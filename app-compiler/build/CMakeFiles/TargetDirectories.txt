@@ -1,0 +1,5 @@
+/home/tallanlong/app-compiler-decouple/app-compiler-pattern/build/CMakeFiles/rebuild_cache.dir
+/home/tallanlong/app-compiler-decouple/app-compiler-pattern/build/CMakeFiles/edit_cache.dir
+/home/tallanlong/app-compiler-decouple/app-compiler-pattern/build/llvm-pass/CMakeFiles/rebuild_cache.dir
+/home/tallanlong/app-compiler-decouple/app-compiler-pattern/build/llvm-pass/CMakeFiles/edit_cache.dir
+/home/tallanlong/app-compiler-decouple/app-compiler-pattern/build/llvm-pass/CMakeFiles/CDFGPass.dir

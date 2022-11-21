@@ -1,0 +1,180 @@
+#ifndef __LLVM_CDFG_NODE_H__
+#define __LLVM_CDFG_NODE_H__
+
+#include "llvm/Pass.h"
+#include "llvm/Analysis/LoopPass.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Transforms/IPO/PassManagerBuilder.h"
+#include "llvm/ADT/Statistic.h"
+#include "llvm/Analysis/LoopInfo.h"
+#include "llvm/Analysis/CFGPrinter.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Analysis/AliasAnalysis.h"
+#include "llvm/IR/Function.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/Analysis/MemoryDependenceAnalysis.h"
+
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/SetVector.h"
+#include "llvm/ADT/Statistic.h"
+#include "llvm/Analysis/AliasAnalysis.h"
+#include "llvm/Analysis/CaptureTracking.h"
+#include "llvm/Analysis/GlobalsModRef.h"
+#include "llvm/Analysis/MemoryBuiltins.h"
+#include "llvm/Analysis/MemoryDependenceAnalysis.h"
+#include "llvm/Analysis/TargetLibraryInfo.h"
+#include "llvm/Analysis/ValueTracking.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DataLayout.h"
+#include "llvm/IR/Dominators.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/GlobalVariable.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/IntrinsicInst.h"
+#include "llvm/Pass.h"
+#include "llvm/Support/Debug.h"
+#include "llvm/Support/raw_ostream.h"
+
+#include "llvm/ADT/GraphTraits.h"
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
+
+
+using namespace llvm;
+
+class LLVMCDFG;
+
+// conditional value
+enum CondVal{UNCOND, TRUE_COND, FALSE_COND};
+
+// memory access dependence type
+// Flow: RAW, Read After Write
+// Anti: WAR, Write AFter Read
+// Output: WAW, Write After Write
+// Input: RAR, Read After Read
+enum DepType{FLOW_DEP, ANTI_DEP, OUTPUT_DEP, INPUT_DEP};
+
+struct InstructionInfo
+{
+    bool isPHI = false;
+    bool isBackEdge = false;
+    CondVal cond = UNCOND;
+};
+
+
+// memory access dependenc info
+struct DependInfo
+{
+    DepType type;
+    bool isConstDist; // is distance constant
+    int distance = 0; // loop interation distance, e.g. a[i+1] = a[i]
+};
+
+class LLVMCDFGNode
+{
+private:
+    int _id; 
+    LLVMCDFG *_parent;
+    Instruction *_instruction = NULL;
+    std::vector<Instruction *> _inputInstructions;  // inputs : predecessor instructions
+    std::vector<Instruction *> _outputInstructions; // outputs : successor instructions
+    std::map<Instruction *, InstructionInfo> _inputInfoMap;  // back-edge : input -> this node
+    std::map<Instruction *, InstructionInfo> _outputInfoMap; // back-edge :this node -> output
+    std::map<Instruction *, DependInfo> _srcDepInfoMap; // loop-carried dependence source instructions
+    std::map<Instruction *, DependInfo> _dstDepInfoMap; // loop-carried dependence destination instructions
+    // constant
+    int64_t _constVal;
+    bool _hasConst = false;
+    // Mem operation: 
+    bool _isMemOp;
+    // outloop address
+    int _outloopAddr = -1;
+    bool _transferedByHost = false;
+	int _GEPbaseAddr = -1;
+	int _typeSizeBytes = -1;
+	//load/store
+	int _leftAlignedMemOP = 0;  //0 - any left or right , 1 - left , 2 - right
+	//negated predicated bit
+	bool _npb = false;
+
+    
+public:
+    LLVMCDFGNode(LLVMCDFG *parent) : _parent(parent){}
+    LLVMCDFGNode(Instruction * ins, LLVMCDFG *parent);
+    ~LLVMCDFGNode(){}
+
+    // std::map<Instruction *, bool> inputBackEdgeMap;  // input -> this node is back-edge?
+    // std::map<Instruction *, bool> outputBackEdgeMap; // this node -> output is back-edge?
+    // std::map<Instruction *, CondVal> inputCondtionalMap;  // is input conditional instruction?
+    // std::map<Instruction *, CondVal> outputCondtionalMap; // is output conditional instruction?
+
+    // get/set id
+    void setId(int id){ _id = id; }
+    int id(){ return _id; }
+    LLVMCDFG* parent(){ return _parent; }
+    Instruction* instruction(){ return _instruction; }
+    void setInstruction(Instruction *ins){ _instruction = ins; }
+    const std::vector<Instruction *>& inputInstructions(){ return _inputInstructions; }  // inputs : predecessor instructions
+    const std::vector<Instruction *>& outputInstructions(){ return _outputInstructions; } // outputs : successor instructions
+    const std::map<Instruction *, InstructionInfo>& inputInfoMap(){ return _inputInfoMap; }  // back-edge : input -> this node
+    const std::map<Instruction *, InstructionInfo>& outputInfoMap(){ return _outputInfoMap; } // back-edge :this node -> output
+    void addInputInstruction(Instruction * ins, bool isBackEdge = false, CondVal cond = UNCOND);  // inputs : predecessor instructions
+    void addOutputInstruction(Instruction * ins, bool isBackEdge = false, CondVal cond = UNCOND);// outputs : successor instructions
+    void setInputBackEdge(Instruction * ins, bool isBackEdge);   // input -> this node is back-edge
+    void setInputCondVal(Instruction * ins, CondVal cond);       // conditional dependence between inputs and this node
+    void setOutputBackEdge(Instruction * ins, bool isBackEdge);  // this node -> output is back-edge
+    void setOutputCondVal(Instruction * ins, CondVal cond);      // conditional dependence between this node and output
+    bool isInputBackEdge(Instruction * ins);      // input -> this node is back-edge
+    CondVal getInputCondVal(Instruction * ins);   // conditional dependence between inputs and this node
+    bool isOutputBackEdge(Instruction * ins);     // this node -> output is back-edge
+    CondVal getOutputCondVal(Instruction * ins);  // conditional dependence between this node and output
+    void delInputInstruction(Instruction * ins);  // inputs : predecessor instructions
+    void delOutputInstruction(Instruction * ins); // outputs : successor instructions
+    const std::map<Instruction *, DependInfo>& srcDepInfoMap(){ return _srcDepInfoMap; } // loop-carried dependence source instructions
+    const std::map<Instruction *, DependInfo>& dstDepInfoMap(){ return _dstDepInfoMap; } // loop-carried dependence destination instructions
+    void addSrcDep(Instruction * ins, DependInfo info); // loop-carried dependence source instructions
+    void addDstDep(Instruction * ins, DependInfo info); // loop-carried dependence destination instructions
+    void delSrcDep(Instruction * ins); // loop-carried dependence source instructions
+    void delDstDep(Instruction * ins); // loop-carried dependence destination instructions
+    bool isConditional();
+    // out of loop instructions
+    void addInputLoad(Instruction * ins); // out of loop LOAD
+    void addOutputStore(Instruction * ins); // out of loop STORE
+    // Memory allocation
+    int outloopAddr();
+	void setOutloopAddr(int addr);
+	bool isOutLoop();
+	int GEPbaseAddr();
+	void setGEPbaseAddr(int addr);
+	bool isGEP();
+	void setTypeSizeBytes(int size){ _typeSizeBytes = size; }
+	int typeSizeBytes(){ return _typeSizeBytes; }
+    //ConstantVal
+	int64_t constVal(){ return _constVal; }
+	void setConstVal(int64_t val){ _constVal = val; _hasConst = true;}
+	void delConstVal(){ _constVal = 0; _hasConst = false; }
+	bool hasConst(){ return _hasConst; }
+	bool transferedByHost() {return _transferedByHost;}
+	void setTransferedByHost(bool transferedByHost = false) { _transferedByHost = transferedByHost; }
+	//negated predicated bit
+	void setNPB(bool val){ _npb = val; }
+	bool NPB(){return _npb;}
+	//left aligned memop
+	int leftAlignedMemOp(){return _leftAlignedMemOP;}
+	void setLeftAlignedMemOp(int leftAlignedMemOp) { _leftAlignedMemOP = leftAlignedMemOp; }
+
+
+};
+
+
+
+
+
+#endif
