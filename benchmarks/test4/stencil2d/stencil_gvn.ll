@@ -1,4 +1,4 @@
-; ModuleID = 'stencil.c'
+; ModuleID = 'stencil.ll'
 source_filename = "stencil.c"
 target datalayout = "e-m:e-p:32:32-p270:32:32-p271:32:32-p272:64:64-f64:32:64-f80:32-n8:16:32-S128"
 target triple = "i386-unknown-linux-gnu"
@@ -56,9 +56,10 @@ for.body6:                                        ; preds = %for.body6, %for.con
   br i1 %exitcond, label %for.end20, label %for.body6
 
 for.end20:                                        ; preds = %for.body6
+  %add17.2.lcssa = phi i32 [ %add17.2, %for.body6 ]
   %add22 = add nuw nsw i32 %c.052, %mul21
   %arrayidx23 = getelementptr inbounds [1024 x i32], [1024 x i32]* @sol, i32 0, i32 %add22
-  store i32 %add17.2, i32* %arrayidx23, align 4, !tbaa !3
+  store i32 %add17.2.lcssa, i32* %arrayidx23, align 4, !tbaa !3
   %inc25 = add nuw nsw i32 %c.052, 1
   %exitcond54 = icmp eq i32 %inc25, 30
   br i1 %exitcond54, label %for.inc27, label %for.cond4.preheader

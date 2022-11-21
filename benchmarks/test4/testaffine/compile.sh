@@ -8,5 +8,5 @@ clang -I /home/tallanlong/app-compiler-decouple/app-compiler-pattern/application
 
 opt -gvn -mem2reg -memdep -memcpyopt -lcssa -loop-simplify -licm -loop-deletion -indvars -simplifycfg -mergereturn -indvars $1.ll -S -o $1_gvn.ll
 
-opt -load /home/tallanlong/app-compiler-decouple/app-compiler-pattern/build/llvm-pass/libCDFGPass.so -fn $2 -cdfg $1_gvn.ll -S -o $1_cdfg.ll
+opt -load ../../../app-compiler/build/llvm-pass/libCDFGPass.so -fn $2 -cdfg $1_gvn.ll -S -o $1_cdfg.ll
 
