@@ -1,0 +1,51 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "run-debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/cgra-compiler",
+            "args": [
+                "SPDLOG_LEVEL=off", // trace, debug, info, warn, err, critical, off
+                "-c", "true",
+                "-m", "true",
+                "-o", "true",
+                "-t", "3600000",
+                "-i", "2000",
+                "-p", "../cgra-mg/src/main/resources/operations.json", // resources/ops/operations.json",
+                "-a", "../cgra-mg/src/main/resources/cgra_adg.json", // resources/adgs/my_cgra_test.json",
+                "-d", "../benchmarks/test4/testaffine/affine.json"
+                // "-d", "../benchmarks/test4/conv2d_3x3/affine.json"
+                // "-d", "../benchmarks/test4/fir_unroll4/affine.json"
+                // "-d", "../benchmarks/test4/gemm-ncubed_unroll4/affine.json"
+                // "-d", "../benchmarks/test4/pedometer/affine.json"
+                // "-d", "../benchmarks/test4/stencil2d/affine.json"   
+                // "-d", "../benchmarks/test4/fft/affine.json"
+                // "-d", "../benchmarks/test4/md-knn/affine.json"           
+                // "-d", "../benchmarks/test4/conv2d_3x3/affine.json ../benchmarks/test4/fir_unroll4/affine.json ../benchmarks/test4/pedometer/affine.json ../benchmarks/test4/stencil2d/affine.json ../benchmarks/test4/gemm-ncubed_unroll4/affine.json ../benchmarks/test4/fft/affine.json ../benchmarks/test4/md-knn/affine.json"                
+                // "-d", "../benchmarks/test4/conv2d_3x3fir_unroll4/affine.json"
+                // "-d", "../benchmarks/test4/pedometermd-knn/affine.json"
+                // "-d", "../benchmarks/test4/stencil2demm-ncubed_unroll4/affine.json"
+                // "-d", "../benchmarks/test4/pedometermd-knn/affine.json ../benchmarks/test4/conv2d_3x3fir_unroll4/affine.json ../benchmarks/test4/stencil2dgemm-ncubed_unroll4/affine.json ../benchmarks/test4/fft/affine.json"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            // "setupCommands": [
+            //     {
+            //         "description": "Enable pretty-printing for gdb",
+            //         "text": "-enable-pretty-printing",
+            //         "ignoreFailures": true
+            //     }
+            // ],
+            "preLaunchTask": "make-task"
+            // "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}

@@ -1,0 +1,3 @@
+void* cgra_din_addr[6] = {acc_avg_x, acc_avg_y, acc_avg_z, acceleration_x, acceleration_y, acceleration_z};
+void* cgra_dout_addr[1] = {acc_vector};
+cgra_execute(cgra_din_addr, cgra_dout_addr);

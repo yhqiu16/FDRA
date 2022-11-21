@@ -1,0 +1,40 @@
+prefix		:= @prefix@
+abs_top_srcdir	:= @abs_top_srcdir@
+XLEN            := @XLEN@
+RISCVTOOLS      := @RISCVTOOLS@
+ROCC = examples
+RUNNER         := "spike --extension=gemmini "
+
+.PHONY: all bareMetalC clean
+all: bareMetalC
+
+vars = \
+	abs_top_srcdir=$(abs_top_srcdir) \
+	XLEN=$(XLEN) \
+	PREFIX=$(ROCC)-$@ \
+	src_dir=$(abs_top_srcdir)/$@ \
+	RISCVTOOLS=$(RISCVTOOLS)
+
+bareMetalC:
+	mkdir -p $@
+	$(MAKE) -C $@ -f $(abs_top_srcdir)/$@/Makefile $(vars)
+
+
+
+clean:
+	$(MAKE) -C bareMetalC -f $(abs_top_srcdir)/bareMetalC/Makefile abs_top_srcdir=$(abs_top_srcdir) PREFIX=$(ROCC)-bareMetalC clean
+
+
+test-baremetal-bareMetalC:
+	make -C bareMetalC	\
+	        -f $(abs_top_srcdir)/bareMetalC/Makefile \
+                TARGET_MAKEFILE=$(abs_top_srcdir)/bareMetalC/Makefile \
+		abs_top_srcdir=$(abs_top_srcdir) \
+	 	src_dir=$(abs_top_srcdir)/bareMetalC \
+	 	XLEN=$(XLEN) \
+	 	PREFIX=$(ROCC)-bareMetalC \
+		RISCVTOOLS=$(RISCVTOOLS) \
+		RUNNER=$(RUNNER) \
+		run-baremetal
+
+

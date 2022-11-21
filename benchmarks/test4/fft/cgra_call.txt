@@ -1,0 +1,3 @@
+void* cgra_din_addr[8] = {XI0, XI1, XI2, XI3, XR0, XR1, XR2, XR3};
+void* cgra_dout_addr[8] = {YR0, YI0, YR1, YI1, YR2, YI2, YR3, YI3};
+cgra_execute(cgra_din_addr, cgra_dout_addr);

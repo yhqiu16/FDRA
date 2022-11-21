@@ -1,0 +1,3 @@
+void* cgra_din_addr[9] = {A, A, A, A, A, A, A, A, A};
+void* cgra_dout_addr[1] = {(void*)B+128};
+cgra_execute(cgra_din_addr, cgra_dout_addr);

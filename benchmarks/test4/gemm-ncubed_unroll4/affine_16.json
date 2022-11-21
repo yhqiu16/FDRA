@@ -1,0 +1,78 @@
+{
+  "name": "G",
+  "directed": true,
+  "strict": false,
+  "_subgraph_cnt": 0,
+  "objects": [
+    {
+      "_gvid": 0,
+      "name": "Input5",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 16, -60, 16, 4, 16",
+      "ref_name": "m1",
+      "size": "1024"
+    },
+    {
+      "_gvid": 1,
+      "name": "Input8",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "64, 16, -956, 16, -1020, 16",
+      "ref_name": "m2",
+      "size": "1024"
+    },
+    {
+      "_gvid": 2,
+      "name": "MUL9",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 3,
+      "name": "Output20",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "0, 16, 4, 16, 4, 16",
+      "ref_name": "prod",
+      "size": "1024"
+    },
+    {
+      "_gvid": 4,
+      "name": "ACC43",
+      "acc_first": "1",
+      "acc_params": "0, 16, 1, 256",
+      "label": "\\N",
+      "opcode": "acc"
+    }
+  ],
+  "edges": [
+    {
+      "_gvid": 0,
+      "tail": 0,
+      "head": 2,
+      "operand": "1"
+    },
+    {
+      "_gvid": 1,
+      "tail": 1,
+      "head": 2,
+      "operand": "0"
+    },
+    {
+      "_gvid": 2,
+      "tail": 2,
+      "head": 4,
+      "operand": "0"
+    },
+    {
+      "_gvid": 3,
+      "tail": 4,
+      "head": 3,
+      "operand": "0"
+    }
+  ]
+}

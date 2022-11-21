@@ -1,0 +1,27 @@
+Digraph G {
+"Input7"[label = "\N\nlat=3"];
+"Input9"[label = "\N\nlat=3"];
+"MUL10"[label = "\N\nlat=4"];
+"Input9"->"MUL10"[label = "lat=0\nop=0"];
+"Input7"->"MUL10"[label = "lat=0\nop=1"];
+"ADD11"[label = "\N\nlat=5"];
+"MUL10"->"ADD11"[label = "lat=0\nop=0"];
+"MUL26"->"ADD11"[label = "lat=0\nop=1"];
+"Input14"[label = "\N\nlat=3"];
+"Input17"[label = "\N\nlat=3"];
+"MUL18"[label = "\N\nlat=4"];
+"Input17"->"MUL18"[label = "lat=0\nop=0"];
+"Input14"->"MUL18"[label = "lat=0\nop=1"];
+"ADD19"[label = "\N\nlat=7"];
+"MUL18"->"ADD19"[label = "lat=0\nop=0"];
+"ADD11"->"ADD19"[label = "lat=1\nop=1"];
+"Input22"[label = "\N\nlat=3"];
+"Input25"[label = "\N\nlat=3"];
+"MUL26"[label = "\N\nlat=4"];
+"Input25"->"MUL26"[label = "lat=0\nop=0"];
+"Input22"->"MUL26"[label = "lat=0\nop=1"];
+"Output42"[label = "\N\nlat=9"];
+"ACC72"->"Output42"[label = "lat=0\nop=0"];
+"ACC72"[label = "\N\nlat=8"];
+"ADD19"->"ACC72"[label = "lat=0\nop=0"];
+}

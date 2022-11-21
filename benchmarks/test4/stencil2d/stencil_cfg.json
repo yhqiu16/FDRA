@@ -1,0 +1,104 @@
+{
+  "name": "CFG for 'stencil' function",
+  "directed": true,
+  "strict": false,
+  "label": "CFG for 'stencil' function",
+  "_subgraph_cnt": 0,
+  "objects": [
+    {
+      "_gvid": 0,
+      "name": "Node0x558dc2502080",
+      "label": "{entry:\\l  br label %for.cond1.preheader\\l}",
+      "shape": "record"
+    },
+    {
+      "_gvid": 1,
+      "name": "Node0x558dc25021e0",
+      "label": "{for.cond1.preheader:                              \\l  %r.053 = phi i32 [ 0, %entry ], [ %inc28, %for.inc27 ]\\l  %mul21 = shl i32 %r.053, 5\\l  br label %for.cond4.preheader\\l}",
+      "shape": "record"
+    },
+    {
+      "_gvid": 2,
+      "name": "Node0x558dc2502b70",
+      "label": "{for.cond4.preheader:                              \\l  %c.052 = phi i32 [ 0, %for.cond1.preheader ], [ %inc25, %for.end20 ]\\l  br label %for.body6\\l}",
+      "shape": "record"
+    },
+    {
+      "_gvid": 3,
+      "name": "Node0x558dc2502e70",
+      "label": "{for.body6:                                        \\l  %temp.051 = phi i32 [ 0, %for.cond4.preheader ], [ %add17.2, %for.body6 ]\\l  %k1.050 = phi i32 [ 0, %for.cond4.preheader ], [ %inc19, %for.body6 ]\\l  %call = call i32 bitcast (i32 (...)* @please_map_me to i32 ()*)() #2\\l  %mul10 = mul nuw nsw i32 %k1.050, 3\\l  %add11 = add nuw nsw i32 %k1.050, %r.053\\l  %mul12 = shl i32 %add11, 5\\l  %add13 = add nuw nsw i32 %mul12, %c.052\\l  %arrayidx = getelementptr inbounds [9 x i32], [9 x i32]* @filter, i32 0, i32\\l... %mul10\\l  %0 = load i32, i32* %arrayidx, align 4, !tbaa !3\\l  %arrayidx15 = getelementptr inbounds [1024 x i32], [1024 x i32]* @orig, i32\\l... 0, i32 %add13\\l  %1 = load i32, i32* %arrayidx15, align 4, !tbaa !3\\l  %mul16 = mul nsw i32 %1, %0\\l  %add17 = add nsw i32 %mul16, %temp.051\\l  %add.1 = add nuw nsw i32 %mul10, 1\\l  %arrayidx.1 = getelementptr inbounds [9 x i32], [9 x i32]* @filter, i32 0,\\l... i32 %add.1\\l  %2 = load i32, i32* %arrayidx.1, align 4, !tbaa !3\\l  %add14.1 = add nuw nsw i32 %add13, 1\\l  %arrayidx15.1 = getelementptr inbounds [1024 x i32], [1024 x i32]* @orig,\\l... i32 0, i32 %add14.1\\l  %3 = load i32, i32* %arrayidx15.1, align 4, !tbaa !3\\l  %mul16.1 = mul nsw i32 %3, %2\\l  %add17.1 = add nsw i32 %mul16.1, %add17\\l  %add.2 = add nuw nsw i32 %mul10, 2\\l  %arrayidx.2 = getelementptr inbounds [9 x i32], [9 x i32]* @filter, i32 0,\\l... i32 %add.2\\l  %4 = load i32, i32* %arrayidx.2, align 4, !tbaa !3\\l  %add14.2 = add nuw nsw i32 %add13, 2\\l  %arrayidx15.2 = getelementptr inbounds [1024 x i32], [1024 x i32]* @orig,\\l... i32 0, i32 %add14.2\\l  %5 = load i32, i32* %arrayidx15.2, align 4, !tbaa !3\\l  %mul16.2 = mul nsw i32 %5, %4\\l  %add17.2 = add nsw i32 %mul16.2, %add17.1\\l  %inc19 = add nuw nsw i32 %k1.050, 1\\l  %exitcond = icmp eq i32 %inc19, 3\\l  br i1 %exitcond, label %for.end20, label %for.body6\\l|{<s0>T|<s1>F}}",
+      "shape": "record"
+    },
+    {
+      "_gvid": 4,
+      "name": "Node0x558dc2502d00",
+      "label": "{for.end20:                                        \\l  %add17.2.lcssa = phi i32 [ %add17.2, %for.body6 ]\\l  %add22 = add nuw nsw i32 %c.052, %mul21\\l  %arrayidx23 = getelementptr inbounds [1024 x i32], [1024 x i32]* @sol, i32\\l... 0, i32 %add22\\l  store i32 %add17.2.lcssa, i32* %arrayidx23, align 4, !tbaa !3\\l  %inc25 = add nuw nsw i32 %c.052, 1\\l  %exitcond54 = icmp eq i32 %inc25, 30\\l  br i1 %exitcond54, label %for.inc27, label %for.cond4.preheader\\l|{<s0>T|<s1>F}}",
+      "shape": "record"
+    },
+    {
+      "_gvid": 5,
+      "name": "Node0x558dc2502950",
+      "label": "{for.inc27:                                        \\l  %inc28 = add nuw nsw i32 %r.053, 1\\l  %exitcond55 = icmp eq i32 %inc28, 30\\l  br i1 %exitcond55, label %for.end29, label %for.cond1.preheader\\l|{<s0>T|<s1>F}}",
+      "shape": "record"
+    },
+    {
+      "_gvid": 6,
+      "name": "Node0x558dc25064f0",
+      "label": "{for.end29:                                        \\l  ret void\\l}",
+      "shape": "record"
+    }
+  ],
+  "edges": [
+    {
+      "_gvid": 0,
+      "tail": 0,
+      "head": 1
+    },
+    {
+      "_gvid": 1,
+      "tail": 1,
+      "head": 2
+    },
+    {
+      "_gvid": 2,
+      "tail": 2,
+      "head": 3
+    },
+    {
+      "_gvid": 3,
+      "tail": 3,
+      "head": 3,
+      "tailport": "s1"
+    },
+    {
+      "_gvid": 4,
+      "tail": 3,
+      "head": 4,
+      "tailport": "s0"
+    },
+    {
+      "_gvid": 5,
+      "tail": 4,
+      "head": 2,
+      "tailport": "s1"
+    },
+    {
+      "_gvid": 6,
+      "tail": 4,
+      "head": 5,
+      "tailport": "s0"
+    },
+    {
+      "_gvid": 7,
+      "tail": 5,
+      "head": 1,
+      "tailport": "s1"
+    },
+    {
+      "_gvid": 8,
+      "tail": 5,
+      "head": 6,
+      "tailport": "s0"
+    }
+  ]
+}
