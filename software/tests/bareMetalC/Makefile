@@ -1,19 +1,11 @@
 include $(abs_top_srcdir)/Makefrag
 
 tests = \
-	array_add \
-	conv2 \
-	conv3 \
-	conv2d_2x2 \
 	conv2d_3x3 \
 	fir \
 	gemm_ncube \
-	gemver \
-	mvt \
 	pedometer \
 	stencil2d \
-	stencil3d \
-	ellpack \
 	knn \
 	fft \
 	pipeline \
