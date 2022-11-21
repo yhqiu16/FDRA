@@ -5,7 +5,7 @@ llvm-pass/CMakeFiles/CDFGPass.dir/src/CDFGPass.cpp.o
  ../llvm-pass/include/llvm_cdfg.h
  ../llvm-pass/include/llvm_cdfg_edge.h
  ../llvm-pass/include/llvm_cdfg_node.h
- /home/tallanlong/app-compiler-decouple/app-compiler-pattern/llvm-pass/src/CDFGPass.cpp
+ /home/tallanlong/fdra/app-compiler/llvm-pass/src/CDFGPass.cpp
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/DataTypes.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/Error.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/ExternC.h
@@ -261,9 +261,8 @@ llvm-pass/CMakeFiles/CDFGPass.dir/src/CDFGPass.cpp.o
 llvm-pass/CMakeFiles/CDFGPass.dir/src/llvm_cdfg.cpp.o
  ../llvm-pass/include/llvm_cdfg.h
  ../llvm-pass/include/llvm_cdfg_edge.h
- ../llvm-pass/include/llvm_cdfg_inline.h
  ../llvm-pass/include/llvm_cdfg_node.h
- /home/tallanlong/app-compiler-decouple/app-compiler-pattern/llvm-pass/src/llvm_cdfg.cpp
+ /home/tallanlong/fdra/app-compiler/llvm-pass/src/llvm_cdfg.cpp
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/DataTypes.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/Error.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/ExternC.h
@@ -365,7 +364,6 @@ llvm-pass/CMakeFiles/CDFGPass.dir/src/llvm_cdfg.cpp.o
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/GlobalValue.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/GlobalVariable.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/IRBuilder.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/InlineAsm.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/InstVisitor.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/InstrTypes.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Instruction.def
@@ -421,9 +419,7 @@ llvm-pass/CMakeFiles/CDFGPass.dir/src/llvm_cdfg.cpp.o
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/ErrorOr.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FileSystem.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Format.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FormatCommon.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FormatProviders.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FormatVariadic.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FormatVariadicDetails.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/GenericDomTree.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/GraphWriter.h
@@ -447,150 +443,10 @@ llvm-pass/CMakeFiles/CDFGPass.dir/src/llvm_cdfg.cpp.o
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Transforms/Scalar.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Transforms/Utils/BasicBlockUtils.h
 llvm-pass/CMakeFiles/CDFGPass.dir/src/llvm_cdfg_edge.cpp.o
- /home/tallanlong/app-compiler-decouple/app-compiler-pattern/llvm-pass/src/llvm_cdfg_edge.cpp
-llvm-pass/CMakeFiles/CDFGPass.dir/src/llvm_cdfg_inline.cpp.o
- ../llvm-pass/include/llvm_cdfg_inline.h
- /home/tallanlong/app-compiler-decouple/app-compiler-pattern/llvm-pass/src/llvm_cdfg_inline.cpp
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/DataTypes.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/ExternC.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/Types.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/APFloat.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/APInt.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/Any.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/ArrayRef.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/DenseMap.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/DenseMapInfo.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/DenseSet.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/EpochTracker.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/FoldingSet.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/FunctionExtras.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/GraphTraits.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/Hashing.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/None.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/Optional.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/PointerIntPair.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/PointerUnion.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/STLExtras.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/SetVector.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/SmallPtrSet.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/SmallString.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/SmallVector.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/StringMap.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/StringRef.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/StringSwitch.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/TinyPtrVector.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/Twine.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/ilist.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/ilist_base.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/ilist_iterator.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/ilist_node.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/ilist_node_base.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/ilist_node_options.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/iterator.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/iterator_range.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/ADT/simple_ilist.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Analysis/ConstantFolding.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Analysis/LoopInfo.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Analysis/ScalarEvolution.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Analysis/ScalarEvolutionExpander.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Analysis/ScalarEvolutionExpressions.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Analysis/ScalarEvolutionNormalization.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Analysis/TargetFolder.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Config/abi-breaking.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Config/llvm-config.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Argument.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Attributes.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Attributes.inc
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/BasicBlock.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/CFG.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/CallingConv.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Comdat.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Constant.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/ConstantFolder.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/ConstantRange.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Constants.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/ConstrainedOps.def
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/DataLayout.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/DebugLoc.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/DerivedTypes.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/DiagnosticHandler.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/FPEnv.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/FixedMetadataKinds.def
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Function.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/GlobalAlias.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/GlobalIFunc.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/GlobalIndirectSymbol.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/GlobalObject.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/GlobalValue.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/GlobalVariable.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/IRBuilder.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/InlineAsm.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/InstrTypes.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Instruction.def
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Instruction.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Instructions.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/IntrinsicEnums.inc
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/IntrinsicInst.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Intrinsics.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/LLVMContext.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Metadata.def
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Metadata.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Module.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/OperandTraits.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Operator.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/PassInstrumentation.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/PassManager.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/PassManagerInternal.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/ProfileSummary.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/SymbolTableListTraits.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/TrackingMDRef.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Type.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Use.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/User.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Value.def
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/Value.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/ValueHandle.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/IR/ValueMap.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Pass.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/PassAnalysisSupport.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/PassInfo.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/PassRegistry.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/PassSupport.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/AlignOf.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Alignment.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Allocator.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Atomic.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/AtomicOrdering.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/CBindingWrapping.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Casting.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/CodeGen.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Compiler.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/DataTypes.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Debug.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Endian.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/ErrorHandling.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FormatCommon.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FormatProviders.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FormatVariadic.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/FormatVariadicDetails.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Host.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/MD5.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/MathExtras.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/MemAlloc.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Mutex.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/NativeFormatting.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/PointerLikeTypeTraits.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/RWMutex.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/ReverseIteration.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/SwapByteOrder.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/Threading.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/TypeName.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/TypeSize.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/raw_ostream.h
- /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm/Support/type_traits.h
+ /home/tallanlong/fdra/app-compiler/llvm-pass/src/llvm_cdfg_edge.cpp
 llvm-pass/CMakeFiles/CDFGPass.dir/src/llvm_cdfg_node.cpp.o
  ../llvm-pass/include/llvm_cdfg_node.h
- /home/tallanlong/app-compiler-decouple/app-compiler-pattern/llvm-pass/src/llvm_cdfg_node.cpp
+ /home/tallanlong/fdra/app-compiler/llvm-pass/src/llvm_cdfg_node.cpp
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/DataTypes.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/Error.h
  /home/tallanlong/llvm-10.0.0-built/usr/local/include/llvm-c/ExternC.h

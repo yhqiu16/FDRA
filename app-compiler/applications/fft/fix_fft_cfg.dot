@@ -1,0 +1,45 @@
+digraph "CFG for 'fix_fft' function" {
+	label="CFG for 'fix_fft' function";
+
+	Node0x55b45c033f90 [shape=record,label="{entry:\l  br label %do.body.preheader\l}"];
+	Node0x55b45c033f90 -> Node0x55b45c0391f0;
+	Node0x55b45c0391f0 [shape=record,label="{do.body.preheader:                                \l  %indvars.iv = phi i32 [ 1, %entry ], [ %indvars.iv.next, %for.inc ]\l  %mr.0252 = phi i32 [ 0, %entry ], [ %add8, %for.inc ]\l  br label %do.body\l}"];
+	Node0x55b45c0391f0 -> Node0x55b45c039290;
+	Node0x55b45c039240 [shape=record,label="{while.cond.preheader:                             \l  %tobool = icmp ne i16 %inverse, 0\l  %not.tobool = xor i1 %tobool, true\l  %0 = zext i1 %not.tobool to i16\l  br label %while.body\l}"];
+	Node0x55b45c039240 -> Node0x55b45c0393d0;
+	Node0x55b45c039290 [shape=record,label="{do.body:                                          \l  %l.0 = phi i32 [ %shr, %do.body ], [ 128, %do.body.preheader ]\l  %shr = ashr i32 %l.0, 1\l  %add = add nsw i32 %shr, %mr.0252\l  %cmp5 = icmp sgt i32 %add, 127\l  br i1 %cmp5, label %do.body, label %do.end\l|{<s0>T|<s1>F}}"];
+	Node0x55b45c039290:s0 -> Node0x55b45c039290;
+	Node0x55b45c039290:s1 -> Node0x55b45c0392e0;
+	Node0x55b45c0392e0 [shape=record,label="{do.end:                                           \l  %shr.lcssa = phi i32 [ %shr, %do.body ]\l  %sub7 = add nsw i32 %shr.lcssa, -1\l  %and = and i32 %sub7, %mr.0252\l  %add8 = add nsw i32 %and, %shr.lcssa\l  %cmp10 = icmp sgt i32 %add8, %indvars.iv\l  br i1 %cmp10, label %if.end13, label %for.inc\l|{<s0>T|<s1>F}}"];
+	Node0x55b45c0392e0:s0 -> Node0x55b45c039330;
+	Node0x55b45c0392e0:s1 -> Node0x55b45c039380;
+	Node0x55b45c039330 [shape=record,label="{if.end13:                                         \l  %arrayidx = getelementptr inbounds i16, i16* %fr, i32 %indvars.iv\l  %1 = load i16, i16* %arrayidx, align 2, !tbaa !3\l  %arrayidx14 = getelementptr inbounds i16, i16* %fr, i32 %add8\l  %2 = load i16, i16* %arrayidx14, align 2, !tbaa !3\l  store i16 %2, i16* %arrayidx, align 2, !tbaa !3\l  store i16 %1, i16* %arrayidx14, align 2, !tbaa !3\l  %arrayidx19 = getelementptr inbounds i16, i16* %fi, i32 %indvars.iv\l  %3 = load i16, i16* %arrayidx19, align 2, !tbaa !3\l  %arrayidx20 = getelementptr inbounds i16, i16* %fi, i32 %add8\l  %4 = load i16, i16* %arrayidx20, align 2, !tbaa !3\l  store i16 %4, i16* %arrayidx19, align 2, !tbaa !3\l  store i16 %3, i16* %arrayidx20, align 2, !tbaa !3\l  br label %for.inc\l}"];
+	Node0x55b45c039330 -> Node0x55b45c039380;
+	Node0x55b45c039380 [shape=record,label="{for.inc:                                          \l  %indvars.iv.next = add nuw nsw i32 %indvars.iv, 1\l  %exitcond = icmp eq i32 %indvars.iv.next, 128\l  br i1 %exitcond, label %while.cond.preheader, label %do.body.preheader\l|{<s0>T|<s1>F}}"];
+	Node0x55b45c039380:s0 -> Node0x55b45c039240;
+	Node0x55b45c039380:s1 -> Node0x55b45c0391f0;
+	Node0x55b45c0393d0 [shape=record,label="{while.body:                                       \l  %k.0251 = phi i32 [ 9, %while.cond.preheader ], [ %dec, %for.end115 ]\l  %l.1250 = phi i32 [ 1, %while.cond.preheader ], [ %shl28, %for.end115 ]\l  %shl28 = shl i32 %l.1250, 1\l  %cmp31247 = icmp sgt i32 %l.1250, 0\l  br i1 %cmp31247, label %for.body33.preheader, label %for.end115\l|{<s0>T|<s1>F}}"];
+	Node0x55b45c0393d0:s0 -> Node0x55b45c039420;
+	Node0x55b45c0393d0:s1 -> Node0x55b45c039650;
+	Node0x55b45c039420 [shape=record,label="{for.body33.preheader:                             \l  br label %for.body33\l}"];
+	Node0x55b45c039420 -> Node0x55b45c039470;
+	Node0x55b45c039470 [shape=record,label="{for.body33:                                       \l  %conv30249 = phi i32 [ %conv30, %for.inc113 ], [ 0, %for.body33.preheader ]\l  %m.1248 = phi i16 [ %inc114, %for.inc113 ], [ 0, %for.body33.preheader ]\l  %shl35 = shl i32 %conv30249, %k.0251\l  %arrayidx38 = getelementptr inbounds [768 x i16], [768 x i16]* @Sinewave,\l... i32 0, i32 %shl35\l  %5 = load i16, i16* %arrayidx38, align 2, !tbaa !3\l  %cmp59245 = icmp slt i32 %conv30249, 128\l  br i1 %cmp59245, label %for.body61.lr.ph, label %for.inc113\l|{<s0>T|<s1>F}}"];
+	Node0x55b45c039470:s0 -> Node0x55b45c0394c0;
+	Node0x55b45c039470:s1 -> Node0x55b45c0395b0;
+	Node0x55b45c0394c0 [shape=record,label="{for.body61.lr.ph:                                 \l  %sub40 = sub i16 0, %5\l  %spec.select = select i1 %tobool, i16 %5, i16 %sub40\l  %wi.1 = ashr i16 %spec.select, %0\l  %add36 = add nsw i32 %shl35, 256\l  %arrayidx37 = getelementptr inbounds [768 x i16], [768 x i16]* @Sinewave,\l... i32 0, i32 %add36\l  %6 = load i16, i16* %arrayidx37, align 2, !tbaa !3\l  %wr.0 = ashr i16 %6, %0\l  %conv.i = sext i16 %wr.0 to i32\l  %conv.i238 = sext i16 %wi.1 to i32\l  br label %for.body61\l}"];
+	Node0x55b45c0394c0 -> Node0x55b45c039510;
+	Node0x55b45c039510 [shape=record,label="{for.body61:                                       \l  %i.0246 = phi i32 [ %conv30249, %for.body61.lr.ph ], [ %add111, %for.body61 ]\l  %call = tail call i32 bitcast (i32 (...)* @please_map_me to i32 ()*)() #7\l  %add62 = add nsw i32 %i.0246, %l.1250\l  %arrayidx63 = getelementptr inbounds i16, i16* %fr, i32 %add62\l  %7 = load i16, i16* %arrayidx63, align 2, !tbaa !3\l  %conv1.i = sext i16 %7 to i32\l  %mul.i = mul nsw i32 %conv1.i, %conv.i\l  %shr10.i = lshr i32 %mul.i, 14\l  %conv2.i = and i32 %shr10.i, 1\l  %8 = lshr i32 %mul.i, 15\l  %add.i = add nuw nsw i32 %conv2.i, %8\l  %conv5.i = trunc i32 %add.i to i16\l  %arrayidx66 = getelementptr inbounds i16, i16* %fi, i32 %add62\l  %9 = load i16, i16* %arrayidx66, align 2, !tbaa !3\l  %conv1.i239 = sext i16 %9 to i32\l  %mul.i240 = mul nsw i32 %conv1.i239, %conv.i238\l  %shr10.i241 = lshr i32 %mul.i240, 14\l  %conv2.i242 = and i32 %shr10.i241, 1\l  %10 = lshr i32 %mul.i240, 15\l  %add.i243 = add nuw nsw i32 %conv2.i242, %10\l  %conv5.i244 = trunc i32 %add.i243 to i16\l  %sub69 = sub i16 %conv5.i, %conv5.i244\l  %mul.i233 = mul nsw i32 %conv1.i239, %conv.i\l  %shr10.i234 = lshr i32 %mul.i233, 14\l  %conv2.i235 = and i32 %shr10.i234, 1\l  %11 = lshr i32 %mul.i233, 15\l  %add.i236 = add nuw nsw i32 %conv2.i235, %11\l  %conv5.i237 = trunc i32 %add.i236 to i16\l  %mul.i226 = mul nsw i32 %conv1.i, %conv.i238\l  %shr10.i227 = lshr i32 %mul.i226, 14\l  %conv2.i228 = and i32 %shr10.i227, 1\l  %12 = lshr i32 %mul.i226, 15\l  %add.i229 = add nuw nsw i32 %conv2.i228, %12\l  %conv5.i230 = trunc i32 %add.i229 to i16\l  %add77 = add i16 %conv5.i237, %conv5.i230\l  %arrayidx79 = getelementptr inbounds i16, i16* %fr, i32 %i.0246\l  %13 = load i16, i16* %arrayidx79, align 2, !tbaa !3\l  %arrayidx80 = getelementptr inbounds i16, i16* %fi, i32 %i.0246\l  %14 = load i16, i16* %arrayidx80, align 2, !tbaa !3\l  %qr.0 = ashr i16 %13, %0\l  %qi.0 = ashr i16 %14, %0\l  %sub92 = sub i16 %qr.0, %sub69\l  store i16 %sub92, i16* %arrayidx63, align 2, !tbaa !3\l  %sub97 = sub i16 %qi.0, %add77\l  store i16 %sub97, i16* %arrayidx66, align 2, !tbaa !3\l  %add102 = add i16 %sub69, %qr.0\l  store i16 %add102, i16* %arrayidx79, align 2, !tbaa !3\l  %add107 = add i16 %add77, %qi.0\l  store i16 %add107, i16* %arrayidx80, align 2, !tbaa !3\l  %add111 = add nsw i32 %i.0246, %shl28\l  %cmp59 = icmp slt i32 %add111, 128\l  br i1 %cmp59, label %for.body61, label %for.inc113.loopexit\l|{<s0>T|<s1>F}}"];
+	Node0x55b45c039510:s0 -> Node0x55b45c039510;
+	Node0x55b45c039510:s1 -> Node0x55b45c039560;
+	Node0x55b45c039560 [shape=record,label="{for.inc113.loopexit:                              \l  br label %for.inc113\l}"];
+	Node0x55b45c039560 -> Node0x55b45c0395b0;
+	Node0x55b45c0395b0 [shape=record,label="{for.inc113:                                       \l  %inc114 = add i16 %m.1248, 1\l  %conv30 = sext i16 %inc114 to i32\l  %cmp31 = icmp sgt i32 %l.1250, %conv30\l  br i1 %cmp31, label %for.body33, label %for.end115.loopexit\l|{<s0>T|<s1>F}}"];
+	Node0x55b45c0395b0:s0 -> Node0x55b45c039470;
+	Node0x55b45c0395b0:s1 -> Node0x55b45c039600;
+	Node0x55b45c039600 [shape=record,label="{for.end115.loopexit:                              \l  br label %for.end115\l}"];
+	Node0x55b45c039600 -> Node0x55b45c039650;
+	Node0x55b45c039650 [shape=record,label="{for.end115:                                       \l  %dec = add nsw i32 %k.0251, -1\l  %cmp24 = icmp slt i32 %shl28, 128\l  br i1 %cmp24, label %while.body, label %cleanup\l|{<s0>T|<s1>F}}"];
+	Node0x55b45c039650:s0 -> Node0x55b45c0393d0;
+	Node0x55b45c039650:s1 -> Node0x55b45c0396a0;
+	Node0x55b45c0396a0 [shape=record,label="{cleanup:                                          \l  ret i32 0\l}"];
+}

@@ -1,4 +1,4 @@
-# Install script for directory: /home/tallanlong/app-compiler-decouple/app-compiler-pattern/llvm-pass
+# Install script for directory: /home/tallanlong/fdra/app-compiler/llvm-pass
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

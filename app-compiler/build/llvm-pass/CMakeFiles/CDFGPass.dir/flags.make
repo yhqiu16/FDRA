@@ -6,5 +6,5 @@ CXX_FLAGS = -fPIC   -fno-rtti -ggdb -std=gnu++14
 
 CXX_DEFINES = -DCDFGPass_EXPORTS
 
-CXX_INCLUDES = -I/home/tallanlong/llvm-10.0.0-built/usr/local/include -I/home/tallanlong/app-compiler-decouple/app-compiler-pattern/llvm-pass/include 
+CXX_INCLUDES = -I/home/tallanlong/llvm-10.0.0-built/usr/local/include -I/home/tallanlong/fdra/app-compiler/llvm-pass/include 
 
