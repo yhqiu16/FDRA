@@ -1,0 +1,18 @@
+# format: DFG-IO-Tag, DFG-IO-Name, ADG-IOB-Id, ADG-IOB-Index, DFG-IO-Latency
+INPUT_0, pedometer_Input2, 4, 3, 0
+INPUT_1, pedometer_Input4, 5, 4, 0
+INPUT_2, pedometer_Input8, 11, 10, 0
+INPUT_3, pedometer_Input10, 12, 11, 0
+INPUT_4, pedometer_Input15, 6, 5, 0
+INPUT_5, pedometer_Input17, 7, 6, 0
+OUTPUT_6, pedometer_Output22, 8, 7, 11
+INPUT_7, md-knn_Input6, 3, 2, 0
+LOAD_8, md-knn_LOAD8, 133, 14, 5
+LOAD_9, md-knn_LOAD10, 2, 1, 5
+LOAD_10, md-knn_LOAD12, 132, 13, 5
+INPUT_11, md-knn_Input49, 135, 16, 1
+INPUT_12, md-knn_Input55, 1, 0, 1
+INPUT_13, md-knn_Input57, 131, 12, 1
+OUTPUT_14, md-knn_Output59, 137, 18, 20
+OUTPUT_15, md-knn_Output60, 136, 17, 21
+OUTPUT_16, md-knn_Output61, 139, 20, 21

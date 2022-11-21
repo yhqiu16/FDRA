@@ -1,0 +1,230 @@
+{
+  "name": "G",
+  "directed": true,
+  "strict": false,
+  "_subgraph_cnt": 0,
+  "objects": [
+    {
+      "_gvid": 0,
+      "name": "Input2",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "acceleration_x",
+      "size": "4096"
+    },
+    {
+      "_gvid": 1,
+      "name": "Input4",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "acc_avg_x",
+      "size": "4096"
+    },
+    {
+      "_gvid": 2,
+      "name": "SUB5",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 3,
+      "name": "MUL6",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 4,
+      "name": "Input8",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "acceleration_y",
+      "size": "4096"
+    },
+    {
+      "_gvid": 5,
+      "name": "Input10",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "acc_avg_y",
+      "size": "4096"
+    },
+    {
+      "_gvid": 6,
+      "name": "SUB11",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 7,
+      "name": "MUL12",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 8,
+      "name": "ADD13",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 9,
+      "name": "Input15",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "acceleration_z",
+      "size": "4096"
+    },
+    {
+      "_gvid": 10,
+      "name": "Input17",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "acc_avg_z",
+      "size": "4096"
+    },
+    {
+      "_gvid": 11,
+      "name": "SUB18",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 12,
+      "name": "MUL19",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 13,
+      "name": "ADD20",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 14,
+      "name": "Output22",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "4, 1024",
+      "ref_name": "acc_vector",
+      "size": "4096"
+    }
+  ],
+  "edges": [
+    {
+      "_gvid": 0,
+      "tail": 0,
+      "head": 2,
+      "operand": "0"
+    },
+    {
+      "_gvid": 1,
+      "tail": 1,
+      "head": 2,
+      "operand": "1"
+    },
+    {
+      "_gvid": 2,
+      "tail": 2,
+      "head": 3,
+      "operand": "0"
+    },
+    {
+      "_gvid": 3,
+      "tail": 2,
+      "head": 3,
+      "operand": "1"
+    },
+    {
+      "_gvid": 4,
+      "tail": 3,
+      "head": 8,
+      "operand": "1"
+    },
+    {
+      "_gvid": 5,
+      "tail": 4,
+      "head": 6,
+      "operand": "0"
+    },
+    {
+      "_gvid": 6,
+      "tail": 5,
+      "head": 6,
+      "operand": "1"
+    },
+    {
+      "_gvid": 7,
+      "tail": 6,
+      "head": 7,
+      "operand": "0"
+    },
+    {
+      "_gvid": 8,
+      "tail": 6,
+      "head": 7,
+      "operand": "1"
+    },
+    {
+      "_gvid": 9,
+      "tail": 7,
+      "head": 8,
+      "operand": "0"
+    },
+    {
+      "_gvid": 10,
+      "tail": 8,
+      "head": 13,
+      "operand": "0"
+    },
+    {
+      "_gvid": 11,
+      "tail": 9,
+      "head": 11,
+      "operand": "0"
+    },
+    {
+      "_gvid": 12,
+      "tail": 10,
+      "head": 11,
+      "operand": "1"
+    },
+    {
+      "_gvid": 13,
+      "tail": 11,
+      "head": 12,
+      "operand": "0"
+    },
+    {
+      "_gvid": 14,
+      "tail": 11,
+      "head": 12,
+      "operand": "1"
+    },
+    {
+      "_gvid": 15,
+      "tail": 12,
+      "head": 13,
+      "operand": "1"
+    },
+    {
+      "_gvid": 16,
+      "tail": 13,
+      "head": 14,
+      "operand": "0"
+    }
+  ]
+}

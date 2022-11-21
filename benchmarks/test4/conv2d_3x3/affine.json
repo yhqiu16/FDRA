@@ -1,0 +1,485 @@
+{
+  "name": "G",
+  "directed": true,
+  "strict": false,
+  "_subgraph_cnt": 0,
+  "objects": [
+    {
+      "_gvid": 0,
+      "name": "Input4",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 1,
+      "name": "SHL5",
+      "label": "\\N",
+      "opcode": "shl"
+    },
+    {
+      "_gvid": 2,
+      "name": "Input8",
+      "label": "\\N",
+      "offset": "0, 128",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 3,
+      "name": "MUL9",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 4,
+      "name": "ADD10",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 5,
+      "name": "Input13",
+      "label": "\\N",
+      "offset": "0, 256",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 6,
+      "name": "SHL14",
+      "label": "\\N",
+      "opcode": "shl"
+    },
+    {
+      "_gvid": 7,
+      "name": "ADD15",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 8,
+      "name": "Input18",
+      "label": "\\N",
+      "offset": "0, 4",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 9,
+      "name": "MUL19",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 10,
+      "name": "ADD20",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 11,
+      "name": "Input23",
+      "label": "\\N",
+      "offset": "0, 132",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 12,
+      "name": "MUL24",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 13,
+      "name": "ADD25",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 14,
+      "name": "Input28",
+      "label": "\\N",
+      "offset": "0, 260",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 15,
+      "name": "MUL29",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 16,
+      "name": "ADD30",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 17,
+      "name": "Input34",
+      "label": "\\N",
+      "offset": "0, 8",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 18,
+      "name": "MUL35",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 19,
+      "name": "ADD36",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 20,
+      "name": "Input39",
+      "label": "\\N",
+      "offset": "0, 136",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 21,
+      "name": "MUL40",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 22,
+      "name": "ADD41",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 23,
+      "name": "Input44",
+      "label": "\\N",
+      "offset": "0, 264",
+      "opcode": "input",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "A",
+      "size": "4096"
+    },
+    {
+      "_gvid": 24,
+      "name": "MUL45",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 25,
+      "name": "ADD46",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 26,
+      "name": "Output48",
+      "label": "\\N",
+      "offset": "128, 4",
+      "opcode": "output",
+      "pattern": "4, 30, 12, 30",
+      "ref_name": "B",
+      "size": "3836"
+    },
+    {
+      "_gvid": 27,
+      "name": "CONST53",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "1"
+    },
+    {
+      "_gvid": 28,
+      "name": "CONST55",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "-3"
+    },
+    {
+      "_gvid": 29,
+      "name": "CONST57",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "2"
+    },
+    {
+      "_gvid": 30,
+      "name": "CONST58",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "5"
+    },
+    {
+      "_gvid": 31,
+      "name": "CONST59",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "6"
+    },
+    {
+      "_gvid": 32,
+      "name": "CONST60",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "7"
+    },
+    {
+      "_gvid": 33,
+      "name": "CONST62",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "-8"
+    },
+    {
+      "_gvid": 34,
+      "name": "CONST63",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "-9"
+    },
+    {
+      "_gvid": 35,
+      "name": "CONST64",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "10"
+    }
+  ],
+  "edges": [
+    {
+      "_gvid": 0,
+      "tail": 0,
+      "head": 1,
+      "operand": "0"
+    },
+    {
+      "_gvid": 1,
+      "tail": 1,
+      "head": 4,
+      "operand": "1"
+    },
+    {
+      "_gvid": 2,
+      "tail": 2,
+      "head": 3,
+      "operand": "0"
+    },
+    {
+      "_gvid": 3,
+      "tail": 3,
+      "head": 4,
+      "operand": "0"
+    },
+    {
+      "_gvid": 4,
+      "tail": 4,
+      "head": 7,
+      "operand": "0"
+    },
+    {
+      "_gvid": 5,
+      "tail": 5,
+      "head": 6,
+      "operand": "0"
+    },
+    {
+      "_gvid": 6,
+      "tail": 6,
+      "head": 7,
+      "operand": "1"
+    },
+    {
+      "_gvid": 7,
+      "tail": 7,
+      "head": 10,
+      "operand": "0"
+    },
+    {
+      "_gvid": 8,
+      "tail": 8,
+      "head": 9,
+      "operand": "0"
+    },
+    {
+      "_gvid": 9,
+      "tail": 9,
+      "head": 10,
+      "operand": "1"
+    },
+    {
+      "_gvid": 10,
+      "tail": 10,
+      "head": 13,
+      "operand": "0"
+    },
+    {
+      "_gvid": 11,
+      "tail": 11,
+      "head": 12,
+      "operand": "0"
+    },
+    {
+      "_gvid": 12,
+      "tail": 12,
+      "head": 13,
+      "operand": "1"
+    },
+    {
+      "_gvid": 13,
+      "tail": 13,
+      "head": 16,
+      "operand": "0"
+    },
+    {
+      "_gvid": 14,
+      "tail": 14,
+      "head": 15,
+      "operand": "0"
+    },
+    {
+      "_gvid": 15,
+      "tail": 15,
+      "head": 16,
+      "operand": "1"
+    },
+    {
+      "_gvid": 16,
+      "tail": 16,
+      "head": 19,
+      "operand": "0"
+    },
+    {
+      "_gvid": 17,
+      "tail": 17,
+      "head": 18,
+      "operand": "0"
+    },
+    {
+      "_gvid": 18,
+      "tail": 18,
+      "head": 19,
+      "operand": "1"
+    },
+    {
+      "_gvid": 19,
+      "tail": 19,
+      "head": 22,
+      "operand": "0"
+    },
+    {
+      "_gvid": 20,
+      "tail": 20,
+      "head": 21,
+      "operand": "0"
+    },
+    {
+      "_gvid": 21,
+      "tail": 21,
+      "head": 22,
+      "operand": "1"
+    },
+    {
+      "_gvid": 22,
+      "tail": 22,
+      "head": 25,
+      "operand": "0"
+    },
+    {
+      "_gvid": 23,
+      "tail": 23,
+      "head": 24,
+      "operand": "0"
+    },
+    {
+      "_gvid": 24,
+      "tail": 24,
+      "head": 25,
+      "operand": "1"
+    },
+    {
+      "_gvid": 25,
+      "tail": 25,
+      "head": 26,
+      "operand": "0"
+    },
+    {
+      "_gvid": 26,
+      "tail": 27,
+      "head": 1,
+      "operand": "1"
+    },
+    {
+      "_gvid": 27,
+      "tail": 28,
+      "head": 3,
+      "operand": "1"
+    },
+    {
+      "_gvid": 28,
+      "tail": 29,
+      "head": 6,
+      "operand": "1"
+    },
+    {
+      "_gvid": 29,
+      "tail": 30,
+      "head": 9,
+      "operand": "1"
+    },
+    {
+      "_gvid": 30,
+      "tail": 31,
+      "head": 12,
+      "operand": "1"
+    },
+    {
+      "_gvid": 31,
+      "tail": 32,
+      "head": 15,
+      "operand": "1"
+    },
+    {
+      "_gvid": 32,
+      "tail": 33,
+      "head": 18,
+      "operand": "1"
+    },
+    {
+      "_gvid": 33,
+      "tail": 34,
+      "head": 21,
+      "operand": "1"
+    },
+    {
+      "_gvid": 34,
+      "tail": 35,
+      "head": 24,
+      "operand": "1"
+    }
+  ]
+}

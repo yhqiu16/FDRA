@@ -1,0 +1,803 @@
+{
+  "name": "merge-dfg",
+  "directed": true,
+  "strict": false,
+  "_subgraph_cnt": 0,
+  "objects": [
+    {
+      "_gvid": 0,
+      "name": "pedometer_Input2",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "pedometer_acceleration_x",
+      "size": "4096"
+    },
+    {
+      "_gvid": 1,
+      "name": "pedometer_Input4",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "pedometer_acc_avg_x",
+      "size": "4096"
+    },
+    {
+      "_gvid": 2,
+      "name": "pedometer_SUB5",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 3,
+      "name": "pedometer_MUL6",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 4,
+      "name": "pedometer_Input8",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "pedometer_acceleration_y",
+      "size": "4096"
+    },
+    {
+      "_gvid": 5,
+      "name": "pedometer_Input10",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "pedometer_acc_avg_y",
+      "size": "4096"
+    },
+    {
+      "_gvid": 6,
+      "name": "pedometer_SUB11",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 7,
+      "name": "pedometer_MUL12",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 8,
+      "name": "pedometer_ADD13",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 9,
+      "name": "pedometer_Input15",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "pedometer_acceleration_z",
+      "size": "4096"
+    },
+    {
+      "_gvid": 10,
+      "name": "pedometer_Input17",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 1024",
+      "ref_name": "pedometer_acc_avg_z",
+      "size": "4096"
+    },
+    {
+      "_gvid": 11,
+      "name": "pedometer_SUB18",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 12,
+      "name": "pedometer_MUL19",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 13,
+      "name": "pedometer_ADD20",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 14,
+      "name": "pedometer_Output22",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "4, 1024",
+      "ref_name": "pedometer_acc_vector",
+      "size": "4096"
+    },
+    {
+      "_gvid": 15,
+      "name": "md-knn_Input6",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 16, 4, 64",
+      "ref_name": "md-knn_NL",
+      "size": "4096"
+    },
+    {
+      "_gvid": 16,
+      "name": "md-knn_LOAD8",
+      "cycles": "1024",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "load",
+      "ref_name": "md-knn_position_x",
+      "size": "256"
+    },
+    {
+      "_gvid": 17,
+      "name": "md-knn_LOAD10",
+      "cycles": "1024",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "load",
+      "ref_name": "md-knn_position_y",
+      "size": "256"
+    },
+    {
+      "_gvid": 18,
+      "name": "md-knn_LOAD12",
+      "cycles": "1024",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "load",
+      "ref_name": "md-knn_position_z",
+      "size": "256"
+    },
+    {
+      "_gvid": 19,
+      "name": "md-knn_SUB13",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 20,
+      "name": "md-knn_SUB14",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 21,
+      "name": "md-knn_SUB15",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 22,
+      "name": "md-knn_MUL16",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 23,
+      "name": "md-knn_MUL17",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 24,
+      "name": "md-knn_ADD18",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 25,
+      "name": "md-knn_MUL19",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 26,
+      "name": "md-knn_ADD20",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 27,
+      "name": "md-knn_DIV21",
+      "label": "\\N",
+      "opcode": "udiv"
+    },
+    {
+      "_gvid": 28,
+      "name": "md-knn_MUL22",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 29,
+      "name": "md-knn_MUL23",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 30,
+      "name": "md-knn_ADD24",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 31,
+      "name": "md-knn_MUL25",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 32,
+      "name": "md-knn_MUL26",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 33,
+      "name": "md-knn_MUL27",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 34,
+      "name": "md-knn_MUL29",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 35,
+      "name": "md-knn_MUL31",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 36,
+      "name": "md-knn_CONST40",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "10"
+    },
+    {
+      "_gvid": 37,
+      "name": "md-knn_CONST41",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "-2000"
+    },
+    {
+      "_gvid": 38,
+      "name": "md-knn_Input49",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "md-knn_position_x",
+      "size": "256"
+    },
+    {
+      "_gvid": 39,
+      "name": "md-knn_Input55",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "md-knn_position_y",
+      "size": "256"
+    },
+    {
+      "_gvid": 40,
+      "name": "md-knn_Input57",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "md-knn_position_z",
+      "size": "256"
+    },
+    {
+      "_gvid": 41,
+      "name": "md-knn_Output59",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "md-knn_force_x",
+      "size": "256"
+    },
+    {
+      "_gvid": 42,
+      "name": "md-knn_Output60",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "md-knn_force_y",
+      "size": "256"
+    },
+    {
+      "_gvid": 43,
+      "name": "md-knn_Output61",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "md-knn_force_z",
+      "size": "256"
+    },
+    {
+      "_gvid": 44,
+      "name": "md-knn_MUL68",
+      "label": "\\N",
+      "opcode": "MUL"
+    },
+    {
+      "_gvid": 45,
+      "name": "md-knn_CONST69",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "4"
+    },
+    {
+      "_gvid": 46,
+      "name": "md-knn_MUL70",
+      "label": "\\N",
+      "opcode": "MUL"
+    },
+    {
+      "_gvid": 47,
+      "name": "md-knn_CONST71",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "4"
+    },
+    {
+      "_gvid": 48,
+      "name": "md-knn_MUL72",
+      "label": "\\N",
+      "opcode": "MUL"
+    },
+    {
+      "_gvid": 49,
+      "name": "md-knn_CONST73",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "4"
+    },
+    {
+      "_gvid": 50,
+      "name": "md-knn_ACC88",
+      "acc_first": "1",
+      "acc_params": "0, 16, 1, 64",
+      "label": "\\N",
+      "opcode": "acc"
+    },
+    {
+      "_gvid": 51,
+      "name": "md-knn_ACC92",
+      "acc_first": "1",
+      "acc_params": "0, 16, 1, 64",
+      "label": "\\N",
+      "opcode": "acc"
+    },
+    {
+      "_gvid": 52,
+      "name": "md-knn_ACC94",
+      "acc_first": "1",
+      "acc_params": "0, 16, 1, 64",
+      "label": "\\N",
+      "opcode": "acc"
+    }
+  ],
+  "edges": [
+    {
+      "_gvid": 0,
+      "tail": 0,
+      "head": 2,
+      "operand": "0"
+    },
+    {
+      "_gvid": 1,
+      "tail": 1,
+      "head": 2,
+      "operand": "1"
+    },
+    {
+      "_gvid": 2,
+      "tail": 2,
+      "head": 3,
+      "operand": "0"
+    },
+    {
+      "_gvid": 3,
+      "tail": 2,
+      "head": 3,
+      "operand": "1"
+    },
+    {
+      "_gvid": 4,
+      "tail": 3,
+      "head": 8,
+      "operand": "1"
+    },
+    {
+      "_gvid": 5,
+      "tail": 4,
+      "head": 6,
+      "operand": "0"
+    },
+    {
+      "_gvid": 6,
+      "tail": 5,
+      "head": 6,
+      "operand": "1"
+    },
+    {
+      "_gvid": 7,
+      "tail": 6,
+      "head": 7,
+      "operand": "0"
+    },
+    {
+      "_gvid": 8,
+      "tail": 6,
+      "head": 7,
+      "operand": "1"
+    },
+    {
+      "_gvid": 9,
+      "tail": 7,
+      "head": 8,
+      "operand": "0"
+    },
+    {
+      "_gvid": 10,
+      "tail": 8,
+      "head": 13,
+      "operand": "0"
+    },
+    {
+      "_gvid": 11,
+      "tail": 9,
+      "head": 11,
+      "operand": "0"
+    },
+    {
+      "_gvid": 12,
+      "tail": 10,
+      "head": 11,
+      "operand": "1"
+    },
+    {
+      "_gvid": 13,
+      "tail": 11,
+      "head": 12,
+      "operand": "0"
+    },
+    {
+      "_gvid": 14,
+      "tail": 11,
+      "head": 12,
+      "operand": "1"
+    },
+    {
+      "_gvid": 15,
+      "tail": 12,
+      "head": 13,
+      "operand": "1"
+    },
+    {
+      "_gvid": 16,
+      "tail": 13,
+      "head": 14,
+      "operand": "0"
+    },
+    {
+      "_gvid": 17,
+      "tail": 15,
+      "head": 44,
+      "operand": "0"
+    },
+    {
+      "_gvid": 18,
+      "tail": 15,
+      "head": 46,
+      "operand": "0"
+    },
+    {
+      "_gvid": 19,
+      "tail": 15,
+      "head": 48,
+      "operand": "0"
+    },
+    {
+      "_gvid": 20,
+      "tail": 16,
+      "head": 19,
+      "operand": "1"
+    },
+    {
+      "_gvid": 21,
+      "tail": 17,
+      "head": 20,
+      "operand": "1"
+    },
+    {
+      "_gvid": 22,
+      "tail": 18,
+      "head": 21,
+      "operand": "1"
+    },
+    {
+      "_gvid": 23,
+      "tail": 19,
+      "head": 22,
+      "operand": "0"
+    },
+    {
+      "_gvid": 24,
+      "tail": 19,
+      "head": 22,
+      "operand": "1"
+    },
+    {
+      "_gvid": 25,
+      "tail": 19,
+      "head": 33,
+      "operand": "1"
+    },
+    {
+      "_gvid": 26,
+      "tail": 20,
+      "head": 23,
+      "operand": "0"
+    },
+    {
+      "_gvid": 27,
+      "tail": 20,
+      "head": 23,
+      "operand": "1"
+    },
+    {
+      "_gvid": 28,
+      "tail": 20,
+      "head": 34,
+      "operand": "1"
+    },
+    {
+      "_gvid": 29,
+      "tail": 21,
+      "head": 25,
+      "operand": "0"
+    },
+    {
+      "_gvid": 30,
+      "tail": 21,
+      "head": 25,
+      "operand": "1"
+    },
+    {
+      "_gvid": 31,
+      "tail": 21,
+      "head": 35,
+      "operand": "1"
+    },
+    {
+      "_gvid": 32,
+      "tail": 22,
+      "head": 24,
+      "operand": "1"
+    },
+    {
+      "_gvid": 33,
+      "tail": 23,
+      "head": 24,
+      "operand": "0"
+    },
+    {
+      "_gvid": 34,
+      "tail": 24,
+      "head": 26,
+      "operand": "0"
+    },
+    {
+      "_gvid": 35,
+      "tail": 25,
+      "head": 26,
+      "operand": "1"
+    },
+    {
+      "_gvid": 36,
+      "tail": 26,
+      "head": 27,
+      "operand": "1"
+    },
+    {
+      "_gvid": 37,
+      "tail": 27,
+      "head": 28,
+      "operand": "0"
+    },
+    {
+      "_gvid": 38,
+      "tail": 27,
+      "head": 28,
+      "operand": "1"
+    },
+    {
+      "_gvid": 39,
+      "tail": 27,
+      "head": 29,
+      "operand": "1"
+    },
+    {
+      "_gvid": 40,
+      "tail": 27,
+      "head": 31,
+      "operand": "1"
+    },
+    {
+      "_gvid": 41,
+      "tail": 28,
+      "head": 29,
+      "operand": "0"
+    },
+    {
+      "_gvid": 42,
+      "tail": 29,
+      "head": 30,
+      "operand": "0"
+    },
+    {
+      "_gvid": 43,
+      "tail": 29,
+      "head": 31,
+      "operand": "0"
+    },
+    {
+      "_gvid": 44,
+      "tail": 30,
+      "head": 32,
+      "operand": "1"
+    },
+    {
+      "_gvid": 45,
+      "tail": 31,
+      "head": 32,
+      "operand": "0"
+    },
+    {
+      "_gvid": 46,
+      "tail": 32,
+      "head": 33,
+      "operand": "0"
+    },
+    {
+      "_gvid": 47,
+      "tail": 32,
+      "head": 34,
+      "operand": "0"
+    },
+    {
+      "_gvid": 48,
+      "tail": 32,
+      "head": 35,
+      "operand": "0"
+    },
+    {
+      "_gvid": 49,
+      "tail": 33,
+      "head": 50,
+      "operand": "0"
+    },
+    {
+      "_gvid": 50,
+      "tail": 34,
+      "head": 52,
+      "operand": "0"
+    },
+    {
+      "_gvid": 51,
+      "tail": 35,
+      "head": 51,
+      "operand": "0"
+    },
+    {
+      "_gvid": 52,
+      "tail": 36,
+      "head": 27,
+      "operand": "0"
+    },
+    {
+      "_gvid": 53,
+      "tail": 37,
+      "head": 30,
+      "operand": "1"
+    },
+    {
+      "_gvid": 54,
+      "tail": 38,
+      "head": 19,
+      "operand": "0"
+    },
+    {
+      "_gvid": 55,
+      "tail": 39,
+      "head": 20,
+      "operand": "0"
+    },
+    {
+      "_gvid": 56,
+      "tail": 40,
+      "head": 21,
+      "operand": "0"
+    },
+    {
+      "_gvid": 57,
+      "tail": 44,
+      "head": 16,
+      "operand": "0"
+    },
+    {
+      "_gvid": 58,
+      "tail": 45,
+      "head": 44,
+      "operand": "1"
+    },
+    {
+      "_gvid": 59,
+      "tail": 46,
+      "head": 17,
+      "operand": "0"
+    },
+    {
+      "_gvid": 60,
+      "tail": 47,
+      "head": 46,
+      "operand": "1"
+    },
+    {
+      "_gvid": 61,
+      "tail": 48,
+      "head": 18,
+      "operand": "0"
+    },
+    {
+      "_gvid": 62,
+      "tail": 49,
+      "head": 48,
+      "operand": "1"
+    },
+    {
+      "_gvid": 63,
+      "tail": 50,
+      "head": 41,
+      "operand": "0"
+    },
+    {
+      "_gvid": 64,
+      "tail": 51,
+      "head": 43,
+      "operand": "0"
+    },
+    {
+      "_gvid": 65,
+      "tail": 52,
+      "head": 42,
+      "operand": "0"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# format: DFG-IO-Tag, DFG-IO-Name, ADG-IOB-Id, ADG-IOB-Index, DFG-IO-Latency
+INPUT_0, conv2d_3x3_Input4, 132, 13, 0
+INPUT_1, conv2d_3x3_Input8, 9, 8, 0
+INPUT_2, conv2d_3x3_Input13, 1, 0, 0
+INPUT_3, conv2d_3x3_Input18, 140, 21, 0
+INPUT_4, conv2d_3x3_Input23, 11, 10, 0
+INPUT_5, conv2d_3x3_Input28, 139, 20, 0
+INPUT_6, conv2d_3x3_Input34, 2, 1, 0
+INPUT_7, conv2d_3x3_Input39, 131, 12, 1
+INPUT_8, conv2d_3x3_Input44, 135, 16, 4
+OUTPUT_9, conv2d_3x3_Output48, 137, 18, 18
+INPUT_10, fir_unroll4_Input4, 141, 22, 0
+INPUT_11, fir_unroll4_Input6, 138, 19, 0
+INPUT_12, fir_unroll4_Input11, 12, 11, 0
+INPUT_13, fir_unroll4_Input13, 10, 9, 0
+INPUT_14, fir_unroll4_Input19, 5, 4, 0
+INPUT_15, fir_unroll4_Input21, 4, 3, 0
+INPUT_16, fir_unroll4_Input26, 7, 6, 0
+INPUT_17, fir_unroll4_Input28, 6, 5, 0
+INPUT_18, fir_unroll4_Input42, 3, 2, 5
+OUTPUT_19, fir_unroll4_Output48, 134, 15, 15

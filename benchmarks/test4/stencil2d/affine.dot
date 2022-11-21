@@ -1,0 +1,27 @@
+Digraph G {
+Input7[opcode=input, ref_name="filter", size=36, offset="0, 0", pattern="12, 3, -24, 30, -24, 30"];
+Input9[opcode=input, ref_name="orig", size=4096, offset="0, 0", pattern="128, 3, -252, 30, -244, 30"];
+MUL10[opcode=mul];
+ADD11[opcode=add];
+Input14[opcode=input, ref_name="filter", size=36, offset="0, 4", pattern="12, 3, -24, 30, -24, 30"];
+Input17[opcode=input, ref_name="orig", size=4096, offset="0, 4", pattern="128, 3, -252, 30, -244, 30"];
+MUL18[opcode=mul];
+ADD19[opcode=add];
+Input22[opcode=input, ref_name="filter", size=36, offset="0, 8", pattern="12, 3, -24, 30, -24, 30"];
+Input25[opcode=input, ref_name="orig", size=4096, offset="0, 8", pattern="128, 3, -252, 30, -244, 30"];
+MUL26[opcode=mul];
+Output42[opcode=output, ref_name="sol", size=3832, offset="0, 0", pattern="0, 3, 4, 30, 12, 30"];
+ACC72[opcode=acc, acc_params="0, 3, 1, 900", acc_first=1];
+Input7->MUL10[operand=1];
+Input9->MUL10[operand=0];
+MUL10->ADD11[operand=0];
+ADD11->ADD19[operand=1];
+Input14->MUL18[operand=1];
+Input17->MUL18[operand=0];
+MUL18->ADD19[operand=0];
+Input22->MUL26[operand=1];
+Input25->MUL26[operand=0];
+MUL26->ADD11[operand=1];
+ADD19->ACC72[operand=0];
+ACC72->Output42[operand=0];
+}

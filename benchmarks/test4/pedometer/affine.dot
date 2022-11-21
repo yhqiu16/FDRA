@@ -1,0 +1,34 @@
+Digraph G {
+Input2[opcode=input, ref_name="acceleration_x", size=4096, offset="0, 0", pattern="4, 1024"];
+Input4[opcode=input, ref_name="acc_avg_x", size=4096, offset="0, 0", pattern="4, 1024"];
+SUB5[opcode=sub];
+MUL6[opcode=mul];
+Input8[opcode=input, ref_name="acceleration_y", size=4096, offset="0, 0", pattern="4, 1024"];
+Input10[opcode=input, ref_name="acc_avg_y", size=4096, offset="0, 0", pattern="4, 1024"];
+SUB11[opcode=sub];
+MUL12[opcode=mul];
+ADD13[opcode=add];
+Input15[opcode=input, ref_name="acceleration_z", size=4096, offset="0, 0", pattern="4, 1024"];
+Input17[opcode=input, ref_name="acc_avg_z", size=4096, offset="0, 0", pattern="4, 1024"];
+SUB18[opcode=sub];
+MUL19[opcode=mul];
+ADD20[opcode=add];
+Output22[opcode=output, ref_name="acc_vector", size=4096, offset="0, 0", pattern="4, 1024"];
+Input2->SUB5[operand=0];
+Input4->SUB5[operand=1];
+SUB5->MUL6[operand=0];
+SUB5->MUL6[operand=1];
+MUL6->ADD13[operand=1];
+Input8->SUB11[operand=0];
+Input10->SUB11[operand=1];
+SUB11->MUL12[operand=0];
+SUB11->MUL12[operand=1];
+MUL12->ADD13[operand=0];
+ADD13->ADD20[operand=0];
+Input15->SUB18[operand=0];
+Input17->SUB18[operand=1];
+SUB18->MUL19[operand=0];
+SUB18->MUL19[operand=1];
+MUL19->ADD20[operand=1];
+ADD20->Output22[operand=0];
+}

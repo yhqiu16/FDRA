@@ -1,0 +1,1067 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+/* Include benchmark-specific header. */
+#include "include/encoding.h"
+#include "include/ISA.h"
+
+
+// ################################ conv2d_3x3 ##########################################
+#define NI 32
+#define NJ 32
+#define SIZE NI*NJ
+
+int conv2d_3x3_A[SIZE];
+int conv2d_3x3_B[SIZE];
+int conv2d_3x3_C[SIZE];
+
+/*For 3x3 filter*/
+#define c11 2
+#define c12 -3
+#define c21 5
+#define c22 6
+#define c13 4
+#define c23 7
+#define c31 -8
+#define c32 -9
+#define c33 10
+
+__attribute__((noinline))
+void conv2d_3x3() {
+	for (int i = 1; i < NI -1; i++) {
+		for (int j = 1; j < NJ-1; j++) {
+#ifdef CGRA_COMPILER
+please_map_me();
+#endif
+	/*For 3x3 filter*/
+		conv2d_3x3_C[i*NJ + j] = c11 * conv2d_3x3_A[(i - 1)*NJ + (j - 1)]  +  c12 * conv2d_3x3_A[(i + 0)*NJ + (j - 1)]  +  c13 * conv2d_3x3_A[(i + 1)*NJ + (j - 1)]
+				+ c21 * conv2d_3x3_A[(i - 1)*NJ + (j + 0)]  +  c22 * conv2d_3x3_A[(i + 0)*NJ + (j + 0)]  +  c23 * conv2d_3x3_A[(i + 1)*NJ + (j + 0)]
+				+ c31 * conv2d_3x3_A[(i - 1)*NJ + (j + 1)]  +  c32 * conv2d_3x3_A[(i + 0)*NJ + (j + 1)]  +  c33 * conv2d_3x3_A[(i + 1)*NJ + (j + 1)];
+		}
+	}
+}
+
+void conv2d_3x3_cgra_execute(void** din_addr, void** dout_addr)
+{
+	volatile unsigned short cin[86][3] __attribute__((aligned(8))) = {
+		{0x2001, 0x7800, 0x0004},
+		{0x00c0, 0x00f0, 0x0005},
+		{0x0000, 0x0100, 0x0006},
+		{0x0000, 0x0000, 0x0007},
+		{0x2821, 0x7800, 0x0014},
+		{0x00c0, 0x00f0, 0x0015},
+		{0x0000, 0x0100, 0x0016},
+		{0x0000, 0x0000, 0x0017},
+		{0x3041, 0x7800, 0x0018},
+		{0x00c0, 0x00f0, 0x0019},
+		{0x0000, 0x0100, 0x001a},
+		{0x0000, 0x0000, 0x001b},
+		{0x2040, 0x7800, 0x001c},
+		{0x00c0, 0x00f0, 0x001d},
+		{0x0000, 0x0100, 0x001e},
+		{0x0000, 0x0000, 0x001f},
+		{0x0000, 0x0000, 0x002c},
+		{0x4000, 0x0000, 0x003c},
+		{0x0000, 0x0000, 0x0040},
+		{0x0000, 0x0000, 0x0044},
+		{0x0005, 0x0000, 0x0050},
+		{0x0403, 0x0000, 0x0051},
+		{0x4e01, 0x0000, 0x005d},
+		{0x0006, 0x0000, 0x0060},
+		{0x0403, 0x0000, 0x0061},
+		{0x0007, 0x0000, 0x0064},
+		{0x0413, 0x0000, 0x0065},
+		{0x0002, 0x0000, 0x0068},
+		{0x0405, 0x0000, 0x0069},
+		{0x0000, 0x0000, 0x0078},
+		{0x0000, 0x0840, 0x007c},
+		{0x0020, 0x0003, 0x0080},
+		{0x0000, 0x0003, 0x0084},
+		{0x0000, 0x0003, 0x0088},
+		{0x0000, 0x0000, 0x008c},
+		{0x3181, 0x0000, 0x009d},
+		{0x4601, 0x0000, 0x00a9},
+		{0x8001, 0x0000, 0x00c4},
+		{0x1100, 0x0000, 0x00cc},
+		{0x4c11, 0x0000, 0x00e5},
+		{0x8a01, 0x0000, 0x00ed},
+		{0x8601, 0x0000, 0x00f1},
+		{0x4010, 0x0000, 0x0108},
+		{0x0004, 0x0000, 0x0114},
+		{0x0204, 0x0000, 0x0118},
+		{0x4000, 0x0000, 0x011c},
+		{0xfffd, 0xffff, 0x0124},
+		{0x1003, 0x0000, 0x0125},
+		{0x4c01, 0x0000, 0x0129},
+		{0x0001, 0x0000, 0x012c},
+		{0x1005, 0x0000, 0x012d},
+		{0xfff7, 0xffff, 0x0134},
+		{0x1033, 0x0000, 0x0135},
+		{0xfff8, 0xffff, 0x0138},
+		{0x0c23, 0x0000, 0x0139},
+		{0x4601, 0x0000, 0x013d},
+		{0x000a, 0x0000, 0x0140},
+		{0x0c43, 0x0000, 0x0141},
+		{0x0000, 0x0000, 0x014c},
+		{0x0000, 0x0000, 0x0154},
+		{0x0010, 0x0000, 0x015c},
+		{0x0010, 0x0000, 0x0164},
+		{0x2820, 0x7800, 0x0170},
+		{0x00c0, 0x00f0, 0x0171},
+		{0x0000, 0x0100, 0x0172},
+		{0x0000, 0x0000, 0x0173},
+		{0x2000, 0x7800, 0x0178},
+		{0x00c0, 0x00f0, 0x0179},
+		{0x0000, 0x0100, 0x017a},
+		{0x0000, 0x0000, 0x017b},
+		{0x2002, 0x7800, 0x017c},
+		{0x00c0, 0x00f0, 0x017d},
+		{0x0000, 0x0100, 0x017e},
+		{0x0000, 0x0000, 0x017f},
+		{0x2822, 0x7800, 0x0180},
+		{0x00c0, 0x00f0, 0x0181},
+		{0x0000, 0x0100, 0x0182},
+		{0x0000, 0x0000, 0x0183},
+		{0x3042, 0x7800, 0x0184},
+		{0x00c0, 0x00f0, 0x0185},
+		{0x0000, 0x0100, 0x0186},
+		{0x0000, 0x0000, 0x0187},
+		{0x3801, 0x7800, 0x0188},
+		{0x00c0, 0x00f0, 0x0189},
+		{0x0000, 0x9b00, 0x018a},
+		{0x0000, 0x0000, 0x018b},
+	};
+
+	load_cfg((void*)cin, 0x20000, 516, 0, 0);
+	load_data(din_addr[0], 0x10000, 4096, 1, 0, 0);
+	load_data(din_addr[1], 0x12000, 4096, 1, 0, 0);
+	load_data(din_addr[2], 0x8000, 4096, 1, 0, 0);
+	load_data(din_addr[3], 0x0, 4096, 1, 0, 0);
+	load_data(din_addr[4], 0xa000, 4096, 1, 0, 0);
+	load_data(din_addr[5], 0xc000, 4096, 1, 0, 0);
+	load_data(din_addr[6], 0x18000, 4096, 1, 0, 0);
+	load_data(din_addr[7], 0x1a000, 4096, 1, 0, 0);
+	load_data(din_addr[8], 0x1c000, 4096, 0, 0, 0);
+	config(0x0, 86, 0, 0);
+	execute(0xfa71, 0, 0);
+	store(dout_addr[0], 0x1e000, 3836, 0, 0);
+}
+
+
+
+// ################################ fir-unroll4 ##########################################
+#define NTAPS 32
+int fir_unroll4_input[NTAPS];
+int fir_unroll4_output[NTAPS];
+int fir_unroll4_res[NTAPS];
+int coefficients[NTAPS] = {025, 150, 375, -225, 050, 075, -300, 125,
+025, 150, 375, -225, 050, 075, -300, 125,
+025, 150, 375, -225, 050, 075, -300, 125,
+025, 150, 375, -225, 050, 075, -300, 125};
+
+__attribute__((noinline))
+void fir_unroll4()//(int fir_unroll4_input[], int fir_unroll4_output[], int coefficients[])
+/*   fir_unroll4_input :           fir_unroll4_input sample array */
+/*   fir_unroll4_output:           fir_unroll4_output sample array */
+/*   coefficient:      coefficient array */
+{
+  int i;
+  int j = 0;
+
+ for(j=0; j< NTAPS; ++j) {
+ 	  int sum = 0;
+    #pragma unroll 4
+    for (i = 0; i < NTAPS; ++i) {
+      #ifdef CGRA_COMPILER
+      please_map_me();
+      #endif
+      sum += fir_unroll4_input[i] * coefficients[i];
+    }
+    fir_unroll4_res[j] += sum;
+ }
+}
+
+void fir_unroll4_cgra_execute(void** din_addr, void** dout_addr)
+{
+	volatile unsigned short cin[64][3] __attribute__((aligned(8))) = {
+		{0x8401, 0x2000, 0x0008},
+		{0xf900, 0x0107, 0x0009},
+		{0x0000, 0x0100, 0x000a},
+		{0x0000, 0x0000, 0x000b},
+		{0x8801, 0x2000, 0x000c},
+		{0xf900, 0x0107, 0x000d},
+		{0x0000, 0x0100, 0x000e},
+		{0x0000, 0x0000, 0x000f},
+		{0x9002, 0x2000, 0x0010},
+		{0xf900, 0x0107, 0x0011},
+		{0x0000, 0x0100, 0x0012},
+		{0x0000, 0x0000, 0x0013},
+		{0x9402, 0x2000, 0x0014},
+		{0xf900, 0x0107, 0x0015},
+		{0x0000, 0x0100, 0x0016},
+		{0x0000, 0x0000, 0x0017},
+		{0x8c00, 0x2000, 0x0018},
+		{0xf900, 0x0107, 0x0019},
+		{0x0000, 0x0100, 0x001a},
+		{0x0000, 0x0000, 0x001b},
+		{0x8400, 0x2000, 0x001c},
+		{0xf900, 0x0107, 0x001d},
+		{0x0000, 0x0100, 0x001e},
+		{0x0000, 0x0000, 0x001f},
+		{0x0000, 0x0000, 0x0030},
+		{0x0800, 0x0000, 0x0034},
+		{0x0400, 0x0004, 0x0038},
+		{0x0200, 0x0000, 0x003c},
+		{0x4400, 0x0000, 0x0040},
+		{0x2403, 0x0000, 0x0059},
+		{0x2403, 0x0000, 0x005d},
+		{0x4401, 0x0000, 0x0061},
+		{0x2403, 0x0000, 0x0065},
+		{0x0100, 0x0000, 0x0080},
+		{0x0000, 0x0000, 0x0084},
+		{0x4411, 0x0000, 0x00a5},
+		{0x0400, 0x0000, 0x00c8},
+		{0x3021, 0x0000, 0x00ed},
+		{0x4100, 0x0000, 0x0110},
+		{0x0000, 0x0000, 0x0114},
+		{0x4c41, 0x0000, 0x0131},
+		{0x040d, 0x0000, 0x0135},
+		{0x0000, 0x7001, 0x0136},
+		{0x0020, 0x0008, 0x0137},
+		{0x8c03, 0x0000, 0x0139},
+		{0x0110, 0x0000, 0x0154},
+		{0x0010, 0x0000, 0x015c},
+		{0x0000, 0x0000, 0x0160},
+		{0x0400, 0x2000, 0x0174},
+		{0x0040, 0x0100, 0x0175},
+		{0x0000, 0x0300, 0x0176},
+		{0x0000, 0x0000, 0x0177},
+		{0x0800, 0x2000, 0x0178},
+		{0x0040, 0x0100, 0x0179},
+		{0x0000, 0x9300, 0x017a},
+		{0x0000, 0x0000, 0x017b},
+		{0x8c03, 0x2000, 0x017c},
+		{0xf900, 0x0107, 0x017d},
+		{0x0000, 0x0100, 0x017e},
+		{0x0000, 0x0000, 0x017f},
+		{0x8403, 0x2000, 0x0184},
+		{0xf900, 0x0107, 0x0185},
+		{0x0000, 0x0100, 0x0186},
+		{0x0000, 0x0000, 0x0187},
+	};
+
+	load_cfg((void*)cin, 0x20208, 384, 1, 0);
+	load_data(din_addr[0], 0xb000, 128, 1, 1, 0);
+	load_data(din_addr[1], 0x2000, 128, 1, 1, 0);
+	load_data(din_addr[2], 0x4000, 128, 1, 1, 0);
+	load_data(din_addr[3], 0x1b000, 128, 0, 1, 0);
+	load_data(din_addr[4], 0x9000, 128, 1, 1, 0);
+	load_data(din_addr[5], 0x1000, 128, 1, 1, 0);
+	load_data(din_addr[6], 0xd000, 128, 1, 1, 0);
+	load_data(din_addr[7], 0x19000, 128, 0, 1, 0);
+	load_data(din_addr[8], 0x11000, 128, 0, 1, 0);
+	config(0x41, 64, 1, 0);
+	execute(0x5c7e, 1, 0);
+	store(dout_addr[0], 0x12000, 128, 1, 0);
+}
+
+// ################################ pedometer ##########################################
+#define pedometer_SIZE  1024
+#define pedometer_SIZE  1024
+
+int acc_vector[pedometer_SIZE ];
+int res_vector[pedometer_SIZE ];
+int acceleration_x[pedometer_SIZE ];
+int acceleration_y[pedometer_SIZE ];
+int acceleration_z[pedometer_SIZE ];
+int acc_avg_x[pedometer_SIZE ];
+int acc_avg_y[pedometer_SIZE ];
+int acc_avg_z[pedometer_SIZE];
+
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
+__attribute__((noinline))
+void pedometer(){
+	for(int i=0;i<pedometer_SIZE;i++){
+		acc_vector[i] = (acceleration_x[i]- acc_avg_x[i]) * (acceleration_x[i]- acc_avg_x[i])+  (acceleration_y[i]- acc_avg_y[i]) * (acceleration_y[i]- acc_avg_y[i])+ (acceleration_z[i]-acc_avg_z[i]) * (acceleration_z[i]-acc_avg_z[i]) ;
+	}
+}
+
+void pedometer_cgra_execute(void** din_addr, void** dout_addr)
+{
+	volatile unsigned short cin[46][3] __attribute__((aligned(8))) = {
+		{0x2000, 0x0000, 0x0010},
+		{0x0010, 0x0000, 0x0011},
+		{0x0000, 0x8f00, 0x0012},
+		{0x0080, 0x0000, 0x0013},
+		{0x2000, 0x0000, 0x0014},
+		{0x0010, 0x0000, 0x0015},
+		{0x0000, 0x0100, 0x0016},
+		{0x0000, 0x0000, 0x0017},
+		{0x2800, 0x0000, 0x0018},
+		{0x0010, 0x0000, 0x0019},
+		{0x0000, 0x0100, 0x001a},
+		{0x0000, 0x0000, 0x001b},
+		{0x0000, 0x0000, 0x0038},
+		{0x0400, 0x0000, 0x003c},
+		{0x6c81, 0x0000, 0x005d},
+		{0x2402, 0x0000, 0x0061},
+		{0x40d0, 0x0000, 0x0080},
+		{0x0000, 0x0000, 0x0084},
+		{0x5001, 0x0000, 0x00a1},
+		{0x4803, 0x0000, 0x00a5},
+		{0x0000, 0x0008, 0x00c8},
+		{0x9003, 0x0000, 0x00e9},
+		{0x9003, 0x0000, 0x00ed},
+		{0x0005, 0x0000, 0x0110},
+		{0x0005, 0x0000, 0x0114},
+		{0x8c02, 0x0000, 0x0131},
+		{0x8c02, 0x0000, 0x0135},
+		{0x0010, 0x0000, 0x0154},
+		{0x0010, 0x0000, 0x0158},
+		{0x0000, 0x0000, 0x015c},
+		{0x3000, 0x0000, 0x0174},
+		{0x0010, 0x0000, 0x0175},
+		{0x0000, 0x0100, 0x0176},
+		{0x0000, 0x0000, 0x0177},
+		{0x2000, 0x0000, 0x0178},
+		{0x0010, 0x0000, 0x0179},
+		{0x0000, 0x0100, 0x017a},
+		{0x0000, 0x0000, 0x017b},
+		{0x2800, 0x0000, 0x017c},
+		{0x0010, 0x0000, 0x017d},
+		{0x0000, 0x0100, 0x017e},
+		{0x0000, 0x0000, 0x017f},
+		{0x2000, 0x0000, 0x0180},
+		{0x0010, 0x0000, 0x0181},
+		{0x0000, 0x0100, 0x0182},
+		{0x0000, 0x0000, 0x0183},
+	};
+
+	load_cfg((void*)cin, 0x20000, 276, 2, 0);
+	load_data(din_addr[0], 0xa000, 4096, 0, 2, 0);
+	load_data(din_addr[1], 0x18000, 4096, 0, 2, 0);
+	load_data(din_addr[2], 0x1a000, 4096, 0, 2, 0);
+	load_data(din_addr[3], 0x8000, 4096, 0, 2, 0);
+	load_data(din_addr[4], 0x10000, 4096, 0, 2, 0);
+	load_data(din_addr[5], 0x14000, 4096, 0, 2, 0);
+	config(0x0, 46, 2, 0);
+	execute(0x3c38, 2, 0);
+	store(dout_addr[0], 0x0, 4096, 2, 0);
+}
+
+// ################################ stencil2d ##########################################
+#define TYPE unsigned
+#define col_size 32
+#define row_size 32
+#define f_size 9
+
+TYPE orig[row_size * col_size] __attribute__((aligned(8)));
+TYPE sol[row_size * col_size] __attribute__((aligned(8)));
+TYPE filter[f_size] __attribute__((aligned(8)));
+TYPE res[row_size * col_size] __attribute__((aligned(8)));
+
+__attribute__((noinline))
+void stencil2d(){
+    int r, c, k1, k2;
+    TYPE temp, mul;
+
+    for (r=0; r<row_size-2; r++) {
+        for (c=0; c<col_size-2; c++) {
+            temp = (TYPE)0;
+            for (k1=0;k1<3;k1++){
+                #pragma unroll
+                for (k2=0;k2<3;k2++){
+                    mul = filter[k1*3 + k2] * orig[(r+k1)*col_size + c+k2];
+                    temp += mul;
+                }
+            }
+            sol[(r*col_size) + c] = temp;
+        }
+    }
+}
+
+
+void stencil2d_cgra_execute(void** din_addr, void** dout_addr)
+{
+	volatile unsigned short cin[45][3] __attribute__((aligned(8))) = {
+		{0x1000, 0x0c04, 0x0008},
+		{0xf040, 0x80f7, 0x0009},
+		{0xefe1, 0x0101, 0x000a},
+		{0x0000, 0x0000, 0x000b},
+		{0x6800, 0x0c00, 0x000c},
+		{0xfe80, 0x00f7, 0x000d},
+		{0xeffd, 0x0101, 0x000e},
+		{0x0000, 0x0000, 0x000f},
+		{0x1802, 0x0c04, 0x0010},
+		{0xf040, 0x80f7, 0x0011},
+		{0xefe1, 0x0101, 0x0012},
+		{0x0000, 0x0000, 0x0013},
+		{0x6402, 0x0c00, 0x0014},
+		{0xfe80, 0x00f7, 0x0015},
+		{0xeffd, 0x0101, 0x0016},
+		{0x0000, 0x0000, 0x0017},
+		{0x0400, 0x0000, 0x0030},
+		{0x4400, 0x0000, 0x0038},
+		{0x2403, 0x0000, 0x0055},
+		{0x4c01, 0x0000, 0x0059},
+		{0x2403, 0x0000, 0x005d},
+		{0x0000, 0x0200, 0x007c},
+		{0x0c00, 0x0000, 0x00c4},
+		{0x2c11, 0x0000, 0x00e9},
+		{0x0010, 0x0000, 0x010c},
+		{0x0000, 0x0000, 0x0110},
+		{0x8c03, 0x0000, 0x012d},
+		{0x040d, 0x0000, 0x0135},
+		{0x0000, 0x6001, 0x0136},
+		{0x000c, 0x00e1, 0x0137},
+		{0x0010, 0x0000, 0x0150},
+		{0x0000, 0x0000, 0x0154},
+		{0x0100, 0x0000, 0x0158},
+		{0x1401, 0x0c04, 0x0170},
+		{0xf040, 0x80f7, 0x0171},
+		{0xefe1, 0x0101, 0x0172},
+		{0x0000, 0x0000, 0x0173},
+		{0x6401, 0x0c00, 0x0178},
+		{0xfe80, 0x00f7, 0x0179},
+		{0xeffd, 0x0101, 0x017a},
+		{0x0000, 0x0000, 0x017b},
+		{0x0000, 0x0c00, 0x017c},
+		{0x0040, 0x80f0, 0x017d},
+		{0xe001, 0x8f01, 0x017e},
+		{0x0000, 0x0000, 0x017f},
+	};
+
+	load_cfg((void*)cin, 0x20118, 270, 3, 0);
+	load_data(din_addr[0], 0x2000, 36, 1, 3, 0);
+	load_data(din_addr[1], 0x11000, 36, 1, 3, 0);
+	load_data(din_addr[2], 0x9000, 36, 0, 3, 0);
+	load_data(din_addr[3], 0x4000, 4096, 1, 3, 0);
+	load_data(din_addr[4], 0x15000, 4096, 1, 3, 0);
+	load_data(din_addr[5], 0x6000, 4096, 0, 3, 0);
+	config(0x23, 45, 3, 0);
+	execute(0x1a1e, 3, 0);
+	store(dout_addr[0], 0x18000, 3832, 3, 0);
+}
+
+
+// ################################ gemm-unroll4 ##########################################
+#define N 1024
+TYPE gemm_unroll4_m1[N];
+TYPE gemm_unroll4_m2[N];
+TYPE gemm_unroll4_prod0[N];
+TYPE gemm_unroll4_prod[N];
+
+__attribute__((noinline))
+void gemm_unroll4()
+{
+    int i, j, k;
+    int k_col, i_col;
+    TYPE mult;
+
+    outer:for(i=0;i<row_size;i++) {
+        middle:for(j=0;j<col_size;j++) {
+            i_col = i * col_size;
+            TYPE sum = 0;
+            #pragma unroll 4
+            for(k=0;k<row_size;k++) {
+                k_col = k * col_size;
+                mult = gemm_unroll4_m1[i_col + k] * gemm_unroll4_m2[k_col + j];
+                sum += mult;
+            }
+            gemm_unroll4_prod0[i_col + j]  = sum;
+        }
+    }
+}
+
+void gemm_unroll4_cgra_execute(void** din_addr, void** dout_addr)
+{
+	volatile unsigned short cin[58][3] __attribute__((aligned(8))) = {
+		{0x0000, 0x2000, 0x000c},
+		{0x0040, 0x8100, 0x000d},
+		{0x0000, 0x9102, 0x000e},
+		{0x0080, 0x0000, 0x000f},
+		{0x082a, 0x2010, 0x0010},
+		{0x2040, 0x8107, 0x0011},
+		{0x0e30, 0x0102, 0x0012},
+		{0x0000, 0x0000, 0x0013},
+		{0x8001, 0x2000, 0x0014},
+		{0xf900, 0x0107, 0x0015},
+		{0x0002, 0x0102, 0x0016},
+		{0x0000, 0x0000, 0x0017},
+		{0x1060, 0x2010, 0x0018},
+		{0x2040, 0x8107, 0x0019},
+		{0x0e30, 0x0102, 0x001a},
+		{0x0000, 0x0000, 0x001b},
+		{0x8803, 0x2000, 0x001c},
+		{0xf900, 0x0107, 0x001d},
+		{0x0002, 0x0102, 0x001e},
+		{0x0000, 0x0000, 0x001f},
+		{0x0000, 0x0000, 0x0034},
+		{0x0400, 0x0000, 0x0038},
+		{0x0400, 0x0000, 0x0040},
+		{0x100d, 0x0000, 0x0059},
+		{0x0000, 0x7001, 0x005a},
+		{0x0020, 0x0100, 0x005b},
+		{0x2403, 0x0000, 0x005d},
+		{0x2403, 0x0000, 0x0065},
+		{0x0002, 0x0000, 0x0080},
+		{0x0000, 0x0001, 0x0084},
+		{0x0000, 0x0000, 0x0088},
+		{0x6821, 0x0000, 0x00a9},
+		{0x4340, 0x0000, 0x00cc},
+		{0x4c11, 0x0000, 0x00ed},
+		{0x8401, 0x0000, 0x00f1},
+		{0x0010, 0x0000, 0x0110},
+		{0x0004, 0x0000, 0x0118},
+		{0x8c03, 0x0000, 0x0131},
+		{0x9003, 0x0000, 0x0139},
+		{0x0010, 0x0000, 0x0154},
+		{0x0000, 0x0000, 0x0158},
+		{0x0004, 0x0000, 0x0160},
+		{0x0040, 0x2010, 0x0174},
+		{0x2040, 0x8107, 0x0175},
+		{0x0e30, 0x0102, 0x0176},
+		{0x0000, 0x0000, 0x0177},
+		{0x9802, 0x2000, 0x017c},
+		{0xf900, 0x0107, 0x017d},
+		{0x0002, 0x0102, 0x017e},
+		{0x0000, 0x0000, 0x017f},
+		{0x8800, 0x2000, 0x0180},
+		{0xf900, 0x0107, 0x0181},
+		{0x0002, 0x0102, 0x0182},
+		{0x0000, 0x0000, 0x0183},
+		{0x1000, 0x2010, 0x0184},
+		{0x2040, 0x8107, 0x0185},
+		{0x0e30, 0x0102, 0x0186},
+		{0x0000, 0x0000, 0x0187},
+	};
+
+	load_cfg((void*)cin, 0x20228, 348, 4, 0);
+	load_data(din_addr[0], 0x1a000, 4096, 1, 4, 0);
+	load_data(din_addr[1], 0x8000, 4096, 1, 4, 0);
+	load_data(din_addr[2], 0x1e000, 4096, 1, 4, 0);
+	load_data(din_addr[3], 0xa000, 4096, 0, 4, 0);
+	load_data(din_addr[4], 0x1c000, 4096, 1, 4, 0);
+	load_data(din_addr[5], 0x2028, 4096, 1, 4, 0);
+	load_data(din_addr[6], 0x10000, 4096, 1, 4, 0);
+	load_data(din_addr[7], 0xc000, 4096, 0, 4, 0);
+	config(0x45, 58, 4, 0);
+	execute(0x747c, 4, 0);
+	store(dout_addr[0], 0x0, 4096, 4, 0);
+}
+
+// ################################ fft ##########################################
+#define DATA_TYPE int
+#define gemver_N 20
+//#define _PB_N 20
+
+TYPE XR0[N];
+TYPE XR1[N];
+TYPE XR2[N];
+TYPE XR3[N];
+TYPE XI0[N];
+TYPE XI1[N];
+TYPE XI2[N];
+TYPE XI3[N];
+TYPE YR0[N];
+TYPE YR1[N];
+TYPE YR2[N];
+TYPE YR3[N];
+TYPE YI0[N];
+TYPE YI1[N];
+TYPE YI2[N];
+TYPE YI3[N];
+TYPE ZR0[N];
+TYPE ZR1[N];
+TYPE ZR2[N];
+TYPE ZR3[N];
+TYPE ZI0[N];
+TYPE ZI1[N];
+TYPE ZI2[N];
+TYPE ZI3[N];
+
+
+#define cmplx_M_x(a_x, a_y, b_x, b_y) (a_x*b_x - a_y *b_y)
+#define cmplx_M_y(a_x, a_y, b_x, b_y) (a_x*b_y + a_y *b_x)
+#define cmplx_MUL_x(a_x, a_y, b_x, b_y ) (a_x*b_x - a_y*b_y)
+#define cmplx_MUL_y(a_x, a_y, b_x, b_y ) (a_x*b_y + a_y*b_x)
+#define cmplx_mul_x(a_x, a_y, b_x, b_y) (a_x*b_x - a_y*b_y)
+#define cmplx_mul_y(a_x, a_y, b_x, b_y) (a_x*b_y + a_y*b_x)
+#define cmplx_add_x(a_x, b_x) (a_x + b_x)
+#define cmplx_add_y(a_y, b_y) (a_y + b_y)
+#define cmplx_sub_x(a_x, b_x) (a_x - b_x)
+#define cmplx_sub_y(a_y, b_y) (a_y - b_y)
+#define cm_fl_mul_x(a_x, b) (b*a_x)
+#define cm_fl_mul_y(a_y, b) (b*a_y)
+
+#define FF2(a0_x, a0_y, a1_x, a1_y){			\
+    TYPE c0_x = a0_x;		\
+    TYPE c0_y = a0_y;		\
+    a0_x = cmplx_add_x(c0_x, a1_x);	\
+    a0_y = cmplx_add_y(c0_y, a1_y);	\
+    a1_x = cmplx_sub_x(c0_x, a1_x);	\
+    a1_y = cmplx_sub_y(c0_y, a1_y);	\
+}
+
+#define FFT4(a0_x, a0_y, a1_x, a1_y, a2_x, a2_y, a3_x, a3_y){           \
+    TYPE exp_1_44_x;		\
+    TYPE exp_1_44_y;		\
+    TYPE tmp;			\
+    exp_1_44_x =  0;		\
+    exp_1_44_y =  -1;		\
+    FF2( a0_x, a0_y, a2_x, a2_y);   \
+    FF2( a1_x, a1_y, a3_x, a3_y);   \
+    tmp = a3_x;			\
+    a3_x = a3_x*exp_1_44_x-a3_y*exp_1_44_y;     	\
+    a3_y = tmp*exp_1_44_y - a3_y*exp_1_44_x;    	\
+    FF2( a0_x, a0_y, a1_x, a1_y );                  \
+    FF2( a2_x, a2_y, a3_x, a3_y );                  \
+}
+
+__attribute__((noinline))
+void fft4(){
+    int i;
+    for(i = 0; i < N; i++){
+//    please_map_me();
+        TYPE a0_x = XR0[i];
+        TYPE a0_y = XI0[i];
+        TYPE a1_x = XR1[i];
+        TYPE a1_y = XI1[i];
+        TYPE a2_x = XR2[i];
+        TYPE a2_y = XI2[i];
+        TYPE a3_x = XR3[i];
+        TYPE a3_y = XI3[i];
+        FFT4(a0_x, a0_y, a1_x, a1_y, a2_x, a2_y, a3_x, a3_y);
+        ZR0[i] = a0_x;
+        ZI0[i] = a0_y;
+        ZR1[i] = a1_x;
+        ZI1[i] = a1_y;
+        ZR2[i] = a2_x;
+        ZI2[i] = a2_y;
+        ZR3[i] = a3_x;
+        ZI3[i] = a3_y;
+    }
+}
+
+void fft_cgra_execute(void** din_addr, void** dout_addr)
+{
+	volatile unsigned short cin[106][3] __attribute__((aligned(8))) = {
+		{0x3800, 0x0000, 0x0004},
+		{0x0010, 0x0000, 0x0005},
+		{0x0000, 0x0100, 0x0006},
+		{0x0000, 0x0000, 0x0007},
+		{0x3000, 0x0000, 0x0008},
+		{0x0010, 0x0000, 0x0009},
+		{0x0000, 0x0100, 0x000a},
+		{0x0000, 0x0000, 0x000b},
+		{0x2400, 0x0000, 0x000c},
+		{0x0010, 0x0000, 0x000d},
+		{0x0000, 0x8f00, 0x000e},
+		{0x0080, 0x0000, 0x000f},
+		{0x2800, 0x0000, 0x0010},
+		{0x0010, 0x0000, 0x0011},
+		{0x0000, 0x8d00, 0x0012},
+		{0x0000, 0x0000, 0x0013},
+		{0x3000, 0x0000, 0x0014},
+		{0x0010, 0x0000, 0x0015},
+		{0x0000, 0x8d00, 0x0016},
+		{0x0080, 0x0000, 0x0017},
+		{0x3800, 0x0000, 0x0018},
+		{0x0010, 0x0000, 0x0019},
+		{0x0000, 0x8f00, 0x001a},
+		{0x0080, 0x0000, 0x001b},
+		{0x2c00, 0x0000, 0x001c},
+		{0x0010, 0x0000, 0x001d},
+		{0x0000, 0x0100, 0x001e},
+		{0x0000, 0x0000, 0x001f},
+		{0x2400, 0x0000, 0x0020},
+		{0x0010, 0x0000, 0x0021},
+		{0x0000, 0x0100, 0x0022},
+		{0x0000, 0x0000, 0x0023},
+		{0x0400, 0x0000, 0x002c},
+		{0x0000, 0x0004, 0x0030},
+		{0x0830, 0x0008, 0x0034},
+		{0x2000, 0x0008, 0x0038},
+		{0x0200, 0x0002, 0x003c},
+		{0x8103, 0x0002, 0x0040},
+		{0x0400, 0x0001, 0x0044},
+		{0x2802, 0x0000, 0x004d},
+		{0x2401, 0x0000, 0x0051},
+		{0x2901, 0x0000, 0x0059},
+		{0x4402, 0x0000, 0x0061},
+		{0x4402, 0x0000, 0x0065},
+		{0x2401, 0x0000, 0x0069},
+		{0x0000, 0x0000, 0x0074},
+		{0x0000, 0x0040, 0x0078},
+		{0x0000, 0x0010, 0x007c},
+		{0x0100, 0x0200, 0x0088},
+		{0x6402, 0x0000, 0x0099},
+		{0x6411, 0x0000, 0x00ad},
+		{0x0cc0, 0x0000, 0x00bc},
+		{0x0cc0, 0x0000, 0x00d0},
+		{0x3001, 0x0000, 0x00e1},
+		{0x3012, 0x0000, 0x00f5},
+		{0x0000, 0x0040, 0x0104},
+		{0x0801, 0x0080, 0x0108},
+		{0x3000, 0x0080, 0x010c},
+		{0x0000, 0x0083, 0x0110},
+		{0x0200, 0x0003, 0x0114},
+		{0xc000, 0x0203, 0x0118},
+		{0x0001, 0x0001, 0x011c},
+		{0x9001, 0x0000, 0x0125},
+		{0x8c02, 0x0000, 0x0129},
+		{0x2902, 0x0000, 0x012d},
+		{0x4501, 0x0000, 0x0139},
+		{0x9002, 0x0000, 0x013d},
+		{0x8c01, 0x0000, 0x0141},
+		{0x0014, 0x0000, 0x014c},
+		{0x0104, 0x0030, 0x0150},
+		{0x0200, 0x0000, 0x0154},
+		{0x3100, 0x0000, 0x015c},
+		{0x0000, 0x0002, 0x0160},
+		{0x0014, 0x0000, 0x0164},
+		{0x2400, 0x0000, 0x016c},
+		{0x0010, 0x0000, 0x016d},
+		{0x0000, 0x0100, 0x016e},
+		{0x0000, 0x0000, 0x016f},
+		{0x2800, 0x0000, 0x0170},
+		{0x0010, 0x0000, 0x0171},
+		{0x0000, 0x0100, 0x0172},
+		{0x0000, 0x0000, 0x0173},
+		{0x3000, 0x0000, 0x0174},
+		{0x0010, 0x0000, 0x0175},
+		{0x0000, 0x8f00, 0x0176},
+		{0x0000, 0x0000, 0x0177},
+		{0x3800, 0x0000, 0x0178},
+		{0x0010, 0x0000, 0x0179},
+		{0x0000, 0x8d00, 0x017a},
+		{0x0000, 0x0000, 0x017b},
+		{0x3800, 0x0000, 0x017c},
+		{0x0010, 0x0000, 0x017d},
+		{0x0000, 0x8f00, 0x017e},
+		{0x0080, 0x0000, 0x017f},
+		{0x2000, 0x0000, 0x0180},
+		{0x0010, 0x0000, 0x0181},
+		{0x0000, 0x8f00, 0x0182},
+		{0x0000, 0x0000, 0x0183},
+		{0x3400, 0x0000, 0x0184},
+		{0x0010, 0x0000, 0x0185},
+		{0x0000, 0x0100, 0x0186},
+		{0x0000, 0x0000, 0x0187},
+		{0x2c00, 0x0000, 0x0188},
+		{0x0010, 0x0000, 0x0189},
+		{0x0000, 0x0100, 0x018a},
+		{0x0000, 0x0000, 0x018b},
+	};
+
+	load_cfg((void*)cin, 0x20000, 636, 5, 2);
+	load_data(din_addr[0], 0x1b000, 4096, 0, 5, 0);
+	load_data(din_addr[1], 0x11000, 4096, 0, 5, 0);
+	load_data(din_addr[2], 0x1d000, 4096, 0, 5, 0);
+	load_data(din_addr[3], 0x12000, 4096, 0, 5, 0);
+	load_data(din_addr[4], 0x4000, 4096, 0, 5, 0);
+	load_data(din_addr[5], 0x9000, 4096, 0, 5, 0);
+	load_data(din_addr[6], 0x6000, 4096, 0, 5, 0);
+	load_data(din_addr[7], 0xb000, 4096, 0, 5, 0);
+	config(0x0, 106, 5, 0);
+	execute(0xffff, 5, 0);
+	store(dout_addr[0], 0x1000, 4096, 5, 0);
+	store(dout_addr[1], 0x18000, 4096, 5, 0);
+	store(dout_addr[2], 0xc000, 4096, 5, 0);
+	store(dout_addr[3], 0x14000, 4096, 5, 0);
+	store(dout_addr[4], 0x16000, 4096, 5, 0);
+	store(dout_addr[5], 0xe000, 4096, 5, 0);
+	store(dout_addr[6], 0x2000, 4096, 5, 0);
+	store(dout_addr[7], 0x1e000, 4096, 5, 0);
+}
+
+// ################################ knn ##########################################
+#define nAtoms        64
+#define maxNeighbors  16
+// LJ coefficients
+#define lj1           1//1.5
+#define lj2           2//2.0
+
+TYPE force_x[nAtoms];
+TYPE force_y[nAtoms];
+TYPE force_z[nAtoms];
+TYPE force_x0[nAtoms];
+TYPE force_y0[nAtoms];
+TYPE force_z0[nAtoms];
+TYPE position_x[nAtoms];
+TYPE position_y[nAtoms];
+TYPE position_z[nAtoms];
+unsigned NL[nAtoms*maxNeighbors];
+
+__attribute__((noinline))
+void md_kernel()
+{
+    TYPE delx, dely, delz, r2inv;
+    TYPE r6inv, potential, force, j_x, j_y, j_z;
+    TYPE i_x, i_y, i_z, fx, fy, fz;
+
+    int32_t i, j, jidx;
+
+loop_i : for (i = 0; i < nAtoms; i++){
+             i_x = position_x[i];
+             i_y = position_y[i];
+             i_z = position_z[i];
+             fx = 0;
+             fy = 0;
+             fz = 0;
+loop_j : for( j = 0; j < maxNeighbors; j++){
+//	please_map_me();
+             // Get neighbor
+             jidx = NL[i*maxNeighbors + j];
+             // Look up x,y,z positions
+             j_x = position_x[jidx];
+             j_y = position_y[jidx];
+             j_z = position_z[jidx];
+             // Calc distance
+             delx = i_x - j_x;
+             dely = i_y - j_y;
+             delz = i_z - j_z;
+             r2inv = 10/( delx*delx + dely*dely + delz*delz );//r2inv = 1.0/( delx*delx + dely*dely + delz*delz );
+             // Assume no cutoff and aways account for all nodes in area
+             r6inv = r2inv * r2inv * r2inv;
+             potential = r6inv*(lj1*r6inv - lj2*1000);
+             // Sum changes in force
+             force = r2inv*potential;
+             /*potential = r6inv/100000000*(lj1*r6inv - lj2*1000000000);
+             // Sum changes in force
+             force = r2inv*potential/10000000000;*/
+             fx += delx * force;
+             fy += dely * force;
+             fz += delz * force;
+         }
+         //Update forces after all neighbors accounted for.
+         force_x0[i] = fx;
+         force_y0[i] = fy;
+         force_z0[i] = fz;
+         //printf("dF=%lf,%lf,%lf\n", fx, fy, fz);
+         }
+}
+
+void knn_cgra_execute(void** din_addr, void** dout_addr)
+{
+	volatile unsigned short cin[107][3] __attribute__((aligned(8))) = {
+		{0x0800, 0x4000, 0x0004},
+		{0x0040, 0x0200, 0x0005},
+		{0x0000, 0x0100, 0x0006},
+		{0x0000, 0x0000, 0x0007},
+		{0x3400, 0x4000, 0x0008},
+		{0x0040, 0x0200, 0x0009},
+		{0x0000, 0x0100, 0x000a},
+		{0x0000, 0x0000, 0x000b},
+		{0x0000, 0x0000, 0x000c},
+		{0x0010, 0x0000, 0x000d},
+		{0x0000, 0x0900, 0x000e},
+		{0x0081, 0x0000, 0x000f},
+		{0x1c00, 0x0000, 0x0010},
+		{0x0010, 0x0000, 0x0011},
+		{0x0000, 0x0900, 0x0012},
+		{0x0081, 0x0000, 0x0013},
+		{0x0000, 0x4000, 0x0014},
+		{0x0040, 0x0200, 0x0015},
+		{0x0000, 0x0100, 0x0016},
+		{0x0000, 0x0000, 0x0017},
+		{0x0800, 0x4000, 0x0018},
+		{0x0040, 0x0200, 0x0019},
+		{0x0000, 0xa900, 0x001a},
+		{0x0080, 0x0000, 0x001b},
+		{0x1000, 0x0014, 0x002c},
+		{0x0000, 0x0020, 0x0030},
+		{0x0201, 0x0000, 0x0034},
+		{0x0101, 0x0000, 0x0038},
+		{0x0000, 0x0000, 0x0040},
+		{0x0800, 0x0000, 0x004d},
+		{0x4442, 0x0000, 0x0051},
+		{0x0004, 0x0000, 0x0054},
+		{0x0403, 0x0000, 0x0055},
+		{0x0004, 0x0000, 0x0058},
+		{0x0403, 0x0000, 0x0059},
+		{0x2442, 0x0000, 0x005d},
+		{0x0c00, 0x0000, 0x0061},
+		{0x100d, 0x0000, 0x0065},
+		{0x0000, 0x3001, 0x0066},
+		{0x0041, 0x0010, 0x0067},
+		{0x0000, 0x0640, 0x0074},
+		{0x0200, 0x00c0, 0x0078},
+		{0xc200, 0x0000, 0x007c},
+		{0x0500, 0x0001, 0x0080},
+		{0x0100, 0x0100, 0x0084},
+		{0x0200, 0x0000, 0x0088},
+		{0x0001, 0x0000, 0x008c},
+		{0x4803, 0x0000, 0x0095},
+		{0x000a, 0x0000, 0x0098},
+		{0x8004, 0x0000, 0x0099},
+		{0x4411, 0x0000, 0x009d},
+		{0x0400, 0x0000, 0x00a1},
+		{0x2403, 0x0000, 0x00a5},
+		{0x0430, 0x0000, 0x00a9},
+		{0x8603, 0x0000, 0x00ad},
+		{0x0000, 0x0600, 0x00bc},
+		{0x0004, 0x0000, 0x00c0},
+		{0x0800, 0x0100, 0x00c4},
+		{0x0000, 0x0080, 0x00c8},
+		{0x0400, 0x0088, 0x00cc},
+		{0x0200, 0x0000, 0x00d0},
+		{0x0004, 0x0000, 0x00d4},
+		{0x9003, 0x0000, 0x00dd},
+		{0x6801, 0x0000, 0x00e1},
+		{0x2403, 0x0000, 0x00e5},
+		{0x2d03, 0x0000, 0x00e9},
+		{0x6c03, 0x0000, 0x00ed},
+		{0x2e03, 0x0000, 0x00f1},
+		{0x0400, 0x0000, 0x00f5},
+		{0x0305, 0x0040, 0x0104},
+		{0x0d00, 0x0080, 0x0108},
+		{0x0010, 0x0010, 0x010c},
+		{0x0040, 0x00c0, 0x0110},
+		{0x0800, 0x0000, 0x0114},
+		{0x9042, 0x0000, 0x0125},
+		{0x0004, 0x0000, 0x0128},
+		{0x0403, 0x0000, 0x0129},
+		{0x2483, 0x0000, 0x012d},
+		{0xf830, 0xffff, 0x0130},
+		{0x0c01, 0x0000, 0x0131},
+		{0x080d, 0x0000, 0x0135},
+		{0x0000, 0x2001, 0x0136},
+		{0x0041, 0x0010, 0x0137},
+		{0x2603, 0x0000, 0x0139},
+		{0x0c0d, 0x0000, 0x013d},
+		{0x0000, 0x2001, 0x013e},
+		{0x0041, 0x0010, 0x013f},
+		{0x0101, 0x0000, 0x014c},
+		{0x0000, 0x0000, 0x0154},
+		{0x0100, 0x0000, 0x0158},
+		{0x0100, 0x0000, 0x0160},
+		{0x0c00, 0x4000, 0x016c},
+		{0x0040, 0x0200, 0x016d},
+		{0x0000, 0x0500, 0x016e},
+		{0x0000, 0x0000, 0x016f},
+		{0x0000, 0x0000, 0x0170},
+		{0x0010, 0x0000, 0x0171},
+		{0x0000, 0x0d00, 0x0172},
+		{0x0001, 0x0000, 0x0173},
+		{0x0400, 0x4000, 0x017c},
+		{0x0040, 0x0200, 0x017d},
+		{0x0000, 0xa700, 0x017e},
+		{0x0000, 0x0000, 0x017f},
+		{0x0800, 0x4000, 0x0184},
+		{0x0040, 0x0200, 0x0185},
+		{0x0000, 0xa700, 0x0186},
+		{0x0000, 0x0000, 0x0187},
+	};
+
+	load_cfg((void*)cin, 0x20000, 642, 6, 2);
+	load_data(din_addr[0], 0x5000, 4096, 0, 6, 0);
+	load_data(din_addr[1], 0x7000, 256, 1, 6, 0);
+	load_data(din_addr[2], 0x8000, 256, 0, 6, 0);
+	load_data(din_addr[3], 0x10000, 256, 1, 6, 0);
+	load_data(din_addr[4], 0x13000, 256, 0, 6, 0);
+	load_data(din_addr[5], 0x0, 256, 1, 6, 1);
+	load_data(din_addr[6], 0x2000, 256, 0, 6, 1);
+	config(0x0, 107, 6, 0);
+	execute(0x533f, 6, 0);
+	store(dout_addr[0], 0x19000, 256, 6, 0);
+	store(dout_addr[1], 0x1a000, 256, 6, 0);
+	store(dout_addr[2], 0xa000, 256, 6, 0);
+}
+
+
+///* Array initialization. */
+//void init_array()
+//{
+//int i,j;
+//for (i=0;i<array_add_SIZE; i++){
+//      gemver_A[i] = i * 2 + 5;
+//      conv2d_2x2_B[i] = i * 3;
+//    }
+//
+//}
+//
+//void result_check()
+//{
+//  int i, j;
+//
+//  for (i = 0; i < array_add_SIZE; i++)
+//  {
+//    if (conv2d_2x2_C[i] != D[i]) printf("There is an error in location (%d)[%d, %d]\n", i, conv2d_2x2_C[i], D[i]);
+//  }
+//}
+
+
+int main(int argc, char** argv)
+{
+  long long unsigned start;
+  long long unsigned end;
+  volatile int result;
+//  init_array();
+//  printf("Initialization finished!\n");
+
+  start = rdcycle();
+  /* Run kernels. */
+  conv2d_3x3();
+  fir_unroll4();
+  pedometer();
+  stencil2d();
+  gemm_unroll4();
+  fft4();
+  md_kernel();
+  end = rdcycle();
+  printf("It takes %d cycles for CPU to finish the task.\n", end - start);
+
+  start = rdcycle();
+
+  void* conv2d_3x3_cgra_din_addr[9] = {conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A};
+  void* conv2d_3x3_cgra_dout_addr[1] = {(void*)conv2d_3x3_B+128};
+  conv2d_3x3_cgra_execute(conv2d_3x3_cgra_din_addr, conv2d_3x3_cgra_dout_addr);
+//  result = fence(1);
+
+  void* fir_unroll4_cgra_din_addr[9] = {coefficients, coefficients, coefficients, coefficients, fir_unroll4_input, fir_unroll4_input, fir_unroll4_input, fir_unroll4_input, fir_unroll4_output};
+  void* fir_unroll4_cgra_dout_addr[1] = {fir_unroll4_output};
+  fir_unroll4_cgra_execute(fir_unroll4_cgra_din_addr, fir_unroll4_cgra_dout_addr);
+//  result = fence(1);
+
+  void* pedometer_cgra_din_addr[6] = {acc_avg_x, acc_avg_y, acc_avg_z, acceleration_x, acceleration_y, acceleration_z};
+  void* pedometer_cgra_dout_addr[1] = {res_vector};
+  pedometer_cgra_execute(pedometer_cgra_din_addr, pedometer_cgra_dout_addr);
+//  result = fence(1);
+
+  void* stencil2d_cgra_din_addr[6] = {filter, filter, filter, orig, orig, orig};
+  void* stencil2d_cgra_dout_addr[1] = {res};
+  stencil2d_cgra_execute(stencil2d_cgra_din_addr, stencil2d_cgra_dout_addr);
+//  result = fence(1);
+
+  void* gemm_unroll4_cgra_din_addr[8] = {gemm_unroll4_m1, gemm_unroll4_m1, gemm_unroll4_m1, gemm_unroll4_m1, gemm_unroll4_m2, gemm_unroll4_m2, gemm_unroll4_m2, gemm_unroll4_m2};
+  void* gemm_unroll4_cgra_dout_addr[1] = {gemm_unroll4_prod};
+  gemm_unroll4_cgra_execute(gemm_unroll4_cgra_din_addr, gemm_unroll4_cgra_dout_addr);
+//  result = fence(1);
+
+//  void* knn_cgra_din_addr[7] = {NL, position_x, position_x, position_y, position_y, position_z, position_z};
+//  void* knn_cgra_dout_addr[3] = {force_x, force_y, force_z};
+//  knn_cgra_execute(knn_cgra_din_addr, knn_cgra_dout_addr);
+//  result = fence(1);
+
+  void* fft_cgra_din_addr[8] = {XI0, XI1, XI2, XI3, XR0, XR1, XR2, XR3};
+  void* fft_cgra_dout_addr[8] = {YR0, YI0, YR1, YI1, YR2, YI2, YR3, YI3};
+  fft_cgra_execute(fft_cgra_din_addr, fft_cgra_dout_addr);
+//  result = fence(1);
+
+  void* knn_cgra_din_addr[7] = {NL, position_x, position_x, position_y, position_y, position_z, position_z};
+  void* knn_cgra_dout_addr[3] = {force_x, force_y, force_z};
+  knn_cgra_execute(knn_cgra_din_addr, knn_cgra_dout_addr);
+  result = fence(1);
+
+  end = rdcycle();
+  printf("It takes %d cycles for CGRA to finish the task(%d).\n", end - start, result);
+
+//  result_check();
+  printf("Done!\n");
+
+  return 0;
+}

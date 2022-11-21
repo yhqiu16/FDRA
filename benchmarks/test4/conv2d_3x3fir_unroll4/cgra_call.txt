@@ -1,0 +1,3 @@
+void* cgra_din_addr[18] = {conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, conv2d_3x3_A, fir_unroll4_coefficients, fir_unroll4_coefficients, fir_unroll4_coefficients, fir_unroll4_coefficients, fir_unroll4_input, fir_unroll4_input, fir_unroll4_input, fir_unroll4_input, fir_unroll4_output};
+void* cgra_dout_addr[2] = {(void*)conv2d_3x3_B+128, fir_unroll4_output};
+cgra_execute(cgra_din_addr, cgra_dout_addr);

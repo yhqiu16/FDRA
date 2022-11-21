@@ -1,0 +1,583 @@
+{
+  "name": "G",
+  "directed": true,
+  "strict": false,
+  "_subgraph_cnt": 0,
+  "objects": [
+    {
+      "_gvid": 0,
+      "name": "Input6",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "4, 16, 4, 64",
+      "ref_name": "NL",
+      "size": "4096"
+    },
+    {
+      "_gvid": 1,
+      "name": "LOAD8",
+      "cycles": "1024",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "load",
+      "ref_name": "position_x",
+      "size": "256"
+    },
+    {
+      "_gvid": 2,
+      "name": "LOAD10",
+      "cycles": "1024",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "load",
+      "ref_name": "position_y",
+      "size": "256"
+    },
+    {
+      "_gvid": 3,
+      "name": "LOAD12",
+      "cycles": "1024",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "load",
+      "ref_name": "position_z",
+      "size": "256"
+    },
+    {
+      "_gvid": 4,
+      "name": "SUB13",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 5,
+      "name": "SUB14",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 6,
+      "name": "SUB15",
+      "label": "\\N",
+      "opcode": "sub"
+    },
+    {
+      "_gvid": 7,
+      "name": "MUL16",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 8,
+      "name": "MUL17",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 9,
+      "name": "ADD18",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 10,
+      "name": "MUL19",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 11,
+      "name": "ADD20",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 12,
+      "name": "DIV21",
+      "label": "\\N",
+      "opcode": "udiv"
+    },
+    {
+      "_gvid": 13,
+      "name": "MUL22",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 14,
+      "name": "MUL23",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 15,
+      "name": "ADD24",
+      "label": "\\N",
+      "opcode": "add"
+    },
+    {
+      "_gvid": 16,
+      "name": "MUL25",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 17,
+      "name": "MUL26",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 18,
+      "name": "MUL27",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 19,
+      "name": "MUL29",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 20,
+      "name": "MUL31",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 21,
+      "name": "CONST40",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "10"
+    },
+    {
+      "_gvid": 22,
+      "name": "CONST41",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "-2000"
+    },
+    {
+      "_gvid": 23,
+      "name": "Input49",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "position_x",
+      "size": "256"
+    },
+    {
+      "_gvid": 24,
+      "name": "Input55",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "position_y",
+      "size": "256"
+    },
+    {
+      "_gvid": 25,
+      "name": "Input57",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "input",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "position_z",
+      "size": "256"
+    },
+    {
+      "_gvid": 26,
+      "name": "Output59",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "force_x",
+      "size": "256"
+    },
+    {
+      "_gvid": 27,
+      "name": "Output60",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "force_y",
+      "size": "256"
+    },
+    {
+      "_gvid": 28,
+      "name": "Output61",
+      "label": "\\N",
+      "offset": "0, 0",
+      "opcode": "output",
+      "pattern": "0, 16, 4, 64",
+      "ref_name": "force_z",
+      "size": "256"
+    },
+    {
+      "_gvid": 29,
+      "name": "MUL68",
+      "label": "\\N",
+      "opcode": "MUL"
+    },
+    {
+      "_gvid": 30,
+      "name": "CONST69",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "4"
+    },
+    {
+      "_gvid": 31,
+      "name": "MUL70",
+      "label": "\\N",
+      "opcode": "MUL"
+    },
+    {
+      "_gvid": 32,
+      "name": "CONST71",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "4"
+    },
+    {
+      "_gvid": 33,
+      "name": "MUL72",
+      "label": "\\N",
+      "opcode": "MUL"
+    },
+    {
+      "_gvid": 34,
+      "name": "CONST73",
+      "label": "\\N",
+      "opcode": "const",
+      "value": "4"
+    },
+    {
+      "_gvid": 35,
+      "name": "ACC88",
+      "acc_first": "1",
+      "acc_params": "0, 16, 1, 64",
+      "label": "\\N",
+      "opcode": "acc"
+    },
+    {
+      "_gvid": 36,
+      "name": "ACC92",
+      "acc_first": "1",
+      "acc_params": "0, 16, 1, 64",
+      "label": "\\N",
+      "opcode": "acc"
+    },
+    {
+      "_gvid": 37,
+      "name": "ACC94",
+      "acc_first": "1",
+      "acc_params": "0, 16, 1, 64",
+      "label": "\\N",
+      "opcode": "acc"
+    }
+  ],
+  "edges": [
+    {
+      "_gvid": 0,
+      "tail": 0,
+      "head": 29,
+      "operand": "0"
+    },
+    {
+      "_gvid": 1,
+      "tail": 0,
+      "head": 31,
+      "operand": "0"
+    },
+    {
+      "_gvid": 2,
+      "tail": 0,
+      "head": 33,
+      "operand": "0"
+    },
+    {
+      "_gvid": 3,
+      "tail": 1,
+      "head": 4,
+      "operand": "1"
+    },
+    {
+      "_gvid": 4,
+      "tail": 2,
+      "head": 5,
+      "operand": "1"
+    },
+    {
+      "_gvid": 5,
+      "tail": 3,
+      "head": 6,
+      "operand": "1"
+    },
+    {
+      "_gvid": 6,
+      "tail": 4,
+      "head": 7,
+      "operand": "0"
+    },
+    {
+      "_gvid": 7,
+      "tail": 4,
+      "head": 7,
+      "operand": "1"
+    },
+    {
+      "_gvid": 8,
+      "tail": 4,
+      "head": 18,
+      "operand": "1"
+    },
+    {
+      "_gvid": 9,
+      "tail": 5,
+      "head": 8,
+      "operand": "0"
+    },
+    {
+      "_gvid": 10,
+      "tail": 5,
+      "head": 8,
+      "operand": "1"
+    },
+    {
+      "_gvid": 11,
+      "tail": 5,
+      "head": 19,
+      "operand": "1"
+    },
+    {
+      "_gvid": 12,
+      "tail": 6,
+      "head": 10,
+      "operand": "0"
+    },
+    {
+      "_gvid": 13,
+      "tail": 6,
+      "head": 10,
+      "operand": "1"
+    },
+    {
+      "_gvid": 14,
+      "tail": 6,
+      "head": 20,
+      "operand": "1"
+    },
+    {
+      "_gvid": 15,
+      "tail": 7,
+      "head": 9,
+      "operand": "1"
+    },
+    {
+      "_gvid": 16,
+      "tail": 8,
+      "head": 9,
+      "operand": "0"
+    },
+    {
+      "_gvid": 17,
+      "tail": 9,
+      "head": 11,
+      "operand": "0"
+    },
+    {
+      "_gvid": 18,
+      "tail": 10,
+      "head": 11,
+      "operand": "1"
+    },
+    {
+      "_gvid": 19,
+      "tail": 11,
+      "head": 12,
+      "operand": "1"
+    },
+    {
+      "_gvid": 20,
+      "tail": 12,
+      "head": 13,
+      "operand": "0"
+    },
+    {
+      "_gvid": 21,
+      "tail": 12,
+      "head": 13,
+      "operand": "1"
+    },
+    {
+      "_gvid": 22,
+      "tail": 12,
+      "head": 14,
+      "operand": "1"
+    },
+    {
+      "_gvid": 23,
+      "tail": 12,
+      "head": 16,
+      "operand": "1"
+    },
+    {
+      "_gvid": 24,
+      "tail": 13,
+      "head": 14,
+      "operand": "0"
+    },
+    {
+      "_gvid": 25,
+      "tail": 14,
+      "head": 15,
+      "operand": "0"
+    },
+    {
+      "_gvid": 26,
+      "tail": 14,
+      "head": 16,
+      "operand": "0"
+    },
+    {
+      "_gvid": 27,
+      "tail": 15,
+      "head": 17,
+      "operand": "1"
+    },
+    {
+      "_gvid": 28,
+      "tail": 16,
+      "head": 17,
+      "operand": "0"
+    },
+    {
+      "_gvid": 29,
+      "tail": 17,
+      "head": 18,
+      "operand": "0"
+    },
+    {
+      "_gvid": 30,
+      "tail": 17,
+      "head": 19,
+      "operand": "0"
+    },
+    {
+      "_gvid": 31,
+      "tail": 17,
+      "head": 20,
+      "operand": "0"
+    },
+    {
+      "_gvid": 32,
+      "tail": 18,
+      "head": 35,
+      "operand": "0"
+    },
+    {
+      "_gvid": 33,
+      "tail": 19,
+      "head": 37,
+      "operand": "0"
+    },
+    {
+      "_gvid": 34,
+      "tail": 20,
+      "head": 36,
+      "operand": "0"
+    },
+    {
+      "_gvid": 35,
+      "tail": 21,
+      "head": 12,
+      "operand": "0"
+    },
+    {
+      "_gvid": 36,
+      "tail": 22,
+      "head": 15,
+      "operand": "1"
+    },
+    {
+      "_gvid": 37,
+      "tail": 23,
+      "head": 4,
+      "operand": "0"
+    },
+    {
+      "_gvid": 38,
+      "tail": 24,
+      "head": 5,
+      "operand": "0"
+    },
+    {
+      "_gvid": 39,
+      "tail": 25,
+      "head": 6,
+      "operand": "0"
+    },
+    {
+      "_gvid": 40,
+      "tail": 29,
+      "head": 1,
+      "operand": "0"
+    },
+    {
+      "_gvid": 41,
+      "tail": 30,
+      "head": 29,
+      "operand": "1"
+    },
+    {
+      "_gvid": 42,
+      "tail": 31,
+      "head": 2,
+      "operand": "0"
+    },
+    {
+      "_gvid": 43,
+      "tail": 32,
+      "head": 31,
+      "operand": "1"
+    },
+    {
+      "_gvid": 44,
+      "tail": 33,
+      "head": 3,
+      "operand": "0"
+    },
+    {
+      "_gvid": 45,
+      "tail": 34,
+      "head": 33,
+      "operand": "1"
+    },
+    {
+      "_gvid": 46,
+      "tail": 35,
+      "head": 26,
+      "operand": "0"
+    },
+    {
+      "_gvid": 47,
+      "tail": 36,
+      "head": 28,
+      "operand": "0"
+    },
+    {
+      "_gvid": 48,
+      "tail": 37,
+      "head": 27,
+      "operand": "0"
+    }
+  ]
+}

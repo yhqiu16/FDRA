@@ -1,0 +1,3 @@
+void* cgra_din_addr[14] = {gemm-ncubed_unroll4_m1, gemm-ncubed_unroll4_m1, gemm-ncubed_unroll4_m1, gemm-ncubed_unroll4_m1, gemm-ncubed_unroll4_m2, gemm-ncubed_unroll4_m2, gemm-ncubed_unroll4_m2, gemm-ncubed_unroll4_m2, stencil2d_filter, stencil2d_filter, stencil2d_filter, stencil2d_orig, stencil2d_orig, stencil2d_orig};
+void* cgra_dout_addr[2] = {stencil2d_sol, gemm-ncubed_unroll4_prod};
+cgra_execute(cgra_din_addr, cgra_dout_addr);

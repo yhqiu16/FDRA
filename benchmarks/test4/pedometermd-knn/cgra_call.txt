@@ -1,0 +1,3 @@
+void* cgra_din_addr[13] = {md-knn_NL, md-knn_position_x, md-knn_position_x, md-knn_position_y, md-knn_position_y, md-knn_position_z, md-knn_position_z, pedometer_acc_avg_x, pedometer_acc_avg_y, pedometer_acc_avg_z, pedometer_acceleration_x, pedometer_acceleration_y, pedometer_acceleration_z};
+void* cgra_dout_addr[4] = {pedometer_acc_vector, md-knn_force_x, md-knn_force_y, md-knn_force_z};
+cgra_execute(cgra_din_addr, cgra_dout_addr);

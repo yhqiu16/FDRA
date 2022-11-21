@@ -1,0 +1,30 @@
+Digraph G {
+Input1[opcode=input, ref_name="A", size=76, offset="24, 0", pattern="0, 6, 0, 16, 24, 4"];
+Input4[opcode=input, ref_name="B", size=128, offset="0, 60", pattern="12, 6, -64, 16, 0, 4"];
+ADD5[opcode=add];
+MUL6[opcode=mul];
+//ADD7[opcode=add];
+LOAD8[opcode=load, ref_name="C", size=1024, offset="0", cycles=384];
+Input10[opcode=input, ref_name="E", size=1024, offset="0, 960", pattern="12, 6, -124, 16, 900, 4"];
+MUL11[opcode=mul];
+ADD12[opcode=add];
+Output14[opcode=Output, ref_name="D", size=7168, offset="2048, 960", pattern="12, 6, -124, 16, 2948, 4"];
+CONST21[opcode=const, value=3];
+MUL26[opcode=MUL];
+CONST27[opcode=const, value=4];
+ACC43[opcode=acc, acc_params="0, 6, 1, 64", acc_first=0];
+Input1->ADD5[operand=1];
+Input4->ADD5[operand=0];
+ADD5->ADD12[operand=0];
+MUL26->LOAD8[operand=0];
+LOAD8->MUL11[operand=1];
+Input10->MUL11[operand=0];
+MUL11->ADD12[operand=1];
+ADD12->Output14[operand=1];
+MUL6->MUL26[operand=0];
+CONST27->MUL26[operand=1];
+//MUL26->ADD7[operand=0];
+ACC43->MUL6[operand=0];
+ACC43->MUL6[operand=1];
+CONST21->ACC43[operand=0];
+}
