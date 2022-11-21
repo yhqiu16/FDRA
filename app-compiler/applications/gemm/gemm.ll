@@ -13,43 +13,44 @@ target triple = "i386-unknown-linux-gnu"
 
 ; Function Attrs: nounwind
 define dso_local void @gemm() local_unnamed_addr #0 {
-  br label %1
+entry:
+  br label %for.cond1.preheader
 
-1:                                                ; preds = %21, %0
-  %2 = phi i32 [ 0, %0 ], [ %22, %21 ]
-  br label %3
+for.cond1.preheader:                              ; preds = %for.inc17, %entry
+  %i.036 = phi i32 [ 0, %entry ], [ %inc18, %for.inc17 ]
+  br label %for.cond4.preheader
 
-3:                                                ; preds = %18, %1
-  %4 = phi i32 [ 0, %1 ], [ %19, %18 ]
-  %5 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @A, i32 0, i32 %2, i32 %4
-  br label %6
+for.cond4.preheader:                              ; preds = %for.inc14, %for.cond1.preheader
+  %j.035 = phi i32 [ 0, %for.cond1.preheader ], [ %inc15, %for.inc14 ]
+  %arrayidx7 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @A, i32 0, i32 %i.036, i32 %j.035
+  br label %for.body6
 
-6:                                                ; preds = %6, %3
-  %7 = phi i32 [ 0, %3 ], [ %16, %6 ]
-  %8 = tail call i32 bitcast (i32 (...)* @please_map_me to i32 ()*)() #4
-  %9 = load i32, i32* %5, align 4, !tbaa !3
-  %10 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @B, i32 0, i32 %2, i32 %7
-  %11 = load i32, i32* %10, align 4, !tbaa !3
-  %12 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @C, i32 0, i32 %7, i32 %4
-  %13 = load i32, i32* %12, align 4, !tbaa !3
-  %14 = mul nsw i32 %13, %11
-  %15 = add nsw i32 %14, %9
-  store i32 %15, i32* %5, align 4, !tbaa !3
-  %16 = add nuw nsw i32 %7, 1
-  %17 = icmp eq i32 %16, 10
-  br i1 %17, label %18, label %6
+for.body6:                                        ; preds = %for.body6, %for.cond4.preheader
+  %k.034 = phi i32 [ 0, %for.cond4.preheader ], [ %inc, %for.body6 ]
+  %call = tail call i32 bitcast (i32 (...)* @please_map_me to i32 ()*)() #4
+  %0 = load i32, i32* %arrayidx7, align 4, !tbaa !3
+  %arrayidx9 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @B, i32 0, i32 %i.036, i32 %k.034
+  %1 = load i32, i32* %arrayidx9, align 4, !tbaa !3
+  %arrayidx11 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @C, i32 0, i32 %k.034, i32 %j.035
+  %2 = load i32, i32* %arrayidx11, align 4, !tbaa !3
+  %mul = mul nsw i32 %2, %1
+  %add = add nsw i32 %mul, %0
+  store i32 %add, i32* %arrayidx7, align 4, !tbaa !3
+  %inc = add nuw nsw i32 %k.034, 1
+  %exitcond = icmp eq i32 %inc, 10
+  br i1 %exitcond, label %for.inc14, label %for.body6
 
-18:                                               ; preds = %6
-  %19 = add nuw nsw i32 %4, 1
-  %20 = icmp eq i32 %19, 10
-  br i1 %20, label %21, label %3
+for.inc14:                                        ; preds = %for.body6
+  %inc15 = add nuw nsw i32 %j.035, 1
+  %exitcond37 = icmp eq i32 %inc15, 10
+  br i1 %exitcond37, label %for.inc17, label %for.cond4.preheader
 
-21:                                               ; preds = %18
-  %22 = add nuw nsw i32 %2, 1
-  %23 = icmp eq i32 %22, 10
-  br i1 %23, label %24, label %1
+for.inc17:                                        ; preds = %for.inc14
+  %inc18 = add nuw nsw i32 %i.036, 1
+  %exitcond38 = icmp eq i32 %inc18, 10
+  br i1 %exitcond38, label %for.end19, label %for.cond1.preheader
 
-24:                                               ; preds = %21
+for.end19:                                        ; preds = %for.inc17
   ret void
 }
 
@@ -57,103 +58,104 @@ declare dso_local i32 @please_map_me(...) local_unnamed_addr #1
 
 ; Function Attrs: nounwind
 define dso_local void @main() local_unnamed_addr #0 {
-  %1 = load i32, i32* @n, align 4, !tbaa !3
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %3, label %20
+entry:
+  %0 = load i32, i32* @n, align 4, !tbaa !3
+  %cmp51 = icmp sgt i32 %0, 0
+  br i1 %cmp51, label %for.cond1.preheader.lr.ph, label %for.cond1.preheader.i.preheader
 
-3:                                                ; preds = %0
-  %4 = shl nuw i32 %1, 2
-  br label %5
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %1 = shl nuw i32 %0, 2
+  br label %for.body3.preheader
 
-5:                                                ; preds = %17, %3
-  %6 = phi i32 [ 0, %3 ], [ %18, %17 ]
-  %7 = getelementptr [10 x [10 x i32]], [10 x [10 x i32]]* @A, i32 0, i32 %6, i32 0
-  %8 = bitcast i32* %7 to i8*
-  call void @llvm.memset.p0i8.i32(i8* align 4 %8, i8 0, i32 %4, i1 false)
-  br label %9
+for.body3.preheader:                              ; preds = %for.inc9, %for.cond1.preheader.lr.ph
+  %i.052 = phi i32 [ 0, %for.cond1.preheader.lr.ph ], [ %inc10, %for.inc9 ]
+  %scevgep = getelementptr [10 x [10 x i32]], [10 x [10 x i32]]* @A, i32 0, i32 %i.052, i32 0
+  %scevgep54 = bitcast i32* %scevgep to i8*
+  call void @llvm.memset.p0i8.i32(i8* align 4 %scevgep54, i8 0, i32 %1, i1 false)
+  br label %for.body3
 
-9:                                                ; preds = %9, %5
-  %10 = phi i32 [ %15, %9 ], [ 0, %5 ]
-  %11 = add nuw nsw i32 %10, %6
-  %12 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @B, i32 0, i32 %6, i32 %10
-  store i32 %11, i32* %12, align 4, !tbaa !3
-  %13 = mul nsw i32 %10, %6
-  %14 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @C, i32 0, i32 %6, i32 %10
-  store i32 %13, i32* %14, align 4, !tbaa !3
-  %15 = add nuw nsw i32 %10, 1
-  %16 = icmp eq i32 %15, %1
-  br i1 %16, label %17, label %9
+for.body3:                                        ; preds = %for.body3, %for.body3.preheader
+  %j.050 = phi i32 [ %inc, %for.body3 ], [ 0, %for.body3.preheader ]
+  %add = add nuw nsw i32 %j.050, %i.052
+  %arrayidx6 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @B, i32 0, i32 %i.052, i32 %j.050
+  store i32 %add, i32* %arrayidx6, align 4, !tbaa !3
+  %mul = mul nsw i32 %j.050, %i.052
+  %arrayidx8 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @C, i32 0, i32 %i.052, i32 %j.050
+  store i32 %mul, i32* %arrayidx8, align 4, !tbaa !3
+  %inc = add nuw nsw i32 %j.050, 1
+  %exitcond = icmp eq i32 %inc, %0
+  br i1 %exitcond, label %for.inc9, label %for.body3
 
-17:                                               ; preds = %9
-  %18 = add nuw nsw i32 %6, 1
-  %19 = icmp slt i32 %18, %1
-  br i1 %19, label %5, label %20
+for.inc9:                                         ; preds = %for.body3
+  %inc10 = add nuw nsw i32 %i.052, 1
+  %cmp = icmp slt i32 %inc10, %0
+  br i1 %cmp, label %for.body3.preheader, label %for.cond1.preheader.i.preheader
 
-20:                                               ; preds = %17, %0
-  br label %21
+for.cond1.preheader.i.preheader:                  ; preds = %for.inc9, %entry
+  br label %for.cond1.preheader.i
 
-21:                                               ; preds = %20, %41
-  %22 = phi i32 [ %42, %41 ], [ 0, %20 ]
-  br label %23
+for.cond1.preheader.i:                            ; preds = %for.cond1.preheader.i.preheader, %for.inc17.i
+  %i.036.i = phi i32 [ %inc18.i, %for.inc17.i ], [ 0, %for.cond1.preheader.i.preheader ]
+  br label %for.cond4.preheader.i
 
-23:                                               ; preds = %38, %21
-  %24 = phi i32 [ 0, %21 ], [ %39, %38 ]
-  %25 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @A, i32 0, i32 %22, i32 %24
-  br label %26
+for.cond4.preheader.i:                            ; preds = %for.inc14.i, %for.cond1.preheader.i
+  %j.035.i = phi i32 [ 0, %for.cond1.preheader.i ], [ %inc15.i, %for.inc14.i ]
+  %arrayidx7.i = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @A, i32 0, i32 %i.036.i, i32 %j.035.i
+  br label %for.body6.i
 
-26:                                               ; preds = %26, %23
-  %27 = phi i32 [ 0, %23 ], [ %36, %26 ]
-  %28 = tail call i32 bitcast (i32 (...)* @please_map_me to i32 ()*)() #4
-  %29 = load i32, i32* %25, align 4, !tbaa !3
-  %30 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @B, i32 0, i32 %22, i32 %27
-  %31 = load i32, i32* %30, align 4, !tbaa !3
-  %32 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @C, i32 0, i32 %27, i32 %24
-  %33 = load i32, i32* %32, align 4, !tbaa !3
-  %34 = mul nsw i32 %33, %31
-  %35 = add nsw i32 %34, %29
-  store i32 %35, i32* %25, align 4, !tbaa !3
-  %36 = add nuw nsw i32 %27, 1
-  %37 = icmp eq i32 %36, 10
-  br i1 %37, label %38, label %26
+for.body6.i:                                      ; preds = %for.body6.i, %for.cond4.preheader.i
+  %k.034.i = phi i32 [ 0, %for.cond4.preheader.i ], [ %inc.i, %for.body6.i ]
+  %call.i = tail call i32 bitcast (i32 (...)* @please_map_me to i32 ()*)() #4
+  %2 = load i32, i32* %arrayidx7.i, align 4, !tbaa !3
+  %arrayidx9.i = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @B, i32 0, i32 %i.036.i, i32 %k.034.i
+  %3 = load i32, i32* %arrayidx9.i, align 4, !tbaa !3
+  %arrayidx11.i = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @C, i32 0, i32 %k.034.i, i32 %j.035.i
+  %4 = load i32, i32* %arrayidx11.i, align 4, !tbaa !3
+  %mul.i = mul nsw i32 %4, %3
+  %add.i = add nsw i32 %mul.i, %2
+  store i32 %add.i, i32* %arrayidx7.i, align 4, !tbaa !3
+  %inc.i = add nuw nsw i32 %k.034.i, 1
+  %exitcond.i = icmp eq i32 %inc.i, 10
+  br i1 %exitcond.i, label %for.inc14.i, label %for.body6.i
 
-38:                                               ; preds = %26
-  %39 = add nuw nsw i32 %24, 1
-  %40 = icmp eq i32 %39, 10
-  br i1 %40, label %41, label %23
+for.inc14.i:                                      ; preds = %for.body6.i
+  %inc15.i = add nuw nsw i32 %j.035.i, 1
+  %exitcond37.i = icmp eq i32 %inc15.i, 10
+  br i1 %exitcond37.i, label %for.inc17.i, label %for.cond4.preheader.i
 
-41:                                               ; preds = %38
-  %42 = add nuw nsw i32 %22, 1
-  %43 = icmp eq i32 %42, 10
-  br i1 %43, label %44, label %21
+for.inc17.i:                                      ; preds = %for.inc14.i
+  %inc18.i = add nuw nsw i32 %i.036.i, 1
+  %exitcond38.i = icmp eq i32 %inc18.i, 10
+  br i1 %exitcond38.i, label %for.cond12.preheader, label %for.cond1.preheader.i
 
-44:                                               ; preds = %41
-  %45 = load i32, i32* @n, align 4, !tbaa !3
-  %46 = icmp sgt i32 %45, 0
-  br i1 %46, label %47, label %63
+for.cond12.preheader:                             ; preds = %for.inc17.i
+  %5 = load i32, i32* @n, align 4, !tbaa !3
+  %cmp1346 = icmp sgt i32 %5, 0
+  br i1 %cmp1346, label %for.cond15.preheader, label %for.end25
 
-47:                                               ; preds = %44, %59
-  %48 = phi i32 [ %60, %59 ], [ %45, %44 ]
-  %49 = phi i32 [ %61, %59 ], [ 0, %44 ]
-  %50 = icmp sgt i32 %48, 0
-  br i1 %50, label %51, label %59
+for.cond15.preheader:                             ; preds = %for.cond12.preheader, %for.inc23
+  %6 = phi i32 [ %9, %for.inc23 ], [ %5, %for.cond12.preheader ]
+  %i.147 = phi i32 [ %inc24, %for.inc23 ], [ 0, %for.cond12.preheader ]
+  %cmp1644 = icmp sgt i32 %6, 0
+  br i1 %cmp1644, label %for.body17, label %for.inc23
 
-51:                                               ; preds = %47, %51
-  %52 = phi i32 [ %56, %51 ], [ 0, %47 ]
-  %53 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @A, i32 0, i32 %49, i32 %52
-  %54 = load i32, i32* %53, align 4, !tbaa !3
-  %55 = tail call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), i32 %54)
-  %56 = add nuw nsw i32 %52, 1
-  %57 = load i32, i32* @n, align 4, !tbaa !3
-  %58 = icmp slt i32 %56, %57
-  br i1 %58, label %51, label %59
+for.body17:                                       ; preds = %for.cond15.preheader, %for.body17
+  %j.145 = phi i32 [ %inc21, %for.body17 ], [ 0, %for.cond15.preheader ]
+  %arrayidx19 = getelementptr inbounds [10 x [10 x i32]], [10 x [10 x i32]]* @A, i32 0, i32 %i.147, i32 %j.145
+  %7 = load i32, i32* %arrayidx19, align 4, !tbaa !3
+  %call = tail call i32 (i8*, ...) @printf(i8* nonnull dereferenceable(1) getelementptr inbounds ([4 x i8], [4 x i8]* @.str, i32 0, i32 0), i32 %7)
+  %inc21 = add nuw nsw i32 %j.145, 1
+  %8 = load i32, i32* @n, align 4, !tbaa !3
+  %cmp16 = icmp slt i32 %inc21, %8
+  br i1 %cmp16, label %for.body17, label %for.inc23
 
-59:                                               ; preds = %51, %47
-  %60 = phi i32 [ %48, %47 ], [ %57, %51 ]
-  %61 = add nuw nsw i32 %49, 1
-  %62 = icmp slt i32 %61, %60
-  br i1 %62, label %47, label %63
+for.inc23:                                        ; preds = %for.body17, %for.cond15.preheader
+  %9 = phi i32 [ %6, %for.cond15.preheader ], [ %8, %for.body17 ]
+  %inc24 = add nuw nsw i32 %i.147, 1
+  %cmp13 = icmp slt i32 %inc24, %9
+  br i1 %cmp13, label %for.cond15.preheader, label %for.end25
 
-63:                                               ; preds = %59, %44
+for.end25:                                        ; preds = %for.inc23, %for.cond12.preheader
   ret void
 }
 
@@ -163,9 +165,9 @@ declare dso_local i32 @printf(i8* nocapture readonly, ...) local_unnamed_addr #2
 ; Function Attrs: argmemonly nounwind willreturn
 declare void @llvm.memset.p0i8.i32(i8* nocapture writeonly, i8, i32, i1 immarg) #3
 
-attributes #0 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="i686" "target-features"="+cx8,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="i686" "target-features"="+cx8,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nofree nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="i686" "target-features"="+cx8,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="pentium4" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="pentium4" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nofree nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="none" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="pentium4" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #3 = { argmemonly nounwind willreturn }
 attributes #4 = { nounwind }
 
@@ -174,7 +176,7 @@ attributes #4 = { nounwind }
 
 !0 = !{i32 1, !"NumRegisterParameters", i32 0}
 !1 = !{i32 1, !"wchar_size", i32 4}
-!2 = !{!"clang version 10.0.0-4ubuntu1 "}
+!2 = !{!"clang version 10.0.0 "}
 !3 = !{!4, !4, i64 0}
 !4 = !{!"int", !5, i64 0}
 !5 = !{!"omnipotent char", !6, i64 0}

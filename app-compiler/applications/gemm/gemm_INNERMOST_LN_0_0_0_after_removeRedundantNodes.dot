@@ -1,0 +1,13 @@
+Digraph G {
+load1[label = "load1, ArrayName=A, Stride=[ 0, 0; 1, 4; 2, 40; ], Bounds=[ (0, 9)*40; (0, 9)*4; ]", shape = box, color = black];
+load3[label = "load3, ArrayName=B, Stride=[ 0, 4; 1, 0; 2, 40; ], Bounds=[ (0, 9)*40; (0, 9)*4; ]", shape = box, color = black];
+load5[label = "load5, ArrayName=C, Stride=[ 0, 40; 1, 4; 2, 0; ], Bounds=[ (0, 9)*40; (0, 9)*4; ]", shape = box, color = black];
+mul6[label = "mul6", shape = box, color = black];
+add7[label = "add7", shape = box, color = black];
+store8[label = "store8, ArrayName=A, Stride=[ 0, 0; 1, 4; 2, 40; ], Bounds=[ (0, 9)*40; (0, 9)*4; ]", shape = box, color = black];
+load1 -> add7[color = black, style = bold, label = "Op=1"];
+load3 -> mul6[color = black, style = bold, label = "Op=1"];
+load5 -> mul6[color = black, style = bold, label = "Op=0"];
+mul6 -> add7[color = black, style = bold, label = "Op=0"];
+add7 -> store8[color = black, style = bold, label = "Op=0"];
+}
