@@ -1,5 +1,0 @@
-/home/tallanlong/fdra/app-compiler/build/CMakeFiles/rebuild_cache.dir
-/home/tallanlong/fdra/app-compiler/build/CMakeFiles/edit_cache.dir
-/home/tallanlong/fdra/app-compiler/build/llvm-pass/CMakeFiles/rebuild_cache.dir
-/home/tallanlong/fdra/app-compiler/build/llvm-pass/CMakeFiles/edit_cache.dir
-/home/tallanlong/fdra/app-compiler/build/llvm-pass/CMakeFiles/CDFGPass.dir

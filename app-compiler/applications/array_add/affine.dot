@@ -1,9 +1,0 @@
-Digraph G {
-Input3[opcode=input, ref_name="A", size=84, offset="0, 4", pattern="4, 20"];
-Input6[opcode=input, ref_name="A", size=84, offset="0, -4", pattern="4, 20"];
-ADD7[opcode=add];
-Output9[opcode=output, ref_name="B", size=3804, offset="0, 0", pattern="200, 20"];
-Input3->ADD7[operand=1];
-Input6->ADD7[operand=0];
-ADD7->Output9[operand=0];
-}

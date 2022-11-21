@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC   -shared  -o libCDFGPass.so CMakeFiles/CDFGPass.dir/src/CDFGPass.cpp.o CMakeFiles/CDFGPass.dir/src/llvm_cdfg.cpp.o CMakeFiles/CDFGPass.dir/src/llvm_cdfg_edge.cpp.o CMakeFiles/CDFGPass.dir/src/llvm_cdfg_node.cpp.o   -L/home/tallanlong/llvm-10.0.0-built/usr/local/lib 

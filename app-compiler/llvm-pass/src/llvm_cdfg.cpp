@@ -3154,49 +3154,49 @@ void LLVMCDFG::generateCDFG()
     outs() << "########################################################\n";
     outs() << "Generate CDFG Started\n";
     // initialized CDFG
-    printDOT(_name + "_init.dot");
+    //printDOT(_name + "_init.dot");
 
     auto nestloops = this->nestloops();
     errs() << nestloops.size() << "\n";
 
     outs() << ">>>>>> add edge between two nodes that have memory dependence (loop-carried)\n";
     addMemDepEdges();
-    printDOT(_name + "_after_addMemDepEdges.dot");
+    //printDOT(_name + "_after_addMemDepEdges.dot");
 
     // Connect control dependent node pairs among BBs
     outs() << ">>>>>> Connect control dependent node pairs among BBs\n";
     connectCtrlDepBBs();
-    printDOT(_name + "_after_connectCtrlDepBBs.dot");
+    //printDOT(_name + "_after_connectCtrlDepBBs.dot");
     // insert Control NOT node behind the node with FALSE_COND control output edge
     outs() << ">>>>>> Insert CTRLNOT node behind the node with FALSE_COND control output edge\n";
     insertCtrlNotNodes();
-    printDOT(_name + "_after_insertCtrlNotNodes.dot");
+    //printDOT(_name + "_after_insertCtrlNotNodes.dot");
     // transfer the multiple control predecessors (input nodes) into a inverted OR tree 
     // with the root connected to a node and leaves connected to control predecessors
     outs() << ">>>>>> Transfer multiple control predecessors (input nodes) into a inverted OR tree\n";
     createCtrlOrTree();
-    printDOT(_name + "_after_createCtrlOrTree.dot");
+    //printDOT(_name + "_after_createCtrlOrTree.dot");
 
     outs() << ">>>>>> Transfer GEP node to MUL/ADD/Const tree\n";
     handleGEPNodes();
-    printDOT(_name + "_after_handleGEPNodes.dot");
+    //printDOT(_name + "_after_handleGEPNodes.dot");
 
     outs() << ">>>>>> Transfer PHINode to SELECT nodes\n";
     handlePHINodes(); 
-    printDOT(_name + "_after_handlePHINodes.dot");
+    //printDOT(_name + "_after_handlePHINodes.dot");
 
     outs() << ">>>>>> affine Access Node\n";
     handleAffineLSNodes(); 
-    printDOT(_name + "_after_handleAffineLSNodes.dot");
+    //printDOT(_name + "_after_handleAffineLSNodes.dot");
 
     outs() << ">>>>>> Remove redundant nodes\n";
     removeRedundantNodes();
-    printDOT(_name + "_after_removeRedundantNodes.dot");
+    //printDOT(_name + "_after_removeRedundantNodes.dot");
 
 
     outs() << ">>>>>> Assign final node name\n";
     assignFinalNodeName();
-    printDOT(_name + "_after_assignFinalNodeName.dot");
+    //printDOT(_name + "_after_assignFinalNodeName.dot");
     printAffineDOT("affine.dot");
 
     outs() << "Generate CDFG Ended\n";

@@ -322,13 +322,13 @@ namespace {
             }
             std::string cfgName = funcName + "_cfg.dot";
             std::error_code EC;
-            raw_fd_ostream File(cfgName, EC, sys::fs::F_Text);
-            if(!EC){
-                WriteGraph(File, (const Function *)&F);
-            }else{
-                errs() << "Cannot open cfg file for WriteGraph!\n";
-            }
-			File.close();
+            // raw_fd_ostream File(cfgName, EC, sys::fs::F_Text);
+            // if(!EC){
+            //     WriteGraph(File, (const Function *)&F);
+            // }else{
+            //     errs() << "Cannot open cfg file for WriteGraph!\n";
+            // }
+			// File.close();
             ParseSizeAttr(F, SizeAttrMap);
             LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
 		    ScalarEvolution *SE = &getAnalysis<ScalarEvolutionWrapperPass>().getSE();

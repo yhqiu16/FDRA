@@ -60,21 +60,3 @@ Using the script build.sh in this app-compiler directory
 ```sh
 ./build.sh
 ```
-
-### Run to generate CDFGs for benchmarks
-
-Using the Makefile in the app-compiler/applications directory
-
-The generated CDFG files are in the same dirrectory as the benchmark.
-
-```sh
-# generate CDFGs for all benchmarks
-make all
-# generate CDFG individually
-make gemm
-```
-
-
-
-
-
