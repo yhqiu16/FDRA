@@ -79,7 +79,7 @@ Set LLVM env
 
 #### Build and Run
 
-Using the script build.sh in this app-compiler directory
+Using the script build.sh in this app-compiler directory. The internal path should be changed.
 
 ```sh
 ./build.sh
@@ -123,7 +123,7 @@ Manually replace the target loop kernel with CGRA call function and binding code
 
 2. add the application in the Makefile
 
-3. compile with the build.sh file. The internal path should be changed.
+3. compile with the build.sh file. 
 
 
 #### Run SoC application with simulator
