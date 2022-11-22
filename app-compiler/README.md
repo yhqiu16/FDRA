@@ -38,7 +38,7 @@ Frontend application compiler that generates CDFG from C code based on LLVM
     # multi-thread consumes lots of memory, e.g. -j4 : 30G+
     make -j4
     # DESTDIR set install directory
-    make install DESTDIR=/home/yhqiu/llvm/llvm-10.0.0-built
+    make install DESTDIR=/xxx/llvm/llvm-10.0.0-built
 ```
 
 3. set llvm env
@@ -46,7 +46,7 @@ Frontend application compiler that generates CDFG from C code based on LLVM
 ```sh
     # add following env to .bashrc and then source ~/.bashrc.
     # or directly export the env
-    export LLVM_HOME=/home/yhqiu/llvm/llvm-10.0.0-built/usr/local/bin
+    export LLVM_HOME=/xxx/llvm/llvm-10.0.0-built/usr/local/bin
     export PATH=$LLVM_HOME:$PATH
     # or set the LLVM path in the CMakeLists.txt
     set(LLVM_INCLUDE_DIRS "/xxx/llvm-10.0.0-built/usr/local/include")
