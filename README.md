@@ -9,7 +9,7 @@ Framework for a hybrid system with RISC-V and CGRA, including:
 
 3. CGRA-Compiler: CGRA mapper.
 
-4. Bechmarks: DFGs in Json format derived from dot files.
+4. Bechmarks: C programs with target loop kernel annotated
 
 
 ## Build and run flow of FDRA in Chipyard
