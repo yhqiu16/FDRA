@@ -1,13 +1,13 @@
 FDRA Framework
 =======================
 
-Framework for a hybrid system with RISC-V and CGRA, including:
+Framework for a hybrid system with a RISC-V core and a Dynamically Reconfigurable Accelerator, including:
 
-1. CGRA-MG: SoC modeling
+1. CGRA-MG: DRA+RISC-V SoC modeling
 
 2. App-Compiler: LLVM-based DFG generator
 
-3. CGRA-Compiler: CGRA mapper.
+3. CGRA-Compiler: CGRA mapper and task scheduler.
 
 4. Bechmarks: C programs with target loop kernel annotated
 
