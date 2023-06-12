@@ -30,6 +30,6 @@ class ALU(width: Int, ops: ListBuffer[OPC.OPC]) extends Module {
 }
 
 
-// object VerilogGen extends App {
-//   (new chisel3.stage.ChiselStage).emitVerilog(new ALU(64, ListBuffer(OPC.ADD, OPC.SUB, OPC.SEL)),args)
-// }
+ object ALUGen extends App {
+   (new chisel3.stage.ChiselStage).emitVerilog(new ALU(32, ListBuffer(OPC.PASS, OPC.MUL)),args)
+ }

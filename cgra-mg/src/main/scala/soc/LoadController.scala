@@ -44,11 +44,12 @@ class LoadController(spadAddrWidth: Int, spadAddrNum: Int, lgMaxDataLen: Int, da
   val addr_num = RegInit(0.U(log2Ceil(spadAddrNum).W))
   val total_len = RegInit(0.U(lgMaxDataLen.W)) // total data length
   val fused = RegInit(false.B) // can be fused with next load command, with the same remote_addr, total_len
+  val dma_to_enq_req = RegInit(false.B)
   val status = Reg(new MStatus)
   val id = RegInit(0.U(idWidth.W))
   val rs1 = io.core.req.bits.cmd.rs1.asTypeOf(new LoadRs1)
   val rs2 = io.core.req.bits.cmd.rs2.asTypeOf(new LoadRs2)
-
+  assert(spadAddrNum > 1, "fused address number should >1")
   switch(state){
     is(s_idle){
       when(io.core.req.fire){
@@ -58,11 +59,11 @@ class LoadController(spadAddrWidth: Int, spadAddrNum: Int, lgMaxDataLen: Int, da
         fused := rs2.fused.asBool
         status := io.core.req.bits.cmd.status
         id := io.core.req.bits.id
-        when(rs2.fused.asBool && addr_num < (spadAddrNum-1).U){
+        when(!rs2.fused.asBool || addr_num === (spadAddrNum-1).U){
+          state := s_dma_req
+        }.otherwise{
           state := s_idle
           addr_num := addr_num + 1.U
-        }.otherwise{
-          state := s_dma_req
         }
       }
     }
@@ -89,7 +90,7 @@ class LoadController(spadAddrWidth: Int, spadAddrNum: Int, lgMaxDataLen: Int, da
   spadReqQue.io.enq.bits.id := id
 
   // Data streams
-  val s_spad_req :: s_spad_stream :: s_exp :: s_resp :: Nil = Enum(4)
+  val s_spad_req :: s_spad_stream :: s_exp :: s_pre_resp :: s_resp :: Nil = Enum(5)
   val spadState = RegInit(s_spad_req)
   val leftLen = RegInit(0.U(lgMaxDataLen.W)) // left data length
   val spadReqId = RegInit(0.U(idWidth.W))
@@ -99,11 +100,15 @@ class LoadController(spadAddrWidth: Int, spadAddrNum: Int, lgMaxDataLen: Int, da
   switch(spadState){
     is(s_spad_req){
       when(io.spad.req.fire){
-        spadState := s_spad_stream
         leftLen := spadReqQue.io.deq.bits.len
         leftNum := spadReqQue.io.deq.bits.num
         spadReqId := spadReqQue.io.deq.bits.id
         success := true.B
+        when(spadReqQue.io.deq.bits.num > 0.U){ // generate (n-1) responses in advance
+          spadState := s_pre_resp
+        }.otherwise{
+          spadState := s_spad_stream
+        }
       }
     }
     is(s_spad_stream){
@@ -120,12 +125,17 @@ class LoadController(spadAddrWidth: Int, spadAddrNum: Int, lgMaxDataLen: Int, da
         spadState := s_resp
       }
     }
-    is(s_resp){
+    is(s_pre_resp){
       when(io.core.resp.fire){
         leftNum := leftNum - 1.U
-        when(leftNum === 0.U){
-          spadState := s_spad_req
+        when(leftNum === 1.U){
+          spadState := s_spad_stream
         }
+      }
+    }
+    is(s_resp){
+      when(io.core.resp.fire){
+        spadState := s_spad_req
       }
     }
   }
@@ -157,7 +167,7 @@ class LoadController(spadAddrWidth: Int, spadAddrNum: Int, lgMaxDataLen: Int, da
     que.io.flush.get := io.spad.exp.req
   }
   // response
-  io.core.resp.valid := (spadState === s_resp)
+  io.core.resp.valid := (spadState === s_pre_resp) || (spadState === s_resp)
   io.core.resp.bits.success := success
   io.core.resp.bits.id := spadReqId
 

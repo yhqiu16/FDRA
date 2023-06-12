@@ -115,7 +115,8 @@ class TLBWrap(nWays: Int, lgMaxSize: Int)(implicit edge: TLEdgeOut, p: Parameter
   }
 
   // keep io.req.bits before the next fire
-  val req_reg = Reg(chiselTypeOf(io.req.bits))
+//  val req_reg = Reg(chiselTypeOf(io.req.bits))
+  val req_reg = RegInit(0.U.asTypeOf(chiselTypeOf(io.req.bits)))
   when(tlb.io.req.fire){
     req_reg := io.req.bits
   }
@@ -130,7 +131,7 @@ class TLBWrap(nWays: Int, lgMaxSize: Int)(implicit edge: TLEdgeOut, p: Parameter
   tlb.io.req.bits.v := false.B
 
   io.ptw <> tlb.io.ptw
-  tlb.io.ptw.status := req.status
+//  tlb.io.ptw.status := req.status
   tlb.io.kill := false.B
   tlb.io.sfence.valid := io.exp.flush
   tlb.io.sfence.bits.rs1 := false.B

@@ -6,17 +6,17 @@
   "objects": [
     {
       "_gvid": 0,
-      "name": "InputA",
+      "name": "Input1",
       "label": "\\N",
-      "offset": "24, 0",
+      "offset": "16, 0",
       "opcode": "input",
-      "pattern": "0, 6, 0, 16, 24, 4",
+      "pattern": "0, 6, 0, 16, 16, 4",
       "ref_name": "A",
-      "size": "76"
+      "size": "52"
     },
     {
       "_gvid": 1,
-      "name": "InputB",
+      "name": "Input4",
       "label": "\\N",
       "offset": "0, 60",
       "opcode": "input",
@@ -32,17 +32,17 @@
     },
     {
       "_gvid": 3,
-      "name": "LoadC",
+      "name": "LOAD6",
       "cycles": "384",
       "label": "\\N",
-      "offset": "0",
+      "offset": "0, 0",
       "opcode": "load",
       "ref_name": "C",
       "size": "1024"
     },
     {
       "_gvid": 4,
-      "name": "InputE",
+      "name": "Input8",
       "label": "\\N",
       "offset": "0, 960",
       "opcode": "input",
@@ -64,7 +64,7 @@
     },
     {
       "_gvid": 7,
-      "name": "OutputD",
+      "name": "Output12",
       "label": "\\N",
       "offset": "2048, 960",
       "opcode": "output",
@@ -74,24 +74,24 @@
     },
     {
       "_gvid": 8,
-      "name": "AccJ",
+      "name": "MUL26",
+      "label": "\\N",
+      "opcode": "mul"
+    },
+    {
+      "_gvid": 9,
+      "name": "ACC31",
       "acc_first": "0",
       "acc_params": "15, 16, 6, 4",
       "label": "\\N",
       "opcode": "acc"
     },
     {
-      "_gvid": 9,
-      "name": "Const32",
+      "_gvid": 10,
+      "name": "CONST34",
       "label": "\\N",
       "opcode": "const",
       "value": "-1"
-    },
-    {
-      "_gvid": 10,
-      "name": "MUL34",
-      "label": "\\N",
-      "opcode": "mul"
     },
     {
       "_gvid": 11,
@@ -101,7 +101,7 @@
     },
     {
       "_gvid": 12,
-      "name": "Const54",
+      "name": "CONST54",
       "label": "\\N",
       "opcode": "const",
       "value": "4"
@@ -148,18 +148,18 @@
       "_gvid": 6,
       "tail": 6,
       "head": 7,
-      "operand": "1"
+      "operand": "0"
     },
     {
       "_gvid": 7,
       "tail": 8,
-      "head": 10,
+      "head": 11,
       "operand": "0"
     },
     {
       "_gvid": 8,
-      "tail": 8,
-      "head": 10,
+      "tail": 9,
+      "head": 8,
       "operand": "1"
     },
     {
@@ -171,7 +171,7 @@
     {
       "_gvid": 10,
       "tail": 10,
-      "head": 11,
+      "head": 9,
       "operand": "0"
     },
     {

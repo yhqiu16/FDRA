@@ -15,22 +15,39 @@
                 "-m", "true",
                 "-o", "true",
                 "-t", "3600000",
-                "-i", "2000",
+                "-i", "20000",
                 "-p", "../cgra-mg/src/main/resources/operations.json", // resources/ops/operations.json",
                 "-a", "../cgra-mg/src/main/resources/cgra_adg.json", // resources/adgs/my_cgra_test.json",
                 "-d", "../benchmarks/test4/testaffine/affine.json"
                 // "-d", "../benchmarks/test4/conv2d_3x3/affine.json"
-                // "-d", "../benchmarks/test4/fir_unroll4/affine.json"
-                // "-d", "../benchmarks/test4/gemm-ncubed_unroll4/affine.json"
+                // "-d", "../benchmarks/test4/fir/affine.json"
                 // "-d", "../benchmarks/test4/pedometer/affine.json"
                 // "-d", "../benchmarks/test4/stencil2d/affine.json"   
+                // "-d", "../benchmarks/test4/gemm/affine.json"
                 // "-d", "../benchmarks/test4/fft/affine.json"
                 // "-d", "../benchmarks/test4/md-knn/affine.json"           
-                // "-d", "../benchmarks/test4/conv2d_3x3/affine.json ../benchmarks/test4/fir_unroll4/affine.json ../benchmarks/test4/pedometer/affine.json ../benchmarks/test4/stencil2d/affine.json ../benchmarks/test4/gemm-ncubed_unroll4/affine.json ../benchmarks/test4/fft/affine.json ../benchmarks/test4/md-knn/affine.json"                
-                // "-d", "../benchmarks/test4/conv2d_3x3fir_unroll4/affine.json"
+                // "-d", "../benchmarks/test4/conv2d_3x3/affine.json ../benchmarks/test4/fir/affine.json ../benchmarks/test4/pedometer/affine.json ../benchmarks/test4/stencil2d/affine.json ../benchmarks/test4/gemm/affine.json ../benchmarks/test4/fft/affine.json ../benchmarks/test4/md-knn/affine.json"                
+                // "-d", "../benchmarks/test4/conv2d_3x3pedometer/affine.json"
+                // "-d", "../benchmarks/test4/firgemm/affine.json"
+                // "-d", "../benchmarks/test4/stencil2dmd-knn/affine.json"
+                // "-d", "../benchmarks/test4/conv2d_3x3pedometer/affine.json ../benchmarks/test4/firgemm/affine.json ../benchmarks/test4/stencil2dmd-knn/affine.json ../benchmarks/test4/fft/affine.json"
+                // "-d", "../benchmarks/test4/conv2d_3x3fir/affine.json"
+                // "-d", "../benchmarks/test4/conv2d_3x3stencil2d/affine.json"
                 // "-d", "../benchmarks/test4/pedometermd-knn/affine.json"
-                // "-d", "../benchmarks/test4/stencil2demm-ncubed_unroll4/affine.json"
-                // "-d", "../benchmarks/test4/pedometermd-knn/affine.json ../benchmarks/test4/conv2d_3x3fir_unroll4/affine.json ../benchmarks/test4/stencil2dgemm-ncubed_unroll4/affine.json ../benchmarks/test4/fft/affine.json"
+                // "-d", "../benchmarks/test4/conv2d_3x3stencil2d/affine.json ../benchmarks/test4/firgemm/affine.json ../benchmarks/test4/pedometermd-knn/affine.json ../benchmarks/test4/fft/affine.json"
+                // "-d", "../benchmarks/test4/pedometergemm/affine.json"
+                // "-d", "../benchmarks/test4/pedometermd-knn/affine.json ../benchmarks/test4/conv2d_3x3fir/affine.json ../benchmarks/test4/stencil2dgemm/affine.json ../benchmarks/test4/fft/affine.json"
+                // "-d", "../benchmarks/test5/conv2d_3x3/affine.json"
+                // "-d", "../benchmarks/test5/fir/affine.json"
+                // "-d", "../benchmarks/test5/pedometer/affine.json"
+                // "-d", "../benchmarks/test5/stencil2d/affine.json"   
+                // "-d", "../benchmarks/test5/gemm/affine.json"
+                // "-d", "../benchmarks/test5/fft/affine.json"
+                // "-d", "../benchmarks/test5/md-knn/affine.json"    
+                // "-d", "../benchmarks/test5/conv2d_3x3/affine.json ../benchmarks/test5/fir/affine.json ../benchmarks/test5/pedometer/affine.json ../benchmarks/test5/stencil2d/affine.json ../benchmarks/test5/gemm/affine.json ../benchmarks/test5/fft/affine.json ../benchmarks/test5/md-knn/affine.json"
+                // "-d", "../benchmarks/cmp/mm/affine.json"
+                // "-d", "../benchmarks/cmp/fir/affine.json"
+                // "-d", "../benchmarks/cmp/poly/affine.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

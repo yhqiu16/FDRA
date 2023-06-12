@@ -1,0 +1,35 @@
+Digraph G {
+Input4[opcode=input, ref_name="m1", size=4096, offset="0, 0", pattern="16, 8, -112, 32, 16, 32"];
+Input6[opcode=input, ref_name="m2", size=4096, offset="0, 0", pattern="512, 8, -3580, 32, -3708, 32"];
+MUL7[opcode=mul];
+ADD8[opcode=add];
+Input12[opcode=input, ref_name="m1", size=4096, offset="0, 4", pattern="16, 8, -112, 32, 16, 32"];
+Input14[opcode=input, ref_name="m2", size=4096, offset="0, 128", pattern="512, 8, -3580, 32, -3708, 32"];
+MUL15[opcode=mul];
+ADD16[opcode=add];
+Input20[opcode=input, ref_name="m1", size=4096, offset="0, 8", pattern="16, 8, -112, 32, 16, 32"];
+Input22[opcode=input, ref_name="m2", size=4096, offset="0, 256", pattern="512, 8, -3580, 32, -3708, 32"];
+MUL23[opcode=mul];
+ADD24[opcode=add];
+Input27[opcode=input, ref_name="m1", size=4096, offset="0, 12", pattern="16, 8, -112, 32, 16, 32"];
+Input29[opcode=input, ref_name="m2", size=4096, offset="0, 384", pattern="512, 8, -3580, 32, -3708, 32"];
+MUL30[opcode=mul];
+Output43[opcode=output, ref_name="prod", size=4096, offset="0, 0", pattern="0, 8, 4, 32, 4, 32"];
+ACC101[opcode=acc, acc_params="0, 8, 1, 1024", acc_first=1];
+Input4->MUL7[operand=1];
+Input6->MUL7[operand=0];
+MUL7->ADD8[operand=0];
+ADD8->ADD16[operand=1];
+Input12->MUL15[operand=1];
+Input14->MUL15[operand=0];
+MUL15->ADD16[operand=0];
+ADD16->ADD24[operand=1];
+Input20->MUL23[operand=1];
+Input22->MUL23[operand=0];
+MUL23->ADD24[operand=0];
+Input27->MUL30[operand=1];
+Input29->MUL30[operand=0];
+MUL30->ADD8[operand=1];
+ADD24->ACC101[operand=0];
+ACC101->Output43[operand=0];
+}

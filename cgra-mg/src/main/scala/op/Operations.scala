@@ -6,6 +6,7 @@ import chisel3.util._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import tram.ir._
+import tram.common.CompileMacroVar.DIV_LATENCY
 
 /**
  * Operation Code
@@ -69,7 +70,7 @@ object OpInfo {
 		"ADD" -> ListBuffer(2, 1, 1, 1, 0),
 		"SUB" -> ListBuffer(2, 1, 1, 0, 0),
 		"MUL" -> ListBuffer(2, 1, 1, 1, 0),
-		"UDIV" -> ListBuffer(2, 1, 1, 0, 0),
+		"UDIV" -> ListBuffer(2, 1, DIV_LATENCY, 0, 0),
 		"MOD" -> ListBuffer(2, 1, 1, 0, 0),
 		"MIN" -> ListBuffer(2, 1, 1, 1, 0),
 		"MAX" -> ListBuffer(2, 1, 1, 1, 0),
@@ -194,6 +195,12 @@ object OpInfo {
 			if(ops.size > 2) ops(2)(0)
 			else 0.U(1.W)
 		}
+		val udiv = Module(new Div(width, false, DIV_LATENCY-1))
+		val sdiv = Module(new Div(width, true, DIV_LATENCY-1))
+		udiv.io.op0 := DontCare
+		udiv.io.op1 := DontCare
+		sdiv.io.op0 := DontCare
+		sdiv.io.op1 := DontCare
 //		val op1_inv = (~op1).asUInt
 //		val op1_new = Wire(UInt(width.W))
 //		val op2_new = Wire(UInt(1.W))
@@ -224,7 +231,26 @@ object OpInfo {
 			"ADD"  -> Seq(op0 + op1),
 			"SUB"  -> Seq(op0 - op1),
 			"MUL"  -> Seq(op0 * op1),
-			"UDIV"  -> Seq(op0 / op1),
+			"UDIV" -> {
+				udiv.io.op0 := op0
+				udiv.io.op1 := op1
+				Seq(udiv.io.quo)
+			},
+			"UREM" -> {
+				udiv.io.op0 := op0
+				udiv.io.op1 := op1
+				Seq(udiv.io.rem)
+			},
+			"SDIV" -> {
+				sdiv.io.op0 := op0
+				sdiv.io.op1 := op1
+				Seq(sdiv.io.quo)
+			},
+			"SREM" -> {
+				sdiv.io.op0 := op0
+				sdiv.io.op1 := op1
+				Seq(sdiv.io.rem)
+			},
 			"MOD"  -> Seq(op0 % op1),
 			"MIN"  -> Seq(Mux(op0 < op1, op0, op1)),
 			"MAX"  -> Seq(Mux(op0 > op1, op0, op1)),

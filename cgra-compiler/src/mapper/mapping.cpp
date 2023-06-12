@@ -224,10 +224,10 @@ bool Mapping::mapDfgNode(DFGNode* dfgNode, ADGNode* targetAdgNode){
         if(adgNode){
             succeed = routeDfgEdge(edge, adgNode, targetAdgNode); // route edge between targetAdgNode and adgNode       
             routed = true;          
-        }else if(_dfg->isIONode(edge->srcId())){ // connected to DFG input node which has not been placed
-            succeed = routeDfgEdge(edge, targetAdgNode, true); // route edge between targetAdgNode and ADG IOB
-            // inEdges.push_back(edge);
-            routed = true; 
+        // }else if(_dfg->isIONode(edge->srcId())){ // connected to DFG input node which has not been placed
+        //     succeed = routeDfgEdge(edge, targetAdgNode, true); // route edge between targetAdgNode and ADG IOB
+        //     inEdges.push_back(edge);
+        //     routed = true; 
         }
         if(!succeed){
             break;
@@ -246,10 +246,10 @@ bool Mapping::mapDfgNode(DFGNode* dfgNode, ADGNode* targetAdgNode){
                 if(adgNode){
                     succeed = routeDfgEdge(edge, targetAdgNode, adgNode); // route edge between targetAdgNode and adgNode  
                     routed = true;                      
-                }else if(_dfg->isIONode(edge->dstId())){ // connected to DFG output node which has not been placed
-                    succeed = routeDfgEdge(edge, targetAdgNode, false); // route edge between targetAdgNode and ADG IOB
-                    // outEdges.push_back(edge);
-                    routed = true; 
+                // }else if(_dfg->isIONode(edge->dstId())){ // connected to DFG output node which has not been placed
+                //     succeed = routeDfgEdge(edge, targetAdgNode, false); // route edge between targetAdgNode and ADG IOB
+                //     outEdges.push_back(edge);
+                //     routed = true; 
                 }
                 if(!succeed){
                     break;
@@ -385,7 +385,7 @@ const std::vector<EdgeLinkAttr>& Mapping::routedEdgeLinks(DFGEdge* edge){
 // }
 
 
-// route DFG edge to passthrough ADG node not including IOB 
+// route DFG edge to passthrough GIB node
 // one internal link can passthrough multiple edges, but they should have the same srcId and srcPortIdx
 // isTry: just try to route, not change the routing status
 bool Mapping::routeDfgEdgePass(DFGEdge* edge, ADGNode* passNode, int srcPort, int dstPort, bool isTry){
@@ -647,7 +647,7 @@ bool Mapping::routeDfgEdgeFromSrc(DFGEdge* edge, ADGNode* srcNode, ADGNode* dstN
         } else if(nodeId == srcNode->id()){ // srcNode
             nodeAttr.outPortUsed[dstPort] = true; // only change the output port status
             break; // get to the srcNode
-        } else{ // intermediate routing nodes or OB
+        } else{ // intermediate routing nodes
             nodeAttr.outPortUsed[dstPort] = true; 
             nodeAttr.inPortUsed[srcPort] = true;
             DfgEdgePassAttr passAttr;
@@ -885,17 +885,17 @@ bool Mapping::routeDfgEdge(DFGEdge* edge, ADGNode* srcNode, ADGNode* dstNode){
 
 // route DFG edge between adgNode and IOB
 // is2Input: whether connected to IB or OB
-bool Mapping::routeDfgEdge(DFGEdge* edge, ADGNode* adgNode, bool is2Input){
-    std::set<int> dstPortRange; // the input port index range of the dstNode
-    if(!is2Input){ // route to OB
-        return routeDfgEdgeFromSrc(edge, adgNode, nullptr, dstPortRange);       
-    } 
-    dstPortRange = availDstPorts(edge, adgNode); // the input port index range of the dstNode
-    if(dstPortRange.empty()){ // no available input port in the dstNode
-        return false;
-    }
-    return routeDfgEdgeFromDst(edge, nullptr, adgNode, dstPortRange);
-}
+// bool Mapping::routeDfgEdge(DFGEdge* edge, ADGNode* adgNode, bool is2Input){
+//     std::set<int> dstPortRange; // the input port index range of the dstNode
+//     if(!is2Input){ // route to OB
+//         return routeDfgEdgeFromSrc(edge, adgNode, nullptr, dstPortRange);       
+//     } 
+//     dstPortRange = availDstPorts(edge, adgNode); // the input port index range of the dstNode
+//     if(dstPortRange.empty()){ // no available input port in the dstNode
+//         return false;
+//     }
+//     return routeDfgEdgeFromDst(edge, nullptr, adgNode, dstPortRange);
+// }
 
 
 // unroute DFG edge and unmap the to-be-free input/output nodes if any
@@ -908,8 +908,7 @@ void Mapping::unrouteDfgEdge(DFGEdge* edge){
     for(auto& edgeLink : edgeAttr.edgeLinks){
         auto node = edgeLink.adgNode;
         if(!_adgNodeAttr.count(node->id())) continue; 
-        auto& nodeAttr = _adgNodeAttr[node->id()];
-                   
+        auto& nodeAttr = _adgNodeAttr[node->id()];                   
         auto& nodeEdges = nodeAttr.dfgEdgePass;
         auto iter = std::remove_if(nodeEdges.begin(), nodeEdges.end(), [&](DfgEdgePassAttr& x){ return (x.edge == edge); });
         nodeEdges.erase(iter, nodeEdges.end());
@@ -937,34 +936,34 @@ void Mapping::unrouteDfgEdge(DFGEdge* edge){
         }            
     }
     _dfgEdgeAttr.erase(eid);
-    // unmap DFG IO Node
-    std::vector<int> ioNodeIds;
-    ioNodeIds.push_back(edge->dstId());     
-    ioNodeIds.push_back(edge->srcId());       
-    for(int ioNodeId : ioNodeIds){       
-        if(_dfg->isIONode(ioNodeId)){ // connected to DFG IO node
-            DFGNode *ioNode = _dfg->node(ioNodeId);
-            bool mapped = false;
-            std::vector<int> eids;
-            for(auto& elem : ioNode->inputEdges()){
-                eids.push_back(elem.second);            
-            }
-            for(auto& elem : ioNode->outputEdges()){
-                for(auto& out : elem.second){
-                    eids.push_back(out);
-                }
-            }
-            for(auto eid : eids){
-                if(isRouted(eid)){ // there are still routed edges connected to the dfg io node
-                    mapped = true;
-                    break;
-                }
-            }
-            if(!mapped){
-                unmapDfgNodeNoUnroute(ioNode);
-            }
-        }
-    }
+    // // unmap DFG IO Node
+    // std::vector<int> ioNodeIds;
+    // ioNodeIds.push_back(edge->dstId());     
+    // ioNodeIds.push_back(edge->srcId());       
+    // for(int ioNodeId : ioNodeIds){       
+    //     if(_dfg->isIONode(ioNodeId)){ // connected to DFG IO node
+    //         DFGNode *ioNode = _dfg->node(ioNodeId);
+    //         bool mapped = false;
+    //         std::vector<int> eids;
+    //         for(auto& elem : ioNode->inputEdges()){
+    //             eids.push_back(elem.second);            
+    //         }
+    //         for(auto& elem : ioNode->outputEdges()){
+    //             for(auto& out : elem.second){
+    //                 eids.push_back(out);
+    //             }
+    //         }
+    //         for(auto eid : eids){
+    //             if(isRouted(eid)){ // there are still routed edges connected to the dfg io node
+    //                 mapped = true;
+    //                 break;
+    //             }
+    //         }
+    //         if(!mapped){
+    //             unmapDfgNodeNoUnroute(ioNode);
+    //         }
+    //     }
+    // }
 }
 
 
@@ -1026,7 +1025,7 @@ int Mapping::getAvailDelay(FUNode* fuNode, DFGNode* dfgNode){
 }
 
 
-// calculate the routing latency of each edge, not inlcuding the delay pipe
+// calculate the routing latency of each edge, not inlcuding the RDU
 void Mapping::calEdgeRouteLat(){
     for(auto& elem : _dfgEdgeAttr){
         auto& attr = elem.second;
@@ -1078,12 +1077,13 @@ void Mapping::latencyBound(){
 
 // schedule the latency of each DFG node based on the mapping status
 // DFG node latency: output port latency
-// DFG edge latency: latency from the output port of src node to the ALU Input port of dst Node, including DelayPipe 
+// DFG edge latency: latency from the output port of src node to the ALU Input port of dst Node, including RDU
 void Mapping::latencySchedule(){
+    _fuDelayAttr.clear();
     std::set<int> scheduledNodeIds;  
     std::vector<int> unscheduledNodes = _dfg->topoNodes();
     std::reverse(unscheduledNodes.begin(), unscheduledNodes.end()); // in reversed topological order
-    // calculate the routing latency of each edge, not inlcuding the delay pipe
+    // calculate the routing latency of each edge, not inlcuding the RDU
     calEdgeRouteLat();
     // calculate the DFG node latency bounds, finding the max-latency path 
     latencyBound();
@@ -1270,8 +1270,8 @@ void Mapping::calEdgeLatVio(){
             // } else{ // connected to DFG input port
             //     srcNodeLat = _dfgInputAttr[_dfg->edge(eid)->srcPortIdx()].lat;  
             // }
-            // _dfgEdgeAttr[eid].lat = maxLat - srcNodeLat; // including delay pipe latency   
-            int requiredDelay = maxLat - srcNodeLat - routeLat; // delay pipe latency  
+            // _dfgEdgeAttr[eid].lat = maxLat - srcNodeLat; // including RDU latency   
+            int requiredDelay = maxLat - srcNodeLat - routeLat; // RDU latency  
             _dfgEdgeAttr[eid].delay = requiredDelay;    
             int assignedDelay; 
             if(!delayUsed.count(elem.first)){ // not assign delay for this port
@@ -1300,10 +1300,21 @@ void Mapping::calEdgeLatVio(){
 
 
 // insert pass-through DFG nodes into a copy of current DFG
-void Mapping::insertPassDfgNodes(DFG* newDfg){
+bool Mapping::insertPassDfgNodes(DFG* newDfg){
+    int numGpeNodes = _adg->numGpeNodes();
+    int numOpNodes = _dfg->nodes().size() - _dfg->ioNodes().size();
+    int numAvail = numGpeNodes - numOpNodes;
+    if(numAvail <= 0){ // cannot insert pass node
+        return false;
+    }
     *newDfg = *_dfg;
     int maxNodeId = newDfg->nodes().rbegin()->first; // std::map auto sort the key
     int maxEdgeId = newDfg->edges().rbegin()->first; 
+    if(numAvail < _vioDfgEdges.size()){
+        std::sort(_vioDfgEdges.begin(), _vioDfgEdges.end(), [&](int a, int b){
+            return _dfgEdgeAttr[a].vio > _dfgEdgeAttr[b].vio;
+        });
+    }
     // int maxDelay = 1;
     // for(auto& elem : _dfgNodeAttr){
     //     auto adgNode = elem.second.adgNode;
@@ -1313,7 +1324,12 @@ void Mapping::insertPassDfgNodes(DFG* newDfg){
     //     }
     // }
     // int maxInsertNodesPerEdge = 2;
+    int n = 0;
     for(int eid : _vioDfgEdges){ // DFG edges with latency violation
+        if(n >= numAvail){
+            break;
+        }
+        n++;
         int vio = _dfgEdgeAttr[eid].vio; // maybe add multiple nodes according to vio   
         int num = 1; // std::min(maxInsertNodesPerEdge, std::max(1, vio/maxDelay));  
         DFGEdge* e = newDfg->edge(eid);
@@ -1344,4 +1360,5 @@ void Mapping::insertPassDfgNodes(DFG* newDfg){
         e2->setDstPortIdx(dstPortIdx);        
         newDfg->addEdge(e2);
     }
+    return true;
 }

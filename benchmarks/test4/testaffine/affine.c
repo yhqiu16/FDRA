@@ -5,14 +5,12 @@
 #define NI 10
 #define NJ 16
 #define NK 16
-#define ASIZE (3*NI)
+#define ASIZE (2*NI)
 #define BSIZE (NJ+NK)
 #define CSIZE (NJ*NJ)
-int A[ASIZE];
-int B[BSIZE];
+int A[ASIZE], B[BSIZE];
 int C[CSIZE];
 int D[NI][NJ][NK];
-int D1[NI][NJ][NK];
 int E[NJ][NK];
 
 void test(){
@@ -20,8 +18,8 @@ void test(){
     for (int j=NJ-1; j>=0; j--){
    	  for(int k=0; k<NK; k=k+3){
    	  	  please_map_me();
-   		  int tmp = A[i*3] + B[j+k];
-   		  D1[i][j][k] = C[j*j] * E[j][k] + tmp;
+   		  int tmp = A[i*2] + B[j+k];
+   		  D[i][j][k] = C[j*j] * E[j][k] + tmp;
    		}
    	}
   }

@@ -24,3 +24,16 @@ object MacroVar {
 	val SRAM_MODE = 1
 }
 
+/**
+	* Compile Macro Variables
+	*/
+object CompileMacroVar {
+//	var USE_SRAM_BLACKBOX = false
+//	var USE_DIV_DW = false
+//	var USE_DIV_FPGA = false
+	val DIV_LATENCY = 6
+	val TARGET_SIM = 0
+	val TARGET_FPGA = 1
+	val TARGET_ASIC = 2
+	var TARGET_TYPE = TARGET_SIM
+}

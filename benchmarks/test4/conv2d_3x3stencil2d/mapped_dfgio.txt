@@ -1,0 +1,18 @@
+# format: DFG-IO-Tag, DFG-IO-Name, ADG-IOB-Id, ADG-IOB-Index, DFG-IO-Latency
+INPUT_0, conv2d_3x3_Input4, 7, 6, 0
+INPUT_1, conv2d_3x3_Input8, 104, 12, 0
+INPUT_2, conv2d_3x3_Input13, 6, 5, 0
+INPUT_3, conv2d_3x3_Input18, 102, 10, 0
+INPUT_4, conv2d_3x3_Input23, 2, 1, 0
+INPUT_5, conv2d_3x3_Input28, 107, 15, 0
+INPUT_6, conv2d_3x3_Input34, 109, 17, 0
+INPUT_7, conv2d_3x3_Input39, 9, 8, 1
+INPUT_8, conv2d_3x3_Input44, 3, 2, 0
+OUTPUT_9, conv2d_3x3_Output48, 8, 7, 16
+INPUT_10, stencil2d_Input7, 106, 14, 0
+INPUT_11, stencil2d_Input9, 5, 4, 0
+INPUT_12, stencil2d_Input14, 108, 16, 0
+INPUT_13, stencil2d_Input17, 1, 0, 0
+INPUT_14, stencil2d_Input22, 4, 3, 0
+INPUT_15, stencil2d_Input25, 105, 13, 0
+OUTPUT_16, stencil2d_Output42, 103, 11, 11

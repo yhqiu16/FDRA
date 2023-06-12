@@ -1,0 +1,19 @@
+# format: DFG-IO-Tag, DFG-IO-Name, ADG-IOB-Id, ADG-IOB-Index, DFG-IO-Latency
+INPUT_0, fir_unroll4_Input5, 105, 13, 0
+INPUT_1, fir_unroll4_Input7, 102, 10, 0
+INPUT_2, fir_unroll4_Input14, 8, 7, 0
+INPUT_3, fir_unroll4_Input16, 106, 14, 0
+INPUT_4, fir_unroll4_Input23, 108, 16, 0
+INPUT_5, fir_unroll4_Input25, 5, 4, 0
+INPUT_6, fir_unroll4_Input31, 104, 12, 0
+INPUT_7, fir_unroll4_Input33, 2, 1, 0
+OUTPUT_8, fir_unroll4_Output46, 6, 5, 10
+INPUT_9, gemm-ncubed_unroll4_Input6, 109, 17, 0
+INPUT_10, gemm-ncubed_unroll4_Input9, 107, 15, 0
+INPUT_11, gemm-ncubed_unroll4_Input17, 9, 8, 0
+INPUT_12, gemm-ncubed_unroll4_Input20, 4, 3, 0
+INPUT_13, gemm-ncubed_unroll4_Input28, 1, 0, 0
+INPUT_14, gemm-ncubed_unroll4_Input31, 103, 11, 0
+INPUT_15, gemm-ncubed_unroll4_Input38, 3, 2, 0
+INPUT_16, gemm-ncubed_unroll4_Input41, 7, 6, 0
+OUTPUT_17, gemm-ncubed_unroll4_Output61, 101, 9, 11

@@ -8,15 +8,7 @@ import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket._
 import freechips.rocketchip.tilelink._
 import testchipip.TLHelper
-
-// DMA read/write request interface
-// remote memory : virtual address
-// local memory : physical address
-//class DMAReq(localAddrWidth: Int, lgMaxLen: Int, isRead: Boolean)(implicit p: Parameters) extends CoreBundle{
-//  val src_addr = UInt({if(isRead) coreMaxAddrBits else localAddrWidth}.W) // src base address
-//  val dst_addr = UInt({if(isRead) localAddrWidth else coreMaxAddrBits}.W) // dst base address
-//  val len = UInt(lgMaxLen.W)              // transferring data length in bytes
-//}
+import tram.dsa.TrueDualPortSRAM
 
 // DMA read/write request interface
 // remote memory : virtual address
@@ -28,7 +20,7 @@ class DMAReq(lgMaxLen: Int, idWidth: Int)(implicit p: Parameters) extends CoreBu
 }
 
 // DMA stream interface
-class DMAStream(dataWidth: Int, hasMask: Boolean, idWidth: Int)(implicit p: Parameters) extends CoreBundle{
+class DMAStream(dataWidth: Int, hasMask: Boolean, idWidth: Int) extends Bundle{
   val data = UInt(dataWidth.W) // aligned to byte
   val mask = UInt({if(hasMask) (dataWidth/8) else 0}.W) // byte mask
   val id = UInt(idWidth.W)
@@ -59,6 +51,158 @@ class DMAStreamWriteIF(lgMaxLen: Int, dataWidth: Int, hasMask: Boolean, idWidth:
 }
 
 
+class ReorderBufferReq(idWidth: Int, lgSize: Int) extends Bundle{
+  val id = UInt(idWidth.W)
+  val size = UInt(lgSize.W)
+}
+
+/** Reorder the response data to make its order consistent with the request order
+  * @param dataWidth      data width
+  * @param hasMask        if has mask signal in the stream interface
+  * @param maxLgBurstSize log2(max burst size of a transaction)
+  * @param nReqInflight   supported dma requests inflight
+  */
+class ReorderBuffer(dataWidth: Int, hasMask: Boolean, maxLgBurstSize: Int, nReqInflight: Int) extends Module{
+  val idWidth = log2Ceil(nReqInflight)
+  val lgSize = log2Ceil(maxLgBurstSize)
+  val io = IO(new Bundle{
+    val req = Flipped(Decoupled(new ReorderBufferReq(idWidth, lgSize)))
+    val streamin = Flipped(Decoupled(new DMAStream(dataWidth, hasMask, idWidth)))
+    val streamout = Decoupled(new DMAStream(dataWidth, hasMask, idWidth))
+  })
+  val bufSize = (1 << maxLgBurstSize) * nReqInflight / (dataWidth/8)
+  val bufAddrWidth = log2Ceil(bufSize)
+  val offsetWidth = maxLgBurstSize - log2Ceil(dataWidth/8)
+  val buffer = Module(new TrueDualPortSRAM(dataWidth, bufAddrWidth, hasMask))
+  val statusTable = RegInit(VecInit(Seq.fill(nReqInflight){0.U(2.W)})) // STATUS for each req-id, 0: IDLE; 1: REQ; 2: RES
+  val reqQue = Module(new Queue(new ReorderBufferReq(idWidth, lgSize), nReqInflight))
+
+  val ready = RegInit(false.B)
+  io.req.ready := ready
+  // Cache request in Queue
+  when(!ready && io.req.valid && statusTable(io.req.bits.id) === 0.U && reqQue.io.enq.ready){
+    ready := true.B
+    reqQue.io.enq.valid := true.B
+    reqQue.io.enq.bits := io.req.bits
+  }.otherwise{
+    ready := false.B
+    reqQue.io.enq.valid := false.B
+    reqQue.io.enq.bits := DontCare
+  }
+
+  // if data packet arrive in order, stream out directly
+  // otherwise, cache in buffer and reorder
+  val s_idle :: s_bypass :: s_read :: Nil = Enum(3)
+  val state = RegInit(s_idle)
+  buffer.io.b.we := 0.U
+  buffer.io.b.din := 0.U
+  val rdOffset = RegInit(0.U((offsetWidth+1).W))
+  buffer.io.b.addr := Cat(reqQue.io.deq.bits.id, rdOffset(offsetWidth-1, 0))
+  val doutValid = RegInit(false.B)
+  val doutLast = RegInit(false.B)
+  val bypass = RegInit(false.B)
+  val buf_we = RegInit(false.B) // write enable
+  val MIN_SIZE = log2Ceil(dataWidth/8).U
+  val alignSize = Wire(UInt(lgSize.W))
+  when(reqQue.io.deq.bits.size <= MIN_SIZE){
+    alignSize := 0.U
+  }.otherwise{
+    alignSize := reqQue.io.deq.bits.size - MIN_SIZE
+  }
+  val rdDataSize = (1.U << alignSize).asUInt // DATA Number
+  switch(state){
+    is(s_idle){
+      when(reqQue.io.deq.valid && io.streamin.valid && !buf_we && reqQue.io.deq.bits.id === io.streamin.bits.id){
+        state := s_bypass
+        bypass := true.B
+      }.elsewhen(reqQue.io.deq.valid && statusTable(reqQue.io.deq.bits.id) === 2.U){  // buffer data is ready
+        doutValid := true.B
+        doutLast := (rdOffset + 1.U >= rdDataSize)
+        state := s_read
+        rdOffset := rdOffset + 1.U
+      }
+    }
+    is(s_bypass){ // bypass streamin to streamout
+      when(io.streamout.ready && io.streamin.valid && io.streamin.bits.last){
+        state := s_idle
+        bypass := false.B
+      }
+    }
+    is(s_read){ // read data from buffer
+      when(io.streamout.ready && rdOffset < rdDataSize){
+        rdOffset := rdOffset + 1.U
+        doutLast := (rdOffset + 1.U >= rdDataSize)
+      }.elsewhen(io.streamout.ready){ // LAST data
+        rdOffset := 0.U
+        doutValid := false.B
+        doutLast := false.B
+        state := s_idle
+      }
+    }
+  }
+
+  reqQue.io.deq.ready := io.streamout.ready && ((state === s_read && rdOffset >= rdDataSize) ||
+        (state === s_bypass && io.streamin.valid && io.streamin.bits.last))
+
+  io.streamin.ready := (bypass && io.streamout.ready) || buf_we
+
+  // Cache data in buffer, data may arrive out of order
+  when(!buf_we && state === s_idle && reqQue.io.deq.valid && io.streamin.valid && reqQue.io.deq.bits.id =/= io.streamin.bits.id){
+    buf_we := true.B
+  }.elsewhen(buf_we && io.streamin.valid && io.streamin.bits.last){
+    buf_we := false.B
+  }
+  buffer.io.a.en := buf_we
+  buffer.io.a.we := {if(hasMask) io.streamin.bits.mask else buf_we.asUInt}
+  buffer.io.a.din := io.streamin.bits.data
+  val wrOffset = RegInit(0.U(offsetWidth.W))
+  buffer.io.a.addr := Cat(io.streamin.bits.id, wrOffset)
+  when(buf_we && io.streamin.valid && io.streamin.bits.last){
+    wrOffset := 0.U
+  }.elsewhen(buf_we && io.streamin.valid){
+    wrOffset := wrOffset + 1.U
+  }
+
+  // read data from buffer
+  when(state === s_idle && reqQue.io.deq.valid && statusTable(reqQue.io.deq.bits.id) === 2.U){
+    buffer.io.b.en := true.B
+  }.elsewhen(state === s_read && io.streamout.ready && rdOffset < rdDataSize){
+    buffer.io.b.en := true.B
+  }.otherwise{
+    buffer.io.b.en := false.B
+  }
+
+//  when(rdOffset + 1.U === rdDataSize){
+//    doutLast := true.B
+//  }.elsewhen(io.streamout.ready && rdOffset >= rdDataSize){
+//    doutLast := false.B
+//  }
+//
+//  when(state =/= s_read || (io.streamout.ready && rdOffset >= rdDataSize)){
+//    doutLast := false.B
+//  }.elsewhen(rdOffset + 1.U === rdDataSize){
+//    doutLast := true.B
+//  }
+
+  io.streamout.valid := doutValid || (bypass && io.streamin.valid)
+  io.streamout.bits.data := Mux(bypass, io.streamin.bits.data, buffer.io.b.dout)
+  io.streamout.bits.id := reqQue.io.deq.bits.id
+  io.streamout.bits.last := doutValid && doutLast || (bypass && io.streamin.bits.last)
+  io.streamout.bits.mask := { if (hasMask) ((1 << (dataWidth/8)) - 1).U else DontCare }
+
+  statusTable.zipWithIndex.foreach{ case (status, i) =>
+    when(io.req.fire && io.req.bits.id === i.U){
+      status := 1.U
+    }.elsewhen(buf_we && io.streamin.valid && io.streamin.bits.last && io.streamin.bits.id === i.U){
+      status := 2.U
+    }.elsewhen(reqQue.io.deq.fire && reqQue.io.deq.bits.id === i.U){
+      status := 0.U
+    }
+  }
+}
+
+
+
 /** DMA Stream read controller, read data from remote memory with virtual address
   * @param lgMaxDataLen   log2(the max data length in one DMA request)
   * @param dataWidth      data width
@@ -71,8 +215,8 @@ class DMAReadController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, idW
                        (implicit p: Parameters) extends LazyModule {
   val node = TLHelper.makeClientNode(TLMasterParameters.v1(
     name = "dma-read-controller",
-    sourceId = IdRange(0, nReqInflight), // [0, n) support n requests inflight
-    requestFifo = true // responses in FIFO order, i.e. in same order the corresponding requests were sent ()
+    sourceId = IdRange(0, nReqInflight) // [0, n) support n requests inflight
+//    requestFifo = true // responses in FIFO order, i.e. in same order the corresponding requests were sent ()
   ))
 
   lazy val module = new LazyModuleImp(this) with HasCoreParameters {
@@ -95,6 +239,7 @@ class DMAReadController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, idW
 //    val pageSize = 1 << pgIdxBits
 //    val vpn = vaddr(vaddrBitsExtended - 1, pgIdxBits) // virtual page number
 //    val vpo = vaddr(pgIdxBits - 1, 0) // virtual page offset
+//    val ppn = paddr(paddrBits - 1, pgIdxBits) // physical page number
     val maxSizeTL = 1 << maxLgSizeTL
     val vxn = vaddr(vaddrBitsExtended - 1, maxLgSizeTL) // virtual number aligned to max TL transfer size
     val vxo = vaddr(maxLgSizeTL - 1, 0) // offset within max TL transfer size
@@ -151,8 +296,10 @@ class DMAReadController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, idW
       val id = UInt(idWidth.W) // request ID
       val exception = Bool()   //  tlb exception
     }
-    val packetInfoQue = Module(new Queue(new PacketInfo, nReqInflight-1))
-    // this queue also used to stall extra requests that exceed the max requests in flight since tl.a.ready will not pull down
+    val packetInfoQue = Module(new Queue(new PacketInfo, nReqInflight))
+
+    // also used to stall extra requests that exceed the max requests in flight since tl.a.ready will not pull down
+    val reorderBuffer = Module(new ReorderBuffer(dataWidth, hasMask, maxLgSizeTL, nReqInflight))
 
     val s_idle :: s_slice :: s_wait :: s_tlb_req :: s_tlb_resp :: s_dma_req :: s_exp :: Nil = Enum(7)
     val state = RegInit(s_idle)
@@ -205,7 +352,7 @@ class DMAReadController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, idW
 //        }
 //      }
       is(s_exp){ // exception
-        when(packetInfoQue.io.enq.fire){ // cache exception
+        when(packetInfoQue.io.enq.ready){ // cache exception
           state := s_idle
         }
       }
@@ -219,27 +366,72 @@ class DMAReadController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, idW
     io.tlb.req.bits.status := status
     // TLB response
     io.tlb.resp.ready := (state === s_tlb_resp)
+
     // DMA request
     val tl_id = RegInit(0.U(log2Ceil(nReqInflight).W))
-    when(tl.a.fire){
-//    when(io.read.req.fire){
-      tl_id := Mux(tl_id < (nReqInflight-1).U, tl_id + 1.U, 0.U )
+    // submit request to reorderBuffer first to check if DMA request is allowed
+    val s_dma_req_idle :: s_dma_req_wait :: s_dma_req_load :: Nil = Enum(3)
+    val dma_req_state = RegInit(s_dma_req_idle)
+    val reorder_req_valid = RegInit(false.B)
+    val tl_a_valid = RegInit(false.B)
+    switch(dma_req_state){
+      is(s_dma_req_idle){
+        when(state === s_tlb_resp && io.tlb.resp.fire && !io.tlb.resp.bits.miss){
+          dma_req_state := s_dma_req_wait
+          reorder_req_valid := true.B
+        }
+      }
+      is(s_dma_req_wait){
+        when(reorderBuffer.io.req.ready){
+          reorder_req_valid := false.B
+          when(tl.a.ready){
+            dma_req_state := s_dma_req_idle
+          }.otherwise{
+            dma_req_state := s_dma_req_load
+            tl_a_valid := true.B
+          }
+        }
+      }
+      is(s_dma_req_load){
+        when(tl.a.ready){
+          dma_req_state := s_dma_req_idle
+          tl_a_valid := false.B
+        }
+      }
     }
-    tl.a.valid := (state === s_dma_req) && packetInfoQue.io.enq.ready
+
+    reorderBuffer.io.req.valid := reorder_req_valid
+    reorderBuffer.io.req.bits.id := tl_id
+    reorderBuffer.io.req.bits.size := lgLen_align
+
+    tl.a.valid := reorderBuffer.io.req.fire || tl_a_valid
     tl.a.bits := edge.Get(
       fromSource = tl_id,
       toAddress = paddr,
       lgSize = lgLen_align
     )._2
+
+    when(tl.a.fire){
+      tl_id := Mux(tl_id < (nReqInflight-1).U, tl_id + 1.U, 0.U )
+    }
+
+    // reorder data packets to make it consistent with the request order
+    tl.d.ready := reorderBuffer.io.streamin.ready
+    reorderBuffer.io.streamin.valid := tl.d.valid
+    reorderBuffer.io.streamin.bits.data := tl.d.bits.data
+    reorderBuffer.io.streamin.bits.id := tl.d.bits.source
+    reorderBuffer.io.streamin.bits.last := edge.last(tl.d)
+    reorderBuffer.io.streamin.bits.mask := { if (hasMask) ((1 << dataByte) - 1).U else DontCare }
+
     // cache packet size
-    packetInfoQue.io.enq.valid := (state === s_dma_req && tl.a.ready) || (state === s_exp)
+    packetInfoQue.io.enq.valid := (tl.a.fire) || (state === s_exp)
     packetInfoQue.io.enq.bits.id := id
     packetInfoQue.io.enq.bits.min_pos := vxo - vxo_align
     val max_pos_tmp = vxo - vxo_align + leftLen
     packetInfoQue.io.enq.bits.max_pos := Mux(max_pos_tmp >= maxSizeTL.U, (maxSizeTL-1).U, max_pos_tmp)
     packetInfoQue.io.enq.bits.exception := (state === s_exp)
 
-    //DMA response
+    // DMA Stream
     val s_stream_idle :: s_stream_data :: s_stream_exp :: Nil = Enum(3)
     val streamState = RegInit(s_stream_idle)
     val min_pos = RegInit(0.U(maxLgSizeTL.W))
@@ -256,7 +448,7 @@ class DMAReadController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, idW
         }
       }
       is(s_stream_data){
-        when(edge.done(tl.d)) {
+        when(reorderBuffer.io.streamout.fire && reorderBuffer.io.streamout.bits.last) {
           streamState := s_stream_idle
         }
       }
@@ -274,17 +466,17 @@ class DMAReadController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, idW
     val addr = RegInit(0.U(maxLgSizeTL.W))
     when(streamState === s_stream_idle) {
       addr := 0.U
-    }.elsewhen(streamState === s_stream_data && tl.d.fire) {
+    }.elsewhen(streamState === s_stream_data && reorderBuffer.io.streamout.fire) {
       addr := addr + dataByte.U
     }
     // over-fetched data is invalid, not transferred on the stream interface
     val isDataInvalid = (addr < min_pos) || (addr >= max_pos)
-    tl.d.ready := (streamState === s_stream_data) && (io.read.stream.ready || isDataInvalid)
-    io.read.stream.valid := (streamState === s_stream_data) && tl.d.valid && (!isDataInvalid)
-    io.read.stream.bits.data := tl.d.bits.data
-    io.read.stream.bits.last := edge.last(tl.d) || (streamState === s_stream_data && addr + dataByte.U >= max_pos)
+    reorderBuffer.io.streamout.ready := (streamState === s_stream_data) && (io.read.stream.ready || isDataInvalid)
+    io.read.stream.valid := (streamState === s_stream_data) && reorderBuffer.io.streamout.valid && (!isDataInvalid)
+    io.read.stream.bits.data := reorderBuffer.io.streamout.bits.data
+    io.read.stream.bits.last := reorderBuffer.io.streamout.bits.last || (streamState === s_stream_data && addr + dataByte.U >= max_pos)
     io.read.stream.bits.id := cache_id
-    if (hasMask) io.read.stream.bits.mask := ((1 << dataByte) - 1).U
+    if (hasMask) io.read.stream.bits.mask := reorderBuffer.io.streamout.bits.mask
   }
 }
 
@@ -301,8 +493,8 @@ class DMAWriteController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, id
                        (implicit p: Parameters) extends LazyModule {
   val node = TLHelper.makeClientNode(TLMasterParameters.v1(
     name = "dma-write-controller",
-    sourceId = IdRange(0, nReqInflight), // [0, n) support n requests inflight
-    requestFifo = true // responses in FIFO order, i.e. in same order the corresponding requests were sent
+    sourceId = IdRange(0, nReqInflight) // [0, n) support n requests inflight
+//    requestFifo = true // responses in FIFO order, i.e. in same order the corresponding requests were sent
   ))
 
   lazy val module = new LazyModuleImp(this) with HasCoreParameters {
@@ -368,6 +560,10 @@ class DMAWriteController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, id
 
     val s_idle :: s_slice :: s_wait :: s_tlb_req :: s_tlb_resp :: s_dma_req :: s_exp :: Nil = Enum(7)
     val state = RegInit(s_idle)
+    // DMA reuqest ID
+    val tl_id = RegInit(0.U(log2Ceil(nReqInflight).W))
+    // // DMA Request/Response Table
+    // val table = RegInit(VecInit(Seq.fill(nReqInflight){true.B}))
 
     io.write.req.ready := (state === s_idle)
     switch(state) {
@@ -385,7 +581,9 @@ class DMAWriteController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, id
         selBw := Mux(vxo + leftLen > maxSizeTL.U, true.B, false.B) // true: still need at least two packets
       }
       is(s_wait){ // wait for lgLen_align, vxo_align are valid
-        state := s_tlb_req
+        // when(table(tl_id)){ // make sure this DMA request can be submit
+          state := s_tlb_req
+        // }
       }
       is(s_tlb_req) { // len_align, lgLen_align, vxo_align are valid
         when(io.tlb.req.fire) {
@@ -444,7 +642,7 @@ class DMAWriteController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, id
     // over-fetched data is invalid, not transferred on the stream interface
     val isDataInvalid = (addr < vxo) || (addr >= vxo + leftLen)
     io.write.stream.ready := (state === s_dma_req) && tl.a.ready && (!isDataInvalid)
-    val tl_id = RegInit(0.U(log2Ceil(nReqInflight).W))
+
     when(edge.done(tl.a)){
       tl_id := Mux(tl_id < (nReqInflight-1).U, tl_id + 1.U, 0.U )
     }
@@ -462,6 +660,15 @@ class DMAWriteController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, id
     //DMA response
     tl.d.ready := true.B
 //    tl.d.ready := (state === s_dma_resp)
+
+    // // DMA Request/Response Table
+    // table.zipWithIndex.foreach{ case (t, i) =>
+    //   when(edge.done(tl.a) && tl_id === i.U){ // request
+    //     t := false.B // unavailable, wait for response
+    //   }.elsewhen(tl.d.fire && tl.d.bits.source === i.U){
+    //     t := true.B // available
+    //   }
+    // }
   }
 }
 
@@ -479,18 +686,17 @@ class DMAWriteController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, id
 class DMAController(lgMaxDataLen: Int, dataWidth: Int, hasMask: Boolean, idWidth: Int, nReqInflight: Int, maxLgSizeTL: Int, nWaysOfTLB: Int, useSharedTLB: Boolean)
                    (implicit p: Parameters) extends LazyModule {
   val id_node = TLIdentityNode()
-  val xbar_node = TLXbar()
 
   val dma_reader = LazyModule(new DMAReadController(lgMaxDataLen, dataWidth, hasMask, idWidth, nReqInflight, maxLgSizeTL)(p))
   val dma_writer = LazyModule(new DMAWriteController(lgMaxDataLen, dataWidth, hasMask, idWidth, nReqInflight, maxLgSizeTL)(p))
 
-  xbar_node := TLBuffer() := dma_reader.node
-  xbar_node := TLBuffer() := dma_writer.node
-  id_node := TLFIFOFixer() := xbar_node
-
-//  xbar_node := dma_reader.node
-//  xbar_node := dma_writer.node
+//  val xbar_node = TLXbar(TLArbiter.lowestIndexFirst)
+//  xbar_node := TLBuffer(8) := dma_reader.node
+//  xbar_node := TLBuffer(8) := dma_writer.node
 //  id_node := TLFIFOFixer() := xbar_node
+
+  id_node := dma_reader.node
+  id_node := dma_writer.node
 
   lazy val module = new LazyModuleImp(this) with HasCoreParameters {
 //    val dataWidth = id_node.out.head._1.params.dataBits

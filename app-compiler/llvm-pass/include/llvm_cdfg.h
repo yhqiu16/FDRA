@@ -1,7 +1,7 @@
 #ifndef __LLVM_CDFG_H__
 #define __LLVM_CDFG_H__
 
-#define BITWIDTH 8
+#define BITWIDTH 16
 
 
 #include "llvm/Analysis/ScalarEvolution.h"

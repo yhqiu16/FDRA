@@ -32,8 +32,8 @@ struct EdgeLinkAttr // internal link
 // DFG edge attributes used for mapping
 struct DFGEdgeAttr
 {
-    int lat = 0; // not including the delay pipe latency
-    int delay = 0; // delay pipe latency
+    int lat = 0; // not including the RDU latency
+    int delay = 0; // RDU latency
     int vio = 0;
     std::vector<EdgeLinkAttr> edgeLinks;
 };
@@ -71,7 +71,7 @@ struct ADGNodeAttr
 //     std::vector<DFGEdge*> dfgEdges;
 // };
 
-// status of DelayPipe in FU node(GPE/IOB)
+// status of RDU in FU node(GPE/IOB)
 // the max reconfigurable delay cycles are shared among the operands
 struct FUDelayAttr
 {  
@@ -105,7 +105,7 @@ private:
     std::map<int, ADGNodeAttr> _adgNodeAttr;
     // // the DFG information of each occupied ADG link
     // std::map<int, ADGLinkAttr> _adgLinkAttr;
-    // status of DelayPipe in each FU node(GPE/IOB)
+    // status of RDU in each FU node(GPE/IOB)
     std::map<int, FUDelayAttr> _fuDelayAttr;
 
     // DFG edges with latency violation
@@ -188,8 +188,8 @@ public:
     // route DFG edge between adgNode and IOB, map input/output node to IOB
     // is2Input: whether connected to IB or OB 
     // map the connected input/output nodes alongside
-    bool routeDfgEdge(DFGEdge* edge, ADGNode* adgNode, bool is2Input);
-    // unroute DFG edge and unmap the to-be-free input/output nodes if any
+    // bool routeDfgEdge(DFGEdge* edge, ADGNode* adgNode, bool is2Input);
+    // unroute DFG edge without unmapping the to-be-free input/output nodes if any
     void unrouteDfgEdge(DFGEdge* edge);
     // if succeed to map all DFG nodes
     bool success();
@@ -209,7 +209,7 @@ public:
     int getAvailDelay(FUNode* fuNode, DFGNode* dfgNode);
     // // reset the latency bounds of each DFG node
     // void resetBound();
-    // calculate the routing latency of each edge, not inlcuding the delay pipe
+    // calculate the routing latency of each edge, not inlcuding the RDU
     void calEdgeRouteLat();
     // calculate the DFG node latency bounds not considering the Delay components 
     // including min latency of the output ports
@@ -221,7 +221,7 @@ public:
     // calculate the latency violation of each edge
     void calEdgeLatVio();
     // insert pass-through DFG nodes into a copy of current DFG
-    void insertPassDfgNodes(DFG* newDfg);
+    bool insertPassDfgNodes(DFG* newDfg);
 };
 
 

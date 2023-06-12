@@ -24,7 +24,7 @@ class CGRAController(attrs: mutable.Map[String, Any])(implicit p: Parameters) ex
   val addrWidthSramCfg = attrs("spad_cfg_lg_size").asInstanceOf[Int] - log2Ceil(dataWidthSramCfg/8) // add 1 per data
   val hasMaskSram = false // attrs("cgra_iob_sram_has_mask").asInstanceOf[Boolean]
   val hasMaskSramCfg = false  // if has write data byte mask
-  val readLatencySramCfg = 1  // read latency
+//  val readLatencySramCfg = 1  // read latency
   val coalesceBanksIOB = attrs("cgra_iob_sram_banks_coalesce").asInstanceOf[Int]
 //  val lgMaxLoopCycles = attrs("cgra_exe_lg_max_loop_cycles").asInstanceOf[Int]  // log2(max in/out cycles)
 //  val lgMaxExeCycles = attrs("cgra_exe_lg_max_execute_cycles").asInstanceOf[Int]  // log2(max execute cycles)
@@ -32,6 +32,7 @@ class CGRAController(attrs: mutable.Map[String, Any])(implicit p: Parameters) ex
   val cfgDataWidth = attrs("cgra_cfg_data_width").asInstanceOf[Int]
   val cfgAddrWidth = attrs("cgra_cfg_addr_width").asInstanceOf[Int]
   val cfgAddrWidthAlign = attrs("cgra_cfg_addr_width_align").asInstanceOf[Int]
+  val cfgAddRegSram = attrs("cgra_cfg_sram_add_reg").asInstanceOf[Int]
 
   val io = IO(new Bundle {
     val core = new CoreIF(idWidth)
@@ -41,7 +42,7 @@ class CGRAController(attrs: mutable.Map[String, Any])(implicit p: Parameters) ex
 
   val cgra = Module(new CGRA(attrs))
   val cfgRegNum = cgra.cfgRegNum // config chain register number
-  val cfgCtrl = Module(new ConfigController(dataWidthSramCfg, addrWidthSramCfg, hasMaskSramCfg, readLatencySramCfg,
+  val cfgCtrl = Module(new ConfigController(dataWidthSramCfg, addrWidthSramCfg, hasMaskSramCfg, cfgAddRegSram,
     cfgDataWidth, cfgAddrWidth, cfgAddrWidthAlign, cfgRegNum))
   val sram_coalesce_iob = Module(new SRAMCoalesce(dataWidthCgra, addrWidthSram, hasMaskSram, nBanksIOB, coalesceBanksIOB))
 //  val sram_cascade_cfg = Module(new SRAMBanksCascade(dataWidthCgra, addrWidthSram, hasMaskSram, nBanksCfg))

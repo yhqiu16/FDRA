@@ -27,7 +27,7 @@ public:
     void setObjOpt(bool objOpt){ _objOpt = objOpt; }
     // PnR and Data Synchronization
     // return -1 : preMapCheck failed; 0 : fail; 1 : success
-    int pnrSync(int maxIters, int temp, bool modifyDfg = true);
+    int pnrSync(int maxIters, int restartIters, int temp, bool modifyDfg = true);
     // PnR, Data Synchronization, and objective optimization
     bool pnrSyncOpt();
     // map the DFG to the ADG, mapper API

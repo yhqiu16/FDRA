@@ -31,7 +31,7 @@ class CGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
 //  val opsStr = attrs("cgra_gpe_operations").asInstanceOf[ListBuffer[String]]
 //  val ops = opsStr.map(OPC.withName(_))
 //  val aluOperandNum = ops.map(OpInfo.getOperandNum(_)).max
-//  // max delay cycles of the DelayPipe in GPE
+//  // max delay cycles of the RDU in GPE
 //  val maxDelayGpe = attrs("cgra_gpe_max_delay").asInstanceOf[Int]
 //
 //  // ====== GIB-Specific attributes =======//
@@ -54,7 +54,7 @@ class CGRA(attrs: mutable.Map[String, Any]) extends Module with IR{
 //  val iobMode = attrs("cgra_iob_mode").asInstanceOf[Int]                   // 0: FIFO mode (with din, dout), 1: SRAM mode (with addr, din, dout)
 //  val numIOBSides = attrs("cgra_iob_num_sides").asInstanceOf[Int]          // IOB in one/two sides
 //  val agNestLevels = attrs("cgra_iob_ag_nest_levels").asInstanceOf[Int]    // nested levels of the address generation
-//  val maxDelayIob = attrs("cgra_iob_max_delay").asInstanceOf[Int]          // max delay cycles of the DelayPipe in IOB
+//  val maxDelayIob = attrs("cgra_iob_max_delay").asInstanceOf[Int]          // max delay cycles of the RDU in IOB
 //  val numInIOCtrl = { if(iobMode == FIFO_MODE) 1 else 2 }
 //  val numIOB = numIOBSides*cols
 //  val iobModeNames = Map(

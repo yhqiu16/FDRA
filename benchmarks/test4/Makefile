@@ -1,7 +1,7 @@
 
-all: conv2d_3x3 fft fir_unroll4 gemm-ncubed_unroll4 md-knn pedometer stencil2d
+all: conv2d_3x3 fft fir gemm md-knn pedometer stencil2d
 
-clean-all: clean-testaffine clean-conv2d_3x3 clean-fft clean-fir_unroll4 clean-gemm-ncubed_unroll4 clean-md-knn clean-pedometer clean-stencil2d
+clean-all: clean-testaffine clean-conv2d_3x3 clean-fft clean-fir clean-gemm clean-md-knn clean-pedometer clean-stencil2d
 
 
 # application: conv2d_3x3
@@ -28,29 +28,29 @@ fft:
 clean-fft:
 	cd ./fft; rm -f ./*.ll ./*.dot
 
-# application: fir_unroll4
-.PHONY : fir_unroll4
-fir_unroll4:
-	@echo "============================ fir_unroll4 =================================="
-	cd ./fir_unroll4; bash ../compile.sh kernel kernel
-	@echo "============================ fir_unroll4 =================================="
+# application: fir
+.PHONY : fir
+fir:
+	@echo "============================ fir =================================="
+	cd ./fir; bash ../compile.sh kernel kernel
+	@echo "============================ fir =================================="
 	@echo
 	@echo
 
-clean-fir_unroll4:
-	cd ./fir_unroll4; rm -f ./*.ll ./*.dot
+clean-fir:
+	cd ./fir; rm -f ./*.ll ./*.dot
 	
-# application: gemm-ncubed_unroll4
-.PHONY : gemm-ncubed_unroll4
-gemm-ncubed_unroll4:
-	@echo "============================ gemm-ncubed_unroll4 =================================="
-	cd ./gemm-ncubed_unroll4; bash ../compile.sh gemm gemm
-	@echo "============================ gemm-ncubed_unroll4 =================================="
+# application: gemm
+.PHONY : gemm
+gemm:
+	@echo "============================ gemm =================================="
+	cd ./gemm; bash ../compile.sh gemm gemm
+	@echo "============================ gemm =================================="
 	@echo
 	@echo
 
-clean-gemm-ncubed_unroll4:
-	cd ./gemm-ncubed_unroll4; rm -f ./*.ll ./*.dot
+clean-gemm:
+	cd ./gemm; rm -f ./*.ll ./*.dot
 	
 # application: md-knn
 .PHONY : md-knn
@@ -68,7 +68,7 @@ clean-md-knn:
 .PHONY : pedometer
 pedometer:
 	@echo "============================ pedometer =================================="
-	cd ./pedometer; bash ../compile.sh adapt_pedometer_step_is_array pedometer
+	cd ./pedometer; bash ../compile.sh pedometer pedometer
 	@echo "============================ pedometer =================================="
 	@echo
 	@echo

@@ -18,6 +18,18 @@
             ],
             "options": {
                 "cwd": "${workspaceFolder}/build"
+            },
+            "dependsOn": "mkdir-task"
+        },
+        {
+            "type": "shell",
+            "label": "mkdir-task",
+            "command": "mkdir",
+            "args": [
+                "-p", "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
             }
         }
     ],

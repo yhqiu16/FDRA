@@ -13,6 +13,7 @@ Mapper::Mapper(ADG* adg, DFG* dfg): _adg(adg), _dfg(dfg) {
     _mapping = new Mapping(adg, dfg);
     // initializeCandidates();
     _isDfgModified = false;
+    initOpLeftDfgAdgNum();
     sortDfgNodeInPlaceOrder();
     _sched = new IOScheduler(adg);
 }
@@ -42,6 +43,7 @@ void Mapper::setDFG(DFG* dfg, bool modify){
     } else{
         _isDfgModified = false;
     }
+    initOpLeftDfgAdgNum();
     sortDfgNodeInPlaceOrder();
 }
 
@@ -249,36 +251,103 @@ int Mapper::calCandidatesCnt(DFGNode* dfgNode, int maxCandidates){
     for(auto& elem : _adg->nodes()){
         auto adgNode = elem.second;
         //select GPE node
-        if(adgNode->type() != "GPE"){  
+        if(adgNode->type() == "GIB"){  
             continue;
         }
-        GPENode* gpeNode = dynamic_cast<GPENode*>(adgNode);
+        FUNode* fuNode = dynamic_cast<FUNode*>(adgNode);
         // check if the DFG node operationis supported
-        if(gpeNode->opCapable(dfgNode->operation())){
+        if(fuNode->opCapable(dfgNode->operation())){
             candidatesCnt++;
         }
     }
     return std::min(candidatesCnt, maxCandidates);
 }
 
+// initialize opLeftDfgAdgNum
+void Mapper::initOpLeftDfgAdgNum(){
+    opLeftDfgAdgNum.clear();
+    for(auto& elem : _dfg->nodes()){
+        auto op = elem.second->operation();
+        if(!opLeftDfgAdgNum.count(op)){
+            opLeftDfgAdgNum[op] = std::make_pair(1, 0);
+        }else{
+            auto nums = opLeftDfgAdgNum[op];
+            opLeftDfgAdgNum[op] = std::make_pair(nums.first+1, 0);
+        }
+    }
+    for(auto& elem : _adg->nodes()){
+        auto adgNode = elem.second;
+        //select GPE node
+        if(adgNode->type() == "GIB"){  
+            continue;
+        }
+        FUNode* fuNode = dynamic_cast<FUNode*>(adgNode);
+        auto ops = fuNode->operations();
+        for(auto op : ops){
+            if(opLeftDfgAdgNum.count(op)){
+                auto nums = opLeftDfgAdgNum[op];
+                opLeftDfgAdgNum[op] = std::make_pair(nums.first, nums.second+1);
+            }
+        }
+    }
+}
+
+// update opLeftDfgAdgNum after mapping/unmapping a DFG node to an ADG node
+void Mapper::updateOpLeftDfgAdgNum(DFGNode *dfgNode, FUNode *fuNode, bool unmap){
+    auto op = dfgNode->operation();
+    int value = -1;
+    if(unmap){
+        value = 1;
+    }
+    assert(opLeftDfgAdgNum.count(op));
+    auto nums = opLeftDfgAdgNum[op];      
+    opLeftDfgAdgNum[op] = std::make_pair(nums.first+value, nums.second);
+    auto ops = fuNode->operations();
+    for(auto op : ops){
+        if(opLeftDfgAdgNum.count(op)){
+            auto nums = opLeftDfgAdgNum[op];
+            opLeftDfgAdgNum[op] = std::make_pair(nums.first, nums.second+value);
+        }
+    }
+}
+
+// reduced richness if occupy an ADG node
+float Mapper::reducedRichnessToUseAdgNode(FUNode *fuNode){
+    auto ops = fuNode->operations();
+    float cost = 0;
+    for(auto op : ops){
+        if(opLeftDfgAdgNum.count(op)){
+            auto nums = opLeftDfgAdgNum[op];
+            if(nums.first == 0){
+                continue;
+            }else if(nums.first >= nums.second){
+                cost += 100.0;
+            }else{
+                cost += 1.0 / nums.first;
+            }
+        }
+    }
+    return cost;
+}
+    
+
 // sort the DFG node IDs in placing order
 void Mapper::sortDfgNodeInPlaceOrder(){
-    std::map<int, int> candidatesCnt; // <dfgnode-id, count>
+    // std::map<int, int> candidatesCnt; // <dfgnode-id, count>
     dfgNodeIdPlaceOrder.clear();
     // topological order
     for(auto nodeId : _dfg->topoNodes()){ 
         DFGNode *node = _dfg->node(nodeId);
         dfgNodeIdPlaceOrder.push_back(nodeId);
         // std::cout << node->id() << ", ";
-        int cnt = calCandidatesCnt(node, 50);
-        candidatesCnt[node->id()] = cnt;
+        // int cnt = calCandidatesCnt(node, 50);
+        // candidatesCnt[node->id()] = cnt;
     }
     // std::cout << std::endl;
     // sort DFG nodes according to their candidate numbers
-    // std::random_shuffle(dfgNodeIds.begin(), dfgNodeIds.end()); // randomly sort will cause long routing paths
-    std::stable_sort(dfgNodeIdPlaceOrder.begin(), dfgNodeIdPlaceOrder.end(), [&](int a, int b){
-        return candidatesCnt[a] <  candidatesCnt[b];
-    });
+    // std::stable_sort(dfgNodeIdPlaceOrder.begin(), dfgNodeIdPlaceOrder.end(), [&](int a, int b){
+    //     return candidatesCnt[a] <  candidatesCnt[b];
+    // });
 }
 
 

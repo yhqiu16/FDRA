@@ -23,7 +23,7 @@ bool MapperSA::mapper(){
     if(_objOpt){ // objective optimization
         succeed = pnrSyncOpt();
     }else{
-        succeed = pnrSync(_maxIters, MAX_TEMP, true) == 1;
+        succeed = pnrSync(_maxIters, 30, MAX_TEMP, true) == 1;
     }
     return succeed;
 }
@@ -31,10 +31,11 @@ bool MapperSA::mapper(){
 
 // PnR, Data Synchronization, and objective optimization
 bool MapperSA::pnrSyncOpt(){
-    int temp = MAX_TEMP; // temperature
-    int maxItersMapSched = 500; // pnrSync iteration number
-    int maxItersNoImprv = 50;  // if not improved for maxItersNoImprv, end
-    int restartIters = 20;     // if not improved for restartIters, restart from the cached status
+    int temp = MAX_TEMP; // temperature    
+    int maxItersNoImprv = 30;  // if not improved for maxItersNoImprv, end
+    int restartIters = 10;     // if not improved for restartIters, restart from the cached status
+    int pnrMaxIters = 2000;    // pnrSync iteration number
+    int pnrRestartIters = 30;
     int lastImprvIter = 0;
     int lastRestartIter = 0;
     float newObj;
@@ -44,12 +45,9 @@ bool MapperSA::pnrSyncOpt(){
     Mapping* bestMapping = new Mapping(getADG(), getDFG());
     Mapping* lastAcceptMapping = new Mapping(getADG(), getDFG());
     bool initObj = true;
-    for(int iter = 0; iter < _maxIters; iter++){
-        if(runningTimeMS() > getTimeOut()){
-            break;
-        }
+    for(int iter = 0; iter < _maxIters; iter++){        
         // PnR and Data Synchronization 
-        int res = pnrSync(maxItersMapSched, temp, (!succeed));
+        int res = pnrSync(pnrMaxIters, pnrRestartIters, temp, (!succeed));
         if(res == 0){ // fail to map
             spdlog::debug("PnR and Data Synchronization failed!");
             continue;
@@ -57,6 +55,7 @@ bool MapperSA::pnrSyncOpt(){
             break;
         }
         succeed = true;
+        pnrRestartIters = 0;
         spdlog::info("PnR and Data Synchronization succeed, start optimization");
         // Objective function
         newObj = objFunc(_mapping, initObj);
@@ -100,17 +99,17 @@ bool MapperSA::pnrSyncOpt(){
 
 // PnR and Data Synchronization
 // return -1 : preMapCheck failed; 0 : fail; 1 : success
-int MapperSA::pnrSync(int maxIters, int temp, bool modifyDfg){
+int MapperSA::pnrSync(int maxIters, int restartIters, int temp, bool modifyDfg){
     int initTemp = temp;
     ADG* adg = _mapping->getADG();
     DFG* dfg = _mapping->getDFG();
     Mapping* curMapping = new Mapping(adg, dfg);
     Mapping* lastAcceptMapping = new Mapping(adg, dfg);
     int numNodes = dfg->nodes().size();
-    int maxItersNoImprv = 20 + numNodes/5; // if not improved for maxItersNoImprv, end
-    // int restartIters = 20;     // if not improved for restartIters, restart from the cached status
+    int maxItersNoImprv = 30 + numNodes/5; // 50, if not improved for maxItersNoImprv, end
+    // int restartIters = 5;     // 30, if not improved for restartIters, restart from the cached status
     int lastImprvIter = 0;
-    // int lastRestartIter = 0;
+    int lastRestartIter = 0;
     int succeed = 0;
     bool update = false;
     int newVio;
@@ -120,14 +119,13 @@ int MapperSA::pnrSync(int maxIters, int temp, bool modifyDfg){
         if(runningTimeMS() > getTimeOut()){
             break;
         }
-        // if(iter & 0xf == 0){
-        //     std::cout << ".";
+        // if((iter & 0x3f) == 0){
+        //     std::cout << "." << std::flush;
         // }
-        // PnR without latency scheduling of DFG nodes
-        // int status = pnr(curMapping, temp);
+        unmapSA(curMapping, temp);
+        // PnR without latency scheduling of DFG nodes        
         if(!incrPnR(curMapping)){ // fail to map
-            spdlog::debug("PnR failed once!");
-            unmapSA(curMapping, temp); 
+            spdlog::debug("PnR failed once!");            
             continue;
         }
         spdlog::info("PnR succeed, start data synchronization");
@@ -158,30 +156,48 @@ int MapperSA::pnrSync(int maxIters, int temp, bool modifyDfg){
         }
         // if not improved for long time, insert pass-through nodes
         if(iter - lastImprvIter > maxItersNoImprv){ 
+            if(lastRestartIter < restartIters){ // restart PnR
+                lastRestartIter++;
+                curMapping->reset();
+                *lastAcceptMapping = *curMapping;
+                lastImprvIter = iter; 
+                temp = initTemp;
+                oldVio = 0x7fffffff;
+                minVio = 0x7fffffff;
+                update = false;
+                srand((unsigned int)(time(NULL) + 1000*iter));
+                continue;
+            }
+            lastRestartIter = 0;
             if(!modifyDfg){ // cannot modify DFG, stop iteration
                 break;
             }                                  
             DFG* newDfg = new DFG();
             int totalVio, maxVio;
+            bool inserted;
             if(update){
                 totalVio = _mapping->totalViolation();
                 maxVio = _mapping->maxViolation();
-                _mapping->insertPassDfgNodes(newDfg); // insert pass-through nodes into DFG
+                inserted = _mapping->insertPassDfgNodes(newDfg); // insert pass-through nodes into DFG
             }else{
                 totalVio = lastAcceptMapping->totalViolation();
                 maxVio = lastAcceptMapping->maxViolation();
-                lastAcceptMapping->insertPassDfgNodes(newDfg); // insert pass-through nodes into DFG
-            }            
+                inserted = lastAcceptMapping->insertPassDfgNodes(newDfg); // insert pass-through nodes into DFG
+            }   
+            if(!inserted){
+                succeed = -1;
+                break;
+            }         
             spdlog::warn("Min total latency violation: {}", minVio);
             spdlog::warn("Current total latency violation: {}", totalVio); 
             spdlog::warn("Current max latency violation: {}", maxVio);  
-            spdlog::warn("Insert pass-through nodes into DFG");
+            spdlog::critical("Insert pass-through nodes into DFG");
             // newDfg->print();                
             setDFG(newDfg, true);  //  update the _dfg and initialize                                                           
-            if(!preMapCheck(adg, newDfg)){
-                succeed = -1;
-                break;
-            }
+            // if(!preMapCheck(adg, newDfg)){
+            //     succeed = -1;
+            //     break;
+            // }
             delete curMapping; 
             curMapping = new Mapping(adg, newDfg);
             *lastAcceptMapping = *curMapping;
@@ -192,8 +208,8 @@ int MapperSA::pnrSync(int maxIters, int temp, bool modifyDfg){
             minVio = 0x7fffffff;
             update = false;
             int numNodesNew = _mapping->getDFG()->nodes().size();
-            maxItersNoImprv = 20 + numNodesNew/5 + numNodesNew - numNodes;
-            spdlog::warn("DFG node number: {}", numNodesNew);
+            // maxItersNoImprv = 30 + numNodesNew/5 + numNodesNew - numNodes;
+            spdlog::critical("DFG node number: {}", numNodesNew);
             // continue;
         }
         // if(iter - lastRestartIter > restartIters){ // if not improved for some time, restart from the cached status 
@@ -230,22 +246,30 @@ int MapperSA::pnrSync(int maxIters, int temp, bool modifyDfg){
 
 // unmap some DFG nodes with SA temperature(max = 100)
 void MapperSA::unmapSA(Mapping* mapping, int temp){
-    auto dfg = mapping->getDFG();
-    int N = mapping->numNodeMapped();
-    int cnt = 0;
-    for(int i = 0; i < N; i++){
-        if(rand()%MAX_TEMP < temp){
-            cnt++;
+    for(auto& elem : mapping->getDFG()->nodes()){
+        auto node = elem.second;
+        if((rand()%MAX_TEMP < temp) && mapping->isMapped(node)){
+            FUNode *fuNode = dynamic_cast<FUNode*>(mapping->mappedNode(node));
+            updateOpLeftDfgAdgNum(node, fuNode, true);
+            mapping->unmapDfgNode(node);
         }
     }
-    int resvNum = N - cnt; // nodes keeping previous mapped location
-    int numNodes = dfgNodeIdPlaceOrder.size();
-    for(int i = resvNum; i < numNodes; i++){     
-        auto dfgNode = dfg->node(dfgNodeIdPlaceOrder[i]);
-        if(mapping->isMapped(dfgNode)){
-            mapping->unmapDfgNode(dfgNode);
-        }
-    }
+    // auto dfg = mapping->getDFG();
+    // int N = mapping->numNodeMapped();
+    // int cnt = 0;
+    // for(int i = 0; i < N; i++){
+    //     if(rand()%MAX_TEMP < temp){
+    //         cnt++;
+    //     }
+    // }
+    // int resvNum = N - cnt; // nodes keeping previous mapped location
+    // int numNodes = dfgNodeIdPlaceOrder.size();
+    // for(int i = resvNum; i < numNodes; i++){     
+    //     auto dfgNode = dfg->node(dfgNodeIdPlaceOrder[i]);
+    //     if(mapping->isMapped(dfgNode)){
+    //         mapping->unmapDfgNode(dfgNode);
+    //     }
+    // }
 }
 
 
@@ -253,14 +277,13 @@ void MapperSA::unmapSA(Mapping* mapping, int temp){
 bool MapperSA::incrPnR(Mapping* mapping){
     auto dfg = mapping->getDFG();
     // start mapping
-    bool succeed = true;
     for(int id : dfgNodeIdPlaceOrder){     
-        if(dfg->isIONode(id)){ // IO node is mapped during mapping computing nodes
-            continue;
-        }     
+        // if(dfg->isIONode(id)){ // IO node is mapped during mapping computing nodes
+        //     continue;
+        // }     
         auto dfgNode = dfg->node(id);
-        spdlog::debug("Mapping DFG node {0}, id: {1}", dfgNode->name(), id);        
         if(!mapping->isMapped(dfgNode)){
+            spdlog::debug("Mapping DFG node {0}, id: {1}", dfgNode->name(), id);        
             // find candidate ADG nodes for this DFG node
             auto nodeCandidates = findCandidates(mapping, dfgNode, 30, 10);
             if(nodeCandidates.empty() || tryCandidates(mapping, dfgNode, nodeCandidates) == -1){
@@ -268,13 +291,12 @@ bool MapperSA::incrPnR(Mapping* mapping){
                 spdlog::debug("Cannot map DFG node {0} : {1}", dfgNode->id(), dfgNode->name());
                 // Graphviz viz(mapping, "results");
                 // viz.printDFGEdgePath();
-                succeed = false;
-                break;
+                return false;
             }
         }
         // spdlog::debug("Mapping DFG node {0} : {1} to ADG node {2}", dfgNode->name(), id, mapping->mappedNode(dfgNode)->id());
     }
-    return succeed;    
+    return true;    
 }
 
 
@@ -288,6 +310,8 @@ int MapperSA::tryCandidates(Mapping* mapping, DFGNode* dfgNode, const std::vecto
     for(auto& candidate : candidates){
         if(mapping->mapDfgNode(dfgNode, candidate)){         
             // spdlog::debug("Map DFG node {0} to ADG node {1}", dfgNode->name(), candidate->name());   
+            FUNode *fuNode = dynamic_cast<FUNode*>(candidate);
+            updateOpLeftDfgAdgNum(dfgNode, fuNode, false);
             return idx;
         }
         idx++;
@@ -301,17 +325,17 @@ std::vector<ADGNode*> MapperSA::findCandidates(Mapping* mapping, DFGNode* dfgNod
     std::vector<ADGNode*> candidates;
     for(auto& elem : mapping->getADG()->nodes()){
         auto adgNode = elem.second;
-        //select GPE node
-        if(adgNode->type() != "GPE"){  
+        //select FU node
+        if(adgNode->type() == "GIB"){  
             continue;
         }
-        GPENode* gpeNode = dynamic_cast<GPENode*>(adgNode);
+        FUNode* fuNode = dynamic_cast<FUNode*>(adgNode);
         // check if the DFG node operationis supported
-        if(!gpeNode->opCapable(dfgNode->operation())){
+        if(!fuNode->opCapable(dfgNode->operation())){
             continue;
         }
-        if(!mapping->isMapped(gpeNode)){
-            candidates.push_back(gpeNode);
+        if(!mapping->isMapped(fuNode)){
+            candidates.push_back(fuNode);
         }
     }
     // randomly select candidates
@@ -357,8 +381,8 @@ int MapperSA::getAdgNode2IODist(Mapping* mapping, int id){
 std::vector<int> MapperSA::sortCandidates(Mapping* mapping, DFGNode* dfgNode, const std::vector<ADGNode*>& candidates){
     // mapped ADG node IDs of the source and destination node of this DFG node
     std::vector<int> srcAdgNodeId, dstAdgNodeId; 
-    int num2in = 0;  // connected to DFG input port
-    int num2out = 0; // connected to DFG output port
+    // int num2in = 0;  // connected to DFG input port
+    // int num2out = 0; // connected to DFG output port
     DFG* dfg = mapping->getDFG();
     for(auto& elem : dfgNode->inputs()){
         int inNodeId = elem.second.first;
@@ -366,8 +390,8 @@ std::vector<int> MapperSA::sortCandidates(Mapping* mapping, DFGNode* dfgNode, co
         auto adgNode = mapping->mappedNode(inNode);
         if(adgNode){
             srcAdgNodeId.push_back(adgNode->id());
-        }else if(dfg->isIONode(inNodeId)){ // connected to DFG input node
-            num2in++;
+        // }else if(dfg->isIONode(inNodeId)){ // connected to DFG input node
+        //     num2in++;
         }
     }
     for(auto& elem : dfgNode->outputs()){
@@ -375,29 +399,43 @@ std::vector<int> MapperSA::sortCandidates(Mapping* mapping, DFGNode* dfgNode, co
             auto adgNode = mapping->mappedNode(dfg->node(outNode.first));
             if(adgNode){
                 dstAdgNodeId.push_back(adgNode->id());
-            }else if(dfg->isIONode(outNode.first)){ // connected to DFG output node
-                num2out++;
+            // }else if(dfg->isIONode(outNode.first)){ // connected to DFG output node
+            //     num2out++;
             }
         }        
     }
     // sum distance between candidate and the srcAdgNode & dstAdgNode & IO
     std::vector<int> sortedIdx, sumDist; // <candidate-index, sum-distance>
+    // int maxDist = 1;
+    std::vector<float> reducedRichness; 
     for(int i = 0; i < candidates.size(); i++){
         int sum = 0;
-        int cdtId = candidates[i]->id();
+        auto candidate = candidates[i];
+        int cdtId = candidate->id();
         for(auto id : srcAdgNodeId){
             sum += getAdgNodeDist(id, cdtId);
         }
         for(auto id : dstAdgNodeId){
             sum += getAdgNodeDist(cdtId, id);
         }
-        sum += (num2in + num2out) * getAdgNode2IODist(mapping, cdtId);
+        // sum += (num2in + num2out) * getAdgNode2IODist(mapping, cdtId);
+        // if(sum > maxDist){
+        //     maxDist = sum;
+        // }
         sumDist.push_back(sum);
+        float reduced = reducedRichnessToUseAdgNode(dynamic_cast<FUNode*>(candidate));
+        reducedRichness.push_back(reduced);
         sortedIdx.push_back(i);
     }
-    std::sort(sortedIdx.begin(), sortedIdx.end(), [&sumDist](int a, int b){
+    std::sort(sortedIdx.begin(), sortedIdx.end(), [&](int a, int b){
         return sumDist[a] < sumDist[b];
     });
+    for(int i = 0; i < candidates.size(); i+=4){
+        auto end = std::min(sortedIdx.begin()+i+4, sortedIdx.end());
+        std::sort(sortedIdx.begin()+i, end, [&](int a, int b){
+            return reducedRichness[a] < reducedRichness[b];
+        });
+    }
     return sortedIdx;
 }
 

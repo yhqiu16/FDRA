@@ -32,7 +32,44 @@ void IOScheduler::ioSchedule(Mapping *mapping)
     int sizeofBank = _adg->iobSpadBankSize();
     int dataByte = _adg->bitWidth() / 8;
     int depthofBank = sizeofBank / dataByte; // accomodate total data number
-    for(auto& id : dfg->ioNodes()){
+    std::vector<int> sortedIoNodes;
+    sortedIoNodes.assign(dfg->ioNodes().begin(), dfg->ioNodes().end());
+    std::map<std::string, int> memNum;
+    for(auto &elem : sortedIoNodes){
+        auto name = dynamic_cast<DFGIONode*>(dfg->node(elem))->memRefName();
+        if(!memNum.count(name)){
+            memNum[name] = 1;
+        }else{
+            memNum[name] += 1;
+        }
+    }
+    // sort by memRefName and memSize
+    // std::sort(sortedIoNodes.begin(), sortedIoNodes.end(), [&](int ida, int idb){
+    //     return dynamic_cast<DFGIONode*>(dfg->node(ida))->memRefName() < dynamic_cast<DFGIONode*>(dfg->node(idb))->memRefName();
+    // });
+    std::sort(sortedIoNodes.begin(), sortedIoNodes.end(), [&](int ida, int idb){
+        auto nodea = dynamic_cast<DFGIONode*>(dfg->node(ida));
+        auto nodeb = dynamic_cast<DFGIONode*>(dfg->node(idb));
+        if(nodea->memSize() > nodeb->memSize()){
+            return true;
+        }else if(nodea->memSize() == nodeb->memSize()){
+            auto namea = nodea->memRefName();
+            auto nameb = nodeb->memRefName();
+            if(memNum[namea] < memNum[nameb]){
+                return true;
+            }else if(memNum[namea] == memNum[nameb]){
+                return namea < nameb;
+            }
+        }
+        return false;
+    });
+    // sort by io type, input nodes rank before output nodes
+    std::stable_sort(sortedIoNodes.begin(), sortedIoNodes.end(), [&](int ida, int idb){
+        return outNodeIds.count(ida) < outNodeIds.count(idb);
+    });
+    std::map<std::string, int> memDep;
+    for(auto id : sortedIoNodes){
+        // std::cout << dfg->node(id)->name() << ": " << dynamic_cast<DFGIONode*>(dfg->node(id))->memRefName() << std::endl;
         dfgIoInfo ioInfo;
         // auto dfgIONode = dfg->node(id);
         bool isStore = false;
@@ -40,7 +77,9 @@ void IOScheduler::ioSchedule(Mapping *mapping)
             isStore = true;
         }
         ioInfo.isStore = isStore;
-        int memSize = dynamic_cast<DFGIONode*>(dfg->node(id))->memSize();
+        DFGIONode* ionode = dynamic_cast<DFGIONode*>(dfg->node(id));
+        int memSize = ionode->memSize();
+        std::string memName = ionode->memRefName();
         int spadDataByte = _adg->cfgSpadDataWidth() / 8; // dual ports of cfg-spad have the same width 
         memSize = (memSize + spadDataByte - 1) / spadDataByte * spadDataByte; // align to spadDataByte
         auto& attr =  mapping->dfgNodeAttr(id);
@@ -130,7 +169,11 @@ void IOScheduler::ioSchedule(Mapping *mapping)
                     selStart = bankStatus[i].second;
                     assert((!isStore) && _older_bank_status[selBank].used == 2);
                     ioInfo.dep = LD_DEP_ST_LAST_SEC_TASK;
-                    _dep_cost += 1;               
+                    if(!memDep.count(memName) || memDep[memName] < 1){ // IO nodes access to the same array have only one cost
+                        memDep[memName] = 1;
+                        _dep_cost += 1; 
+                    }
+                    // _dep_cost += 1;               
                     allocated = true;
                     break;
                 }
@@ -148,7 +191,11 @@ void IOScheduler::ioSchedule(Mapping *mapping)
                 if(_old_bank_status[selBank].used == 1){                    
                     selStart = bankStatus[i].second;
                     ioInfo.dep = LD_DEP_EX_LAST_TASK;
-                    _dep_cost += inNodeNum;        
+                    if(!memDep.count(memName) || memDep[memName] < inNodeNum){ // IO nodes access to the same array have only one cost
+                        memDep[memName] = inNodeNum;
+                        _dep_cost += inNodeNum; 
+                    }
+                    // _dep_cost += inNodeNum;          
                     allocated = true;
                     break;
                 }
@@ -157,7 +204,11 @@ void IOScheduler::ioSchedule(Mapping *mapping)
                 selBank = availBanks[0];
                 selStart = bankStatus[0].second;
                 ioInfo.dep = LD_DEP_ST_LAST_TASK;
-                _dep_cost += inNodeNum_3;
+                if(!memDep.count(memName) || memDep[memName] < inNodeNum_3){ // IO nodes access to the same array have only one cost
+                    memDep[memName] = inNodeNum_3;
+                    _dep_cost += inNodeNum_3; 
+                }
+                // _dep_cost += inNodeNum_3;
                 allocated = true;
             }
         }
@@ -198,9 +249,9 @@ void IOScheduler::genCfgData(Mapping *mapping, std::ostream &os)
     }
 
     if(cfgAddrWidth > 16){
-        os << "\tvolatile unsigned int ";
+        os << "\tstatic unsigned int ";
     }else{
-        os << "\tvolatile unsigned short ";
+        os << "\tstatic unsigned short ";
     }
     os << "cin[" << cfgNum << "][" << (1 + cfgDataWidth / alignWidth) << "] __attribute__((aligned(" << cfgSpadDataByte << "))) = {\n";
     os << std::hex;
@@ -242,6 +293,7 @@ void IOScheduler::genCfgData(Mapping *mapping, std::ostream &os)
 // generate CGRA instructions
 std::pair<std::vector<std::string>, std::vector<std::string>> IOScheduler::genInstructions(Mapping *mapping, std::ostream &os)
 {
+    DFG *dfg = mapping->getDFG();
     std::vector<std::string> ldArrayNames;
     std::vector<std::string> stArrayNames;
     int banks = _adg->numIobNodes();
@@ -251,9 +303,13 @@ std::pair<std::vector<std::string>, std::vector<std::string>> IOScheduler::genIn
     int cfgBaseAddrCtrl = _old_cfg_status.start / cfgSpadDataByte; // config base address the controller access
     os << "\tload_cfg((void*)cin, 0x" << std::hex << cfgBaseAddrSpad << std::dec << ", " 
        << _cfg_len << ", " << _task_id << ", " << _ld_cfg_dep << ");\n";
+    std::map<int, DFGIONode*> dfgIoNodes;
     std::vector<std::pair<int, int>> ld_data_deps; // <id, dep>
     std::vector<int> st_ids; // store node ids  
+    std::map<std::string, int> arrayDeps; // store the max dependence type of an array 
     for(auto &elem : _dfg_io_infos){
+        DFGIONode* dfgIONode = dynamic_cast<DFGIONode*>(dfg->node(elem.first));
+        dfgIoNodes[elem.first] = dfgIONode;
         if(elem.second.isStore){
             st_ids.push_back(elem.first);
         }else{
@@ -267,32 +323,41 @@ std::pair<std::vector<std::string>, std::vector<std::string>> IOScheduler::genIn
                 sort_dep = 3;
             }
             ld_data_deps.push_back(std::make_pair(elem.first, sort_dep));
+            std::string memRefName = dfgIONode->memRefName(); 
+            if(!arrayDeps.count(memRefName)){
+                arrayDeps[memRefName] = sort_dep;
+            }else if(arrayDeps[memRefName] < sort_dep){
+                arrayDeps[memRefName] = sort_dep;
+            }
         }        
     }
+
     // sort the load data commands according to array name to make same array access adjacent
     std::sort(ld_data_deps.begin(), ld_data_deps.end(), [&](std::pair<int, int> a, std::pair<int, int> b){
-        DFGIONode* dfgIONodeA = dynamic_cast<DFGIONode*>(mapping->getDFG()->node(a.first));
-        std::string memRefNameA = dfgIONodeA->memRefName(); 
-        DFGIONode* dfgIONodeB = dynamic_cast<DFGIONode*>(mapping->getDFG()->node(b.first));
-        std::string memRefNameB = dfgIONodeB->memRefName(); 
-        return memRefNameA < memRefNameB;
+        std::string memRefNameA = dfgIoNodes[a.first]->memRefName(); 
+        std::string memRefNameB = dfgIoNodes[b.first]->memRefName(); 
+        // return memRefNameA < memRefNameB;
+        return memRefNameA < memRefNameB || (memRefNameA == memRefNameB && a.second < b.second);
     });
     // sort the load data commands according to dependence type
-    std::stable_sort(ld_data_deps.begin(), ld_data_deps.end(), [](std::pair<int, int> a, std::pair<int, int> b){
-        return a.second < b.second;
+    std::stable_sort(ld_data_deps.begin(), ld_data_deps.end(), [&](std::pair<int, int> a, std::pair<int, int> b){
+        std::string memRefNameA = dfgIoNodes[a.first]->memRefName(); 
+        std::string memRefNameB = dfgIoNodes[b.first]->memRefName(); 
+        return (arrayDeps[memRefNameA] < arrayDeps[memRefNameB]);
+        // return (a.second < b.second);
     });
     int i = 0;
     int ld_num = ld_data_deps.size();
-    DFG *dfg = mapping->getDFG();
+
     for(auto &elem : ld_data_deps){
-        DFGIONode* dfgIONode = dynamic_cast<DFGIONode*>(dfg->node(elem.first));
+        DFGIONode* dfgIONode = dfgIoNodes[elem.first];
         int dataLen = dfgIONode->memSize();
         std::string memRefName = dfgIONode->memRefName(); 
         int offset = dfgIONode->memOffset();        
         // the next load command info
         int fused = 0; // fused with the next command
         if(i < ld_num - 1){
-            DFGIONode* dfgIONodeNext = dynamic_cast<DFGIONode*>(dfg->node(ld_data_deps[i+1].first));
+            DFGIONode* dfgIONodeNext = dfgIoNodes[ld_data_deps[i+1].first];
             int dataLenNext = dfgIONodeNext->memSize();
             std::string memRefNameNext = dfgIONodeNext->memRefName(); 
             int offsetNext = dfgIONodeNext->memOffset();
@@ -314,7 +379,7 @@ std::pair<std::vector<std::string>, std::vector<std::string>> IOScheduler::genIn
     os << "\texecute(0x" << std::hex << _iob_ens << std::dec << ", " << _task_id << ", " << _ex_dep << ");\n";
     i = 0;
     for(auto id : st_ids){
-        DFGIONode* dfgIONode = dynamic_cast<DFGIONode*>(dfg->node(id));
+        DFGIONode* dfgIONode = dfgIoNodes[id];
         int dataLen = dfgIONode->memSize();
         std::string memRefName = dfgIONode->memRefName();
         int offset = dfgIONode->memOffset();

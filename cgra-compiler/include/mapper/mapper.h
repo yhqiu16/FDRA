@@ -43,6 +43,8 @@ protected:
     std::vector<int> dfgNodeIdPlaceOrder;
     // supported operation count of ADG
     std::map<std::string, int> adgOpCnt; 
+    // number of left unmapped DFG and ADG nodes for every operation
+    std::map<std::string, std::pair<int, int>> opLeftDfgAdgNum; 
 
 public:
     // Mapper(){}
@@ -74,6 +76,12 @@ public:
     // int getAdgNode2OutputDist(int id);
     // calculate supported operation count of ADG
     void calAdgOpCnt();
+    // initialize opLeftDfgAdgNum
+    void initOpLeftDfgAdgNum();
+    // update opLeftDfgAdgNum after mapping/unmapping a DFG node to an ADG node
+    void updateOpLeftDfgAdgNum(DFGNode *dfgNode, FUNode *adgNode, bool unmap = false);
+    // reduced richness if occupy an ADG node
+    float reducedRichnessToUseAdgNode(FUNode *adgNode); 
     // initialize candidates of DFG nodes
     // void initializeCandidates();
     // calculate the number of the candidates for one DFG node

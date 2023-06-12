@@ -41,7 +41,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
   val aluOperandNum = ops.map(OpInfo.getOperandNum(_)).max
   // val aluCfgWidth = log2Ceil(OPC.numOPC) // ALU Config width
   val numInPerOperand = attrs("num_input_per_operand").asInstanceOf[ListBuffer[Int]]
-  // max delay cycles of the DelayPipe
+  // max delay cycles of the RDU
   val maxDelay = attrs("max_delay").asInstanceOf[Int]
 
   val lgMaxWI = { if(hasAcc) attrs("lg_max_wi").asInstanceOf[Int] else 0 }              // log2(max writing Interval)
@@ -72,8 +72,8 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
   val alu = Module(new ALU(width, ops))
 //  val rf = Module(new RF(width, numRegRF, 1, 2))
   val dmr = Module(new DualModeReg(width, hasAcc, lgMaxWI, lgMaxLat, lgMaxCycles, lgMaxRepeats))
-  val delay_pipe = Module(new SharedDelayPipe(width, maxDelay, aluOperandNum))
-  //  val delay_pipes = Array.fill(aluOperandNum){ Module(new DelayPipe(width, maxDelay)).io }
+  val rdu = Module(new SharedRDU(width, maxDelay, aluOperandNum))
+  //  val rdus = Array.fill(aluOperandNum){ Module(new RDU(width, maxDelay)).io }
   val const = Wire(UInt(width.W))
   val extraMuxIns = {
     if(hasAcc && aluOperandNum > 1){
@@ -92,7 +92,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
     "Const" -> 1,
     "ALU" -> 2,
     "REG" -> 3,
-    "DelayPipe" -> 4,
+    "RDU" -> 4,
     "Muxn" -> 5
   )
 
@@ -111,7 +111,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
     "Const" -> List(1),
     "ALU" -> List(2),
     "REG" -> List(3),
-    "DelayPipe" -> List(4), // (4 until aluOperandNum+4).toList,
+    "RDU" -> List(4), // (4 until aluOperandNum+4).toList,
     "Muxn" -> (5 until aluOperandNum+5).toList // (aluOperandNum+4 until 2*aluOperandNum+4).toList
   )
   val next_smi_id : Int = aluOperandNum+5
@@ -132,7 +132,7 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
     (smi_id("ALU")(0), "ALU", 0, smi_id("REG")(0), "REG", 0),
     (smi_id("REG")(0), "REG", 0, smi_id("This")(0), "This", 0)
   )
-  delay_pipe.io.en := io.en
+  rdu.io.en := io.en
 //  dmr.io.en := io.en
   dmr.io.in := alu.io.out
   io.out(0) := dmr.io.out(0)
@@ -161,13 +161,13 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
         connections.append((smi_id("REG")(0), "REG", 1, smi_id("Muxn")(i), "Muxn", j))
       }
     }
-    delay_pipe.io.in(i) := imuxs(i).out
-    alu.io.in(i) := delay_pipe.io.out(i)
-    connections.append((smi_id("Muxn")(i), "Muxn", 0, smi_id("DelayPipe")(0), "DelayPipe", i))
-    connections.append((smi_id("DelayPipe")(0), "DelayPipe", i, smi_id("ALU")(0), "ALU", i))
-    //    delay_pipes(i).en := io.en
-    //    delay_pipes(i).in := imuxs(i).out
-    //    alu.io.in(i) := delay_pipes(i).out
+    rdu.io.in(i) := imuxs(i).out
+    alu.io.in(i) := rdu.io.out(i)
+    connections.append((smi_id("Muxn")(i), "Muxn", 0, smi_id("RDU")(0), "RDU", i))
+    connections.append((smi_id("RDU")(0), "RDU", i, smi_id("ALU")(0), "ALU", i))
+    //    rdus(i).en := io.en
+    //    rdus(i).in := imuxs(i).out
+    //    alu.io.in(i) := rdus(i).out
     offset += num
   }
   if(hasAcc && aluOperandNum == 1){
@@ -183,12 +183,12 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
   val constCfgWidth = width // constant
   val aluCfgWidth = alu.io.config.getWidth // ALU Config width
   val rfCfgWidth = dmr.io.config.getWidth  // REG
-  //  val delayCfgWidthEach = delay_pipes(0).config.getWidth // DelayPipe Config width
-  //  val delayCfgWidth = aluOperandNum * delayCfgWidthEach
-  val delayCfgWidth = delay_pipe.io.config.getWidth
+  //  val rduCfgWidthEach = rdus(0).config.getWidth // RDU Config width
+  //  val rduCfgWidth = aluOperandNum * rduCfgWidthEach
+  val rduCfgWidth = rdu.io.config.getWidth
   val imuxCfgWidthList = imuxs.map{ mux => mux.config.getWidth } // input Muxes
   val imuxCfgWidth = imuxCfgWidthList.sum
-  val sumCfgWidth = constCfgWidth + aluCfgWidth + rfCfgWidth + delayCfgWidth + imuxCfgWidth
+  val sumCfgWidth = constCfgWidth + aluCfgWidth + rfCfgWidth + rduCfgWidth + imuxCfgWidth
 
   val cfg = Module(new ConfigMem(sumCfgWidth, 1, cfgDataWidth))
   cfg.io.cfg_en := io.cfg_en && (cfgBlkIndex.U === io.cfg_addr(cfgAddrWidth-1, cfgBlkOffset))
@@ -222,30 +222,30 @@ class GPE(attrs: mutable.Map[String, Any]) extends Module with IR {
 //  }
 //  offset += rfCfgWidth
   //  for(i <- 0 until aluOperandNum){
-  //    if(delayCfgWidthEach != 0){
-  //      delay_pipes(i).config := cfgOut(offset+delayCfgWidthEach-1, offset)
+  //    if(rduCfgWidthEach != 0){
+  //      rdus(i).config := cfgOut(offset+rduCfgWidthEach-1, offset)
   //    } else {
-  //      delay_pipes(i).config := DontCare
+  //      rdus(i).config := DontCare
   //    }
-  //    offset += delayCfgWidthEach
+  //    offset += rduCfgWidthEach
   //  }
-  if(delayCfgWidth != 0){
-    delay_pipe.io.config := cfgOut(offset+delayCfgWidth-1, offset)
-    configuration += smi_id("DelayPipe")(0) -> ("DelayPipe", offset+delayCfgWidth-1, offset)
+  if(rduCfgWidth != 0){
+    rdu.io.config := cfgOut(offset+rduCfgWidth-1, offset)
+    configuration += smi_id("RDU")(0) -> ("RDU", offset+rduCfgWidth-1, offset)
   } else{
-    delay_pipe.io.config := DontCare
+    rdu.io.config := DontCare
   }
   if(hasAcc && (aluOperandNum > 1)){
     when(isAccOp){
-      val spCfgWidth = delay_pipe.cfgWidth // single port config width
+      val spCfgWidth = rdu.cfgWidth // single port config width
       if(aluOperandNum > 2){
-        delay_pipe.io.config := Cat(cfgOut(offset+delayCfgWidth-1, offset+2*spCfgWidth), 0.U(spCfgWidth.W), cfgOut(offset+spCfgWidth-1, offset))
+        rdu.io.config := Cat(cfgOut(offset+rduCfgWidth-1, offset+2*spCfgWidth), 0.U(spCfgWidth.W), cfgOut(offset+spCfgWidth-1, offset))
       }else{
-        delay_pipe.io.config := Cat(0.U(spCfgWidth.W), cfgOut(offset+spCfgWidth-1, offset))
+        rdu.io.config := Cat(0.U(spCfgWidth.W), cfgOut(offset+spCfgWidth-1, offset))
       }
     }
   }
-  offset += delayCfgWidth
+  offset += rduCfgWidth
 
   for(i <- 0 until aluOperandNum){
     if(imuxCfgWidthList(i) != 0){

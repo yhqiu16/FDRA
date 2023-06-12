@@ -63,9 +63,10 @@ void Graphviz::drawDFG(){
             int operandIdx = edge->dstPortIdx();
             auto& edgeAttr = _mapping->dfgEdgeAttr(eid);
             int edgeLat = edgeAttr.lat; // edge latency not including delay unit
+            int rduDelay = edgeAttr.delay; // latency of delay unit
             std::string srcName = dfg->node(srcNodeId)->name();
             std::string quoteSrcName = "\"" + srcName + "\"";
-            ofs << quoteSrcName << "->" << quoteName << "[label = \"lat=" << edgeLat << "\\nop=" << operandIdx << "\"];\n";
+            ofs << quoteSrcName << "->" << quoteName << "[label = \"lat=" << edgeLat << "\\nrdu=" << rduDelay << "\\nop=" << operandIdx << "\"];\n";
         }
     }
     ofs << "}\n";

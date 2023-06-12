@@ -1,0 +1,3 @@
+void* cgra_din_addr[16] = {fir_unroll4_coefficients, fir_unroll4_coefficients, fir_unroll4_coefficients, fir_unroll4_coefficients, fir_unroll4_input, fir_unroll4_input, fir_unroll4_input, fir_unroll4_input, gemm-ncubed_unroll4_m1, gemm-ncubed_unroll4_m1, gemm-ncubed_unroll4_m1, gemm-ncubed_unroll4_m1, gemm-ncubed_unroll4_m2, gemm-ncubed_unroll4_m2, gemm-ncubed_unroll4_m2, gemm-ncubed_unroll4_m2};
+void* cgra_dout_addr[2] = {(void*)fir_unroll4_output+16, gemm-ncubed_unroll4_prod};
+cgra_execute(cgra_din_addr, cgra_dout_addr);

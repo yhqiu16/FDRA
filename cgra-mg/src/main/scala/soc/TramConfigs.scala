@@ -5,6 +5,7 @@ import freechips.rocketchip.tile._
 import freechips.rocketchip.config._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.subsystem.SystemBusKey
+import tram.spec.TramSpec
 
 
 class WithTram extends Config((site, here, up) => {
@@ -14,5 +15,5 @@ class WithTram extends Config((site, here, up) => {
       tram
     }
   )
-  case SystemBusKey => up(SystemBusKey).copy(beatBytes = 8)
+  case SystemBusKey => up(SystemBusKey).copy(beatBytes = TramSpec.system_bus_beat_bits/8)
 })

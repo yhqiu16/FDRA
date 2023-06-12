@@ -1,33 +1,26 @@
 include $(abs_top_srcdir)/Makefrag
 
 tests = \
+	test \
 	conv2d_3x3 \
 	fir \
-	gemm_ncube \
+	gemm \
 	pedometer \
 	stencil2d \
 	knn \
 	fft \
+	fft_4x9 \
 	pipeline \
-	conv3x3_fir_unroll \
+	pipeline_4x9 \
+	conv2d_3x3_stencil2d \
+	conv2d_3x3_pedometer \
+	fir_gemm \
+	stencil2d_knn \
 	pedometer_knn \
-	stencil2d_gemm \
-	parallel_pipeline
-#
-#
-#
-#
-#	fir \
-#	gemm_ncube \
-#	gemver \
-#	mvt \
-#	pedometer \
-#	stencil2d \
-#	stencil3d \
-#	multi_pipeline \
-#	multi_pipeline_long \
-#	ellpack \
-#	knn
+	parallel_pipeline \
+	mm \
+	gemm8
+
 
 tests_baremetal = $(tests:=-baremetal)
 

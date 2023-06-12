@@ -145,7 +145,7 @@ class Scratchpad(spadAddrWidth: Int, spadAddrNum: Int, lgMaxDataLen: Int, dataWi
         writeState := s_write_data
         writeAddrs := io.write.req.bits.addrs
         writeAddrNum := io.write.req.bits.num
-        writeMaxAddr := io.write.req.bits.addrs(0) + io.write.req.bits.len - dataByte.U
+        writeMaxAddr := io.write.req.bits.addrs(0) + Mux(io.write.req.bits.len > dataByte.U, io.write.req.bits.len - dataByte.U, 0.U)
         writeId := io.write.req.bits.id
       }
     }
@@ -183,7 +183,7 @@ class Scratchpad(spadAddrWidth: Int, spadAddrNum: Int, lgMaxDataLen: Int, dataWi
       when(io.read.req.fire){
         readState := s_read_data
         readAddr := io.read.req.bits.addrs(0)
-        readMaxAddr := io.read.req.bits.addrs(0) + io.read.req.bits.len - dataByte.U
+        readMaxAddr := io.read.req.bits.addrs(0) + Mux(io.read.req.bits.len > dataByte.U, io.read.req.bits.len - dataByte.U, 0.U)
         readId := io.read.req.bits.id
       }
     }

@@ -11,108 +11,74 @@
 #include "include/encoding.h"
 #include "include/ISA.h"
 
-#define SIZE 1024
+#define SIZE 256
 
-//typedef struct Acceleration Acceleration;
-//struct Acceleration {
-//    int x;
-//    int y;
-//    int z;
-//};
+int acc_vector[SIZE] __attribute__((aligned(16)));
+int res_vector[SIZE] __attribute__((aligned(16)));
 
-//unsigned char second = 0;
-//unsigned char minute = 0;
-//unsigned char hour = 0;
-//unsigned char state = 0;
-//unsigned char I1_flag = 0;
-//unsigned char I2_flag = 0;
-//unsigned char timerFlag1 = 0;
-//unsigned char timerFlag2 = 0;
-//unsigned char aux=0;
-//char Int_SourceSystem =0;
-//char Int_SourceTrans=0;
-//unsigned char length;
-//char buffer[14];
-//int step[SIZE]={};
-//int km[SIZE]={};
-int acc_vector[SIZE];
-int res_vector[SIZE];
-
-//int i;
-//int sub_x;
-//int sub_y;
-//int sub_z;
-int acceleration_x[SIZE];
-int acceleration_y[SIZE];
-int acceleration_z[SIZE];
-int acc_avg_x[SIZE];
-int acc_avg_y[SIZE];
-int acc_avg_z[SIZE];
-
-//long long unsigned start;
-//long long unsigned end;
-//int result;
+int acceleration_x[SIZE] __attribute__((aligned(16)));
+int acceleration_y[SIZE] __attribute__((aligned(16)));
+int acceleration_z[SIZE] __attribute__((aligned(16)));
+int acc_avg_x[SIZE] __attribute__((aligned(16)));
+int acc_avg_y[SIZE] __attribute__((aligned(16)));
+int acc_avg_z[SIZE] __attribute__((aligned(16)));
 
 void cgra_execute(void** din_addr, void** dout_addr)
 {
-	volatile unsigned short cin[45][3] __attribute__((aligned(8))) = {
-		{0x2000, 0x0000, 0x0010},
-		{0x0010, 0x0000, 0x0011},
-		{0x0000, 0x0100, 0x0012},
-		{0x0000, 0x0000, 0x0013},
-		{0x3000, 0x0000, 0x0014},
-		{0x0010, 0x0000, 0x0015},
-		{0x0000, 0x0100, 0x0016},
-		{0x0000, 0x0000, 0x0017},
-		{0x2000, 0x0000, 0x001c},
-		{0x0010, 0x0000, 0x001d},
-		{0x0000, 0x0100, 0x001e},
-		{0x0000, 0x0000, 0x001f},
-		{0x2800, 0x0000, 0x0020},
-		{0x0010, 0x0000, 0x0021},
-		{0x0000, 0x0100, 0x0022},
-		{0x0000, 0x0000, 0x0023},
-		{0x0400, 0x0000, 0x0038},
-		{0x4000, 0x0000, 0x0040},
-		{0x5400, 0x0000, 0x0044},
-		{0x2402, 0x0000, 0x005d},
-		{0x5001, 0x0000, 0x0061},
-		{0x4803, 0x0000, 0x0065},
-		{0x2402, 0x0000, 0x0069},
-		{0x0000, 0x0200, 0x0084},
-		{0x0001, 0x0000, 0x0088},
-		{0x2403, 0x0000, 0x00a9},
-		{0x0300, 0x0000, 0x00cc},
-		{0x6481, 0x0000, 0x00f1},
-		{0x5040, 0x0200, 0x0114},
-		{0x4803, 0x0000, 0x0135},
-		{0x8c02, 0x0000, 0x0139},
-		{0x0310, 0x0000, 0x015c},
-		{0x0000, 0x0000, 0x0160},
-		{0x2000, 0x0000, 0x017c},
-		{0x0010, 0x0000, 0x017d},
-		{0x0000, 0x0100, 0x017e},
-		{0x0000, 0x0000, 0x017f},
-		{0x3000, 0x0000, 0x0180},
-		{0x0010, 0x0000, 0x0181},
-		{0x0000, 0x8f00, 0x0182},
-		{0x0000, 0x0000, 0x0183},
-		{0x2800, 0x0000, 0x0184},
-		{0x0010, 0x0000, 0x0185},
-		{0x0000, 0x0100, 0x0186},
-		{0x0000, 0x0000, 0x0187},
+	static unsigned short cin[41][3] __attribute__((aligned(16))) = {
+		{0x0400, 0x8000, 0x000c},
+		{0x0000, 0x0000, 0x000d},
+		{0x0000, 0x0020, 0x000e},
+		{0x0500, 0x8000, 0x0010},
+		{0x0000, 0x0000, 0x0011},
+		{0x0000, 0x0020, 0x0012},
+		{0x0400, 0x8000, 0x0018},
+		{0x0000, 0x0000, 0x0019},
+		{0x0000, 0x11e0, 0x001a},
+		{0x0000, 0x0000, 0x001b},
+		{0x0000, 0x0010, 0x0030},
+		{0x0000, 0x0010, 0x0034},
+		{0x0010, 0x0000, 0x003c},
+		{0xb003, 0x0001, 0x0055},
+		{0x4003, 0x0002, 0x0059},
+		{0xb001, 0x0001, 0x005d},
+		{0x2150, 0x0000, 0x0078},
+		{0x0300, 0x0040, 0x007c},
+		{0x0025, 0x0000, 0x0080},
+		{0xa002, 0x0001, 0x0099},
+		{0x1001, 0x0002, 0x009d},
+		{0x9102, 0x0001, 0x00a1},
+		{0x00c0, 0x0000, 0x00bc},
+		{0x00c4, 0x0000, 0x00c4},
+		{0xc002, 0x0001, 0x00e1},
+		{0xb003, 0x0001, 0x00e5},
+		{0x0040, 0x0000, 0x0104},
+		{0x0000, 0x0000, 0x0108},
+		{0x0000, 0x0000, 0x010c},
+		{0x0400, 0x8000, 0x0124},
+		{0x0000, 0x0000, 0x0125},
+		{0x0000, 0x0020, 0x0126},
+		{0x0500, 0x8000, 0x0128},
+		{0x0000, 0x0000, 0x0129},
+		{0x0000, 0x0020, 0x012a},
+		{0x0700, 0x8000, 0x012c},
+		{0x0000, 0x0000, 0x012d},
+		{0x0000, 0x0020, 0x012e},
+		{0x0600, 0x8000, 0x0130},
+		{0x0000, 0x0000, 0x0131},
+		{0x0000, 0x0020, 0x0132},
 	};
 
-	load_cfg((void*)cin, 0x20000, 270, 0, 0);
-	load_data(din_addr[0], 0xa000, 4096, 0, 0, 0);
-	load_data(din_addr[1], 0xc000, 4096, 0, 0, 0);
-	load_data(din_addr[2], 0x1a000, 4096, 0, 0, 0);
-	load_data(din_addr[3], 0x8000, 4096, 0, 0, 0);
-	load_data(din_addr[4], 0x0, 4096, 0, 0, 0);
-	load_data(din_addr[5], 0x18000, 4096, 0, 0, 0);
-	config(0x0, 45, 0, 0);
-	execute(0x70d8, 0, 0);
-	store(dout_addr[0], 0x1c000, 4096, 0, 0);
+	load_cfg((void*)cin, 0x4000, 246, 0, 0);
+	load_data(din_addr[0], 0x2000, 1024, 0, 0, 0);
+	load_data(din_addr[1], 0x2400, 1024, 0, 0, 0);
+	load_data(din_addr[2], 0x2800, 1024, 0, 0, 0);
+	load_data(din_addr[3], 0x2c00, 1024, 0, 0, 0);
+	load_data(din_addr[4], 0x0, 1024, 0, 0, 0);
+	load_data(din_addr[5], 0x400, 1024, 0, 0, 0);
+	config(0x0, 41, 0, 0);
+	execute(0xf2c, 0, 0);
+	store(dout_addr[0], 0x1000, 1024, 0, 0);
 }
 
 
@@ -120,11 +86,7 @@ void cgra_execute(void** din_addr, void** dout_addr)
 static
 void init_array()
 {
-	for(int i=0;i<SIZE;i++){    
-//    	sub_x = 0;
-//    	sub_y = 0;
-//    	sub_z = 0;
-
+	for(int i=0;i<SIZE;i++){
     	acceleration_x[i] = 3*i;
     	acceleration_y[i] = 3*i+1;
     	acceleration_z[i] = 3*i+2;
@@ -137,7 +99,7 @@ void init_array()
 
 
 __attribute__((noinline))
-void pedometer(){//(int input[], int output[], int coefficients[])
+void pedometer(){
 	for(int i=0;i<SIZE;i++){
 		acc_vector[i] = (acceleration_x[i]- acc_avg_x[i]) * (acceleration_x[i]- acc_avg_x[i])+  (acceleration_y[i]- acc_avg_y[i]) * (acceleration_y[i]- acc_avg_y[i])+ (acceleration_z[i]-acc_avg_z[i]) * (acceleration_z[i]-acc_avg_z[i]) ;
 	}

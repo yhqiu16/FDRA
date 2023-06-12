@@ -17,7 +17,7 @@ std::map<int, CfgData> Configuration::getGpeCfgData(GPENode* node){
     // operation
     int opc = Operations::OPC(dfgNode->operation());
     int aluId = -1;
-    int dlypipeId;
+    int rduId;
     // bool flag = false;
     std::set<int> usedOperands;
     std::map<int, int> delayUsed;
@@ -29,12 +29,12 @@ std::map<int, CfgData> Configuration::getGpeCfgData(GPENode* node){
         int muxId = muxPair->first;
         int muxCfgData = muxPair->second;
         auto mux = subAdg->node(muxId);
-        auto dlyPair = mux->output(0).begin();
-        dlypipeId = dlyPair->first; 
-        int dlyPort = dlyPair->second;
-        auto dlypipe = subAdg->node(dlypipeId);   
-        delayUsed[dlyPort] = edgeAttr.delay; // delay cycles used by this port
-        auto aluPair = dlypipe->output(dlyPort).begin();  // delaypipe has the same input/output index
+        auto rduPair = mux->output(0).begin();
+        rduId = rduPair->first; 
+        int rduPort = rduPair->second;
+        auto rdu = subAdg->node(rduId);   
+        delayUsed[rduPort] = edgeAttr.delay; // delay cycles used by this port
+        auto aluPair = rdu->output(rduPort).begin();  // RDU has the same input/output index
         aluId = aluPair->first;
         int aluPort = aluPair->second;
         usedOperands.emplace(aluPort); // operand index
@@ -46,23 +46,23 @@ std::map<int, CfgData> Configuration::getGpeCfgData(GPENode* node){
         auto muxPair = subAdg->input(0).begin(); // one input only connected to one Mux
         int muxId = muxPair->first;
         auto mux = subAdg->node(muxId);
-        dlypipeId = mux->output(0).begin()->first; 
-        auto dlypipe = subAdg->node(dlypipeId);   
-        auto aluPair = dlypipe->output(0).begin();   
+        rduId = mux->output(0).begin()->first; 
+        auto rdu = subAdg->node(rduId);   
+        auto aluPair = rdu->output(0).begin();   
         aluId = aluPair->first;
     }
     CfgDataLoc aluCfgLoc = node->configInfo(aluId);
     CfgData aluCfg(aluCfgLoc.high - aluCfgLoc.low + 1, (uint32_t)opc);
     cfg[aluCfgLoc.low] = aluCfg;
-    // delaypipe
-    CfgDataLoc dlyCfgLoc = node->configInfo(dlypipeId);
+    // RDU
+    CfgDataLoc rduCfgLoc = node->configInfo(rduId);
     uint32_t delayCfg = 0;
-    int eachDelayWidth = (dlyCfgLoc.high - dlyCfgLoc.low + 1) / node->numOperands();
+    int eachDelayWidth = (rduCfgLoc.high - rduCfgLoc.low + 1) / node->numOperands();
     for(auto& elem : delayUsed){
         delayCfg |= elem.second << (eachDelayWidth * elem.first);
     }
-    CfgData dlyCfg(dlyCfgLoc.high - dlyCfgLoc.low + 1, delayCfg);
-    cfg[dlyCfgLoc.low] = dlyCfg;  
+    CfgData rduCfg(rduCfgLoc.high - rduCfgLoc.low + 1, delayCfg);
+    cfg[rduCfgLoc.low] = rduCfg;  
     // accumulative node
     if(dfgNode->accumulative()){
         int initValId = node->cfgIdMap["InitVal"];
@@ -125,8 +125,8 @@ std::map<int, CfgData> Configuration::getGpeCfgData(GPENode* node){
         }
         assert(i < dfgNode->numInputs());
         // auto alu = subAdg->node(aluId); 
-        auto dlypipe = subAdg->node(dlypipeId); // used default delay 
-        int muxId = dlypipe->input(i).first;
+        auto rdu = subAdg->node(rduId); // used default delay 
+        int muxId = rdu->input(i).first;
         for(auto& elem : subAdg->node(muxId)->inputs()){
             int id = elem.second.first;
             if(id == subAdg->id()) continue;
@@ -248,7 +248,7 @@ std::map<int, CfgData> Configuration::getIobCfgData(IOBNode* node){
         cfg[useAddrCfgLoc.low] = useAddrCfg;
     }
     if(dfgNode->operation() != "INPUT"){ // only INPUT node donot use Mux     
-        int dlypipeId;
+        int rduId;
         std::map<int, int> delayUsed;
         for(auto& elem : dfgNode->inputEdges()){
             int eid = elem.second;
@@ -262,27 +262,27 @@ std::map<int, CfgData> Configuration::getIobCfgData(IOBNode* node){
             CfgDataLoc muxCfgLoc = node->configInfo(muxId);
             CfgData muxCfg((muxCfgLoc.high - muxCfgLoc.low + 1), (uint32_t)muxCfgData);
             cfg[muxCfgLoc.low] = muxCfg;
-            auto dlyPair = mux->output(0).begin();
-            dlypipeId = dlyPair->first; 
-            int dlyPort = dlyPair->second;
-            auto dlypipe = subAdg->node(dlypipeId);            
-            if(dlypipe->type() == "DelayPipe"){
-                delayUsed[dlyPort] = edgeAttr.delay; // delay cycles used by this port
-                CfgDataLoc dlyCfgLoc = node->configInfo(dlypipeId);
-                CfgData dlyCfg(dlyCfgLoc.high - dlyCfgLoc.low + 1, (uint32_t)delay);
-                cfg[dlyCfgLoc.low] = dlyCfg;      
+            auto rduPair = mux->output(0).begin();
+            rduId = rduPair->first; 
+            int rduPort = rduPair->second;
+            auto rdu = subAdg->node(rduId);            
+            if(rdu->type() == "RDU"){
+                delayUsed[rduPort] = edgeAttr.delay; // delay cycles used by this port
+                CfgDataLoc rduCfgLoc = node->configInfo(rduId);
+                CfgData rduCfg(rduCfgLoc.high - rduCfgLoc.low + 1, (uint32_t)delay);
+                cfg[rduCfgLoc.low] = rduCfg;      
             }     
         }  
-        // delaypipe
+        // RDU
         if(!delayUsed.empty()){
-            CfgDataLoc dlyCfgLoc = node->configInfo(dlypipeId);
+            CfgDataLoc rduCfgLoc = node->configInfo(rduId);
             uint32_t delayCfg = 0;
-            int eachDelayWidth = (dlyCfgLoc.high - dlyCfgLoc.low + 1) / node->numOperands();
+            int eachDelayWidth = (rduCfgLoc.high - rduCfgLoc.low + 1) / node->numOperands();
             for(auto& elem : delayUsed){
                 delayCfg |= elem.second << (eachDelayWidth * elem.first);
             }
-            CfgData dlyCfg(dlyCfgLoc.high - dlyCfgLoc.low + 1, delayCfg);
-            cfg[dlyCfgLoc.low] = dlyCfg;  
+            CfgData rduCfg(rduCfgLoc.high - rduCfgLoc.low + 1, delayCfg);
+            cfg[rduCfgLoc.low] = rduCfg;  
         }
     }
     return cfg;

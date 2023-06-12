@@ -168,7 +168,7 @@ ADGNode* ADGIR::parseADGNode(json& nodeJson){
                 adg_node->addConfigInfo(subModuleId, cfg);
             }
         }
-    }else{ // common components: ALU, Muxn, RF, DelayPipe, Const
+    }else{ // common components: ALU, Muxn, DMR, RDU, Const
         adg_node = new ADGNode(nodeId);        
     } 
     adg_node->setType(type);
@@ -212,11 +212,11 @@ ADGNode* ADGIR::parseADGNode(json& nodeJson, std::map<int, std::pair<ADGNode*, b
         }
         if(type == "GPE"){
             GPENode *gpe_node = dynamic_cast<GPENode*>(adg_node);
-            // gpe_node->setMaxDelay(nodeJson["max_delay"].get<int>());
+            gpe_node->setMaxDelay(nodeJson["max_delay"].get<int>());
         }else if(type == "IOB"){
             IOBNode *iob_node = dynamic_cast<IOBNode*>(adg_node);
             iob_node->setIndex(nodeJson["iob_index"].get<int>());
-            // iob_node->setMaxDelay(nodeJson["max_delay"].get<int>());
+            iob_node->setMaxDelay(nodeJson["max_delay"].get<int>());
         }else{
             GIBNode *gib_node = dynamic_cast<GIBNode*>(adg_node);
             gib_node->setTrackReged(nodeJson["track_reged"].get<bool>());
@@ -224,7 +224,7 @@ ADGNode* ADGIR::parseADGNode(json& nodeJson, std::map<int, std::pair<ADGNode*, b
         adg_node->setCfgBlkIdx(nodeJson["cfg_blk_index"].get<int>());  
         adg_node->setX(nodeJson["x"].get<int>());     
         adg_node->setY(nodeJson["y"].get<int>());          
-    }else{ // common components: ALU, Muxn, RF, DelayPipe, Const
+    }else{ // common components: ALU, Muxn, DMR, RDU, Const
         if(renewNode){ // re-new ADGNode
             adg_node = new ADGNode(nodeId);
             *adg_node = *module;  

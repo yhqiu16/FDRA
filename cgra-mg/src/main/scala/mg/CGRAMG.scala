@@ -15,25 +15,25 @@ import java.io.File
 
 // CGRA Modeling and Generation
 object CGRAMG extends App{
-  val loadSpec : Boolean = false
+  val loadSpecParam : Boolean = true
   val dumpOperationSet : Boolean = true
   val dumpADG : Boolean = true
   val genVerilog : Boolean = true
   val rootDirPath = (new File("")).getAbsolutePath()
 
-  if(loadSpec){
-    val jsonFile = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/tram_spec.json"
-    TramSpec.dumpSpec(jsonFile)
-    TramSpec.loadSpec(jsonFile)
+  if(loadSpecParam){
+//    val jsonFile = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/tram_spec.json"
+//    TramSpec.dumpSpec()
+    TramSpec.loadSpec()
   }
   TramSpec.attrs("dumpOperationSet") = dumpOperationSet
-  if(dumpOperationSet){
-    TramSpec.attrs("operation_set_filename") = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/operations.json"
-  }
+//  if(dumpOperationSet){
+//    TramSpec.attrs("operation_set_filename") = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/operations.json"
+//  }
   TramSpec.attrs("dumpADG") = dumpADG
-  if(dumpADG){
-    TramSpec.attrs("cgra_adg_filename") = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/cgra_adg.json"
-  }
+//  if(dumpADG){
+//    TramSpec.attrs("cgra_adg_filename") = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/cgra_adg.json"
+//  }
   if(genVerilog){
     (new chisel3.stage.ChiselStage).emitVerilog(new CGRA(TramSpec.attrs), args)
   }else{ // not emit verilog to speedup

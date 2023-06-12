@@ -36,7 +36,7 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
   val numIn = numInList.sum
   val numOut = 1
   val numInCtrl = { if(mode == FIFO_MODE) 1 else 2 }
-  // max delay cycles of the DelayPipe
+  // max delay cycles of the RDU
   val maxDelay = attrs("max_delay").asInstanceOf[Int]
   apply("data_width", width)
   apply("num_input", numIn)
@@ -63,10 +63,10 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
     val sram = Flipped(new SRAMIO(width, addrWidthSram, hasMaskSram))
   })
 
-  val numDelayPipes = { if(mode == FIFO_MODE) 0 else 2 } // FIFO mode, no DelayPipe
+  val numRDUs = { if(mode == FIFO_MODE) 0 else 2 } // FIFO mode, no RDU
   val ioCtrl = Module(new IOController(width, addrWidthSram, hasMaskSram, mode, lgMaxII, lgMaxLat, lgMaxStride, lgMaxCycles, agNestLevels, addRegSram))
-  val delay_pipe: SharedDelayPipe = {if(numDelayPipes > 0) Module(new SharedDelayPipe(width, maxDelay, numDelayPipes)) else null}
-//  val delay_pipes = Array.fill(numDelayPipes){ Module(new DelayPipe(width, maxDelay)).io }
+  val rdu: SharedRDU = {if(numRDUs > 0) Module(new SharedRDU(width, maxDelay, numRDUs)) else null}
+//  val rdus = Array.fill(numRDUs){ Module(new RDU(width, maxDelay)).io }
   val imuxs = numInList.map{ num => Module(new Muxn(width, num)).io } // input MUXs
 
 
@@ -86,10 +86,10 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
     "IOController" -> List(1),
   )
   var next_smi_id : Int = 2
-  if(numDelayPipes > 0) {
-    sm_id += ("DelayPipe" -> 3)
-//    smi_id += ("DelayPipe" -> (numInCtrl+2 until numDelayPipes+numInCtrl+2).toList)
-    smi_id += ("DelayPipe" -> List(next_smi_id))
+  if(numRDUs > 0) {
+    sm_id += ("RDU" -> 3)
+//    smi_id += ("RDU" -> (numInCtrl+2 until numRDUs+numInCtrl+2).toList)
+    smi_id += ("RDU" -> List(next_smi_id))
     next_smi_id += 1
   }
   smi_id += "Muxn" -> (next_smi_id until numInCtrl+next_smi_id).toList
@@ -128,12 +128,12 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
       in := io.in(offset+j)
       connections.append((smi_id("This")(0), "This", offset+j, smi_id("Muxn")(i), "Muxn", j))
     }
-    if(numDelayPipes > 0){
-      delay_pipe.io.en := io.en
-      delay_pipe.io.in(i) := imuxs(i).out
-      ioCtrl.io.in(i) := delay_pipe.io.out(i)
-      connections.append((smi_id("Muxn")(i), "Muxn", 0, smi_id("DelayPipe")(0), "DelayPipe", i))
-      connections.append((smi_id("DelayPipe")(0), "DelayPipe", i, smi_id("IOController")(0), "IOController", i))
+    if(numRDUs > 0){
+      rdu.io.en := io.en
+      rdu.io.in(i) := imuxs(i).out
+      ioCtrl.io.in(i) := rdu.io.out(i)
+      connections.append((smi_id("Muxn")(i), "Muxn", 0, smi_id("RDU")(0), "RDU", i))
+      connections.append((smi_id("RDU")(0), "RDU", i, smi_id("IOController")(0), "IOController", i))
     }else{
       ioCtrl.io.in(i) := imuxs(i).out
       connections.append((smi_id("Muxn")(i), "Muxn", 0, smi_id("IOController")(0), "IOController", i))
@@ -144,10 +144,10 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
 
   // configuration memory
   val ioCtrlCfgWidth = ioCtrl.io.config.getWidth
-  val delayCfgWidth = { if(numDelayPipes > 0) delay_pipe.io.config.getWidth else 0 }// DelayPipe Config width
+  val rduCfgWidth = { if(numRDUs > 0) rdu.io.config.getWidth else 0 }// RDU Config width
   val imuxCfgWidthList = imuxs.map{ mux => mux.config.getWidth } // input Muxes
   val imuxCfgWidth = imuxCfgWidthList.sum
-  val sumCfgWidth = ioCtrlCfgWidth + delayCfgWidth + imuxCfgWidth
+  val sumCfgWidth = ioCtrlCfgWidth + rduCfgWidth + imuxCfgWidth
 
   val cfg = Module(new ConfigMem(sumCfgWidth, 1, cfgDataWidth))
   cfg.io.cfg_en := io.cfg_en && (cfgBlkIndex.U === io.cfg_addr(cfgAddrWidth-1, cfgBlkOffset))
@@ -173,10 +173,10 @@ class IOB(attrs: mutable.Map[String, Any]) extends Module with IR {
   apply("io_controller_cfg_id", ioc_cfg_id)
 
   offset = ioCtrlCfgWidth
-  if(delayCfgWidth != 0){
-    delay_pipe.io.config := cfgOut(delayCfgWidth+offset-1, offset)
-    configuration += smi_id("DelayPipe")(0) -> ("DelayPipe", delayCfgWidth+offset-1, offset)
-    offset += delayCfgWidth
+  if(rduCfgWidth != 0){
+    rdu.io.config := cfgOut(rduCfgWidth+offset-1, offset)
+    configuration += smi_id("RDU")(0) -> ("RDU", rduCfgWidth+offset-1, offset)
+    offset += rduCfgWidth
   }
   imuxCfgWidthList.zipWithIndex.foreach{ case (w, i) =>
     if(w != 0){

@@ -112,8 +112,9 @@ int main(int argc, char* argv[]) {
     ADGIR adg_ir(adg_fn);
     ADG* adg = adg_ir.getADG();
     int numGpeNodes = adg->numGpeNodes();
-    int numFuNodes = numGpeNodes + adg->numIobNodes();
-    std::cout << "numGpeNodes: " << numGpeNodes << ", numFuNodes(GPE+IOB): "  << numFuNodes << std::endl;
+    int numIobNodes = adg->numIobNodes();
+    int numFuNodes = numGpeNodes + numIobNodes;
+    std::cout << "numGpeNodes: " << numGpeNodes << ", numIobNodes: "  << numIobNodes << std::endl;
     std::vector<float>storePEusage;
     std::vector<float>storeFUusage;
     std::vector<int>bestLatency;
@@ -129,8 +130,10 @@ int main(int argc, char* argv[]) {
         DFGIR dfg_ir(dfg_fn);
         DFG* dfg = dfg_ir.getDFG();
         int numNodes = dfg->nodes().size();
-        int numOpNodes = numNodes - dfg->ioNodes().size();
-        std::cout << "numOpNodes: " << numOpNodes << ", numDfgNodes(Op+IO): "  << numNodes << std::endl;
+        int numIoNodes = dfg->ioNodes().size();
+        int numOpNodes = numNodes - numIoNodes;
+        int numEdges = dfg->edges().size();
+        std::cout << "numOpNodes: " << numOpNodes << ", numIoNodes: "  << numIoNodes << ", numDfgEdges: "  << numEdges << std::endl;
         // dfg->print();
         // map DFG to ADG
         mapper.setDFG(dfg);
@@ -139,8 +142,8 @@ int main(int argc, char* argv[]) {
         if(!succeed){
             break;
         }
-        std::string appName = fileNameRemovePath(dfg_fn);
-        mapper.genSoCApp(resultDir, appName);
+        // std::string appName = fileNameRemovePath(dfg_fn);
+        // mapper.genSoCApp(resultDir, appName);
         numSucceed++;
         float usagePE = (float)numOpNodes/numGpeNodes;
         float usageFU = (float)numNodes/numFuNodes;

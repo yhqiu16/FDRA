@@ -1,0 +1,18 @@
+# format: DFG-IO-Tag, DFG-IO-Name, ADG-IOB-Id, ADG-IOB-Index, DFG-IO-Latency
+INPUT_0, stencil2d_Input7, 108, 16, 0
+INPUT_1, stencil2d_Input9, 105, 13, 0
+INPUT_2, stencil2d_Input14, 9, 8, 0
+INPUT_3, stencil2d_Input17, 7, 6, 0
+INPUT_4, stencil2d_Input22, 1, 0, 0
+INPUT_5, stencil2d_Input25, 3, 2, 0
+OUTPUT_6, stencil2d_Output42, 4, 3, 10
+INPUT_7, md-knn_Input6, 8, 7, 0
+LOAD_8, md-knn_LOAD8, 109, 17, 6
+LOAD_9, md-knn_LOAD10, 6, 5, 5
+LOAD_10, md-knn_LOAD12, 107, 15, 6
+INPUT_11, md-knn_Input49, 106, 14, 1
+INPUT_12, md-knn_Input55, 103, 11, 0
+INPUT_13, md-knn_Input57, 2, 1, 0
+OUTPUT_14, md-knn_Output59, 104, 12, 27
+OUTPUT_15, md-knn_Output60, 102, 10, 28
+OUTPUT_16, md-knn_Output61, 101, 9, 27

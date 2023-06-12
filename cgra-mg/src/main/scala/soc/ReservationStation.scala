@@ -263,7 +263,7 @@ class ReservationStation(loadQueDepth: Int, storeQueDepth: Int, exeQueDepth: Int
   ex_resv_que.io.enq.bits := ex_cmd_task_id
   io.ex.req.valid := (ex_state === s_issue) && ex_resv_que.io.enq.ready
   io.ex.req.bits.cmd := ex_cmd_que.io.deq.bits
-  io.ex.req.bits.id := ex_cmd_task_id
+  io.ex.req.bits.id := Cat(is_cfg_cmd, ex_cmd_task_id)
   io.ex.resp.ready := true.B
   ex_resv_que.io.deq.ready := io.ex.resp.fire
 

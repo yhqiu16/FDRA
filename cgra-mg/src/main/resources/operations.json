@@ -34,7 +34,7 @@
   }, {
     "name" : "UDIV",
     "commutative" : 0,
-    "latency" : 1,
+    "latency" : 6,
     "accumulative" : 0,
     "numOperands" : 2,
     "numRes" : 1,

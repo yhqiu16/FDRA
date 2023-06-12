@@ -141,14 +141,18 @@ class IOController(dataWidth: Int, addrWidth: Int, hasMask: Boolean, mode: Int, 
   }
 
   // write real valid: the last level with stride = 0 and cycleCntEnd
-  val wRealValid = (0 until agNestLevels).map{ i =>
-      (stride(i) === 0.S && cycleCnt(i) + 1.U >= cycles(i)) || stride(i) =/= 0.S
-  }.reduce(_&_)
+  // apply to first several zeros
+//  val wRealValid = (0 until agNestLevels).map{ i =>
+//      (stride(i) === 0.S && cycleCnt(i) + 1.U >= cycles(i)) || stride(i) =/= 0.S
+//  }.reduce(_&_)
+  val wRealValid = true.B
 
   // read real valid: the last level with stride = 0 and cycleCnt == 0
-  val rRealValid = (0 until agNestLevels).map{ i =>
-    (stride(i) === 0.S && cycleCnt(i) === 0.U) || stride(i) =/= 0.S
-  }.reduce(_&_)
+  // apply to first several zeros
+//  val rRealValid = (0 until agNestLevels).map{ i =>
+//    (stride(i) === 0.S && cycleCnt(i) === 0.U) || stride(i) =/= 0.S
+//  }.reduce(_&_)
+  val rRealValid = true.B
 
   // in -> sram
   val wValid = isStore && launch && (iiCnt === 0.U)

@@ -1,0 +1,3 @@
+void* cgra_din_addr[8] = {coefficients, coefficients, coefficients, coefficients, input, input, input, input};
+void* cgra_dout_addr[1] = {(void*)output+16};
+cgra_execute(cgra_din_addr, cgra_dout_addr);

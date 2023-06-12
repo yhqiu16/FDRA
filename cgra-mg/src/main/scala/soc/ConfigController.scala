@@ -9,13 +9,13 @@ import tram.dsa.SRAMIO
  * @param dataWidthSram      SRAM data width in bits
  * @param addrWidthSram      SRAM address width (+1 every data width)
  * @param hasMaskSram        if SRAM has write data byte mask
- * @param readLatencySram    SRAM read latency
+ * @param addRegSram         SRAM read latency, 0 : 1; 1 : 2; 2 : 3;
  * @param cfgDataWidth       Config data width in bits
  * @param cfgAddrWidth       Config address width
  * @param cfgAddrWidthAlign  Config address width aligned to power2
  * @param cfgRegNum          Config chain register number, the last config data arrive in the last row of IOB after cfgRegNum cycles
  */
-class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Boolean, readLatencySram: Int,
+class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Boolean, addRegSram: Int,
                        cfgDataWidth: Int, cfgAddrWidth: Int, cfgAddrWidthAlign: Int, cfgRegNum: Int) extends Module {
   val io = IO(new Bundle {
     val start = Input(Bool()) // pulse signal
@@ -29,6 +29,12 @@ class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Bool
     val cfg_addr = Output(UInt(cfgAddrWidth.W))
     val cfg_data = Output(UInt(cfgDataWidth.W))
   })
+
+  val readLatencySram = addRegSram + 1
+  val sramDout = {
+    if(addRegSram > 0) RegNext(io.sram.dout)
+    else io.sram.dout
+  }
 
   val cfgWidth = cfgDataWidth + cfgAddrWidthAlign
   val s_idle :: s_data :: s_wait :: Nil = Enum(3)
@@ -93,11 +99,11 @@ class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Bool
   }.elsewhen(wen && ren){
     wOffset := wOffset + dataWidthSram.U - cfgWidth.U
     dataReg := ((dataReg << (regWidth.U - wOffset)) >> (regWidth.U + cfgWidth.U - wOffset)).asUInt |
-                (io.sram.dout << (wOffset - cfgWidth.U)).asUInt
+                (sramDout << (wOffset - cfgWidth.U)).asUInt
   }.elsewhen(wen){
     wOffset := wOffset + dataWidthSram.U
     dataReg := ((dataReg << (regWidth.U - wOffset)) >> (regWidth.U - wOffset)).asUInt |
-      (io.sram.dout << wOffset).asUInt
+      (sramDout << wOffset).asUInt
   }.elsewhen(ren){
     wOffset := wOffset - cfgWidth.U
     dataReg := (dataReg >> cfgWidth.U).asUInt
@@ -109,10 +115,19 @@ class ConfigController(dataWidthSram: Int, addrWidthSram: Int, hasMaskSram: Bool
   }.elsewhen(sramRen){
     addrSram := addrSram + 1.U
   }
-  io.sram.en := sramRen
+//  io.sram.en := sramRen
   io.sram.we := 0.U
-  io.sram.addr := addrSram
+//  io.sram.addr := addrSram
   io.sram.din := 0.U
+
+  if(addRegSram > 1){ // add reg to en, read latency + 3
+    io.sram.en := RegNext(sramRen)
+    io.sram.addr := RegNext(addrSram)
+  }else{ // not add reg to en, read latency is 1/2
+    io.sram.en := sramRen
+    io.sram.addr := addrSram
+  }
+
   io.cfg_en := ren
   io.cfg_addr := dataReg(cfgWidth-1, cfgDataWidth)
   io.cfg_data := dataReg(cfgDataWidth-1, 0)

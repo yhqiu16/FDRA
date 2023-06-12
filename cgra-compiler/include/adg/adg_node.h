@@ -64,7 +64,7 @@ public:
 class FUNode : public ADGNode
 {
 protected:
-    // max delay cycles of the internal shared DelayPipe
+    // max delay cycles of the internal shared RDU
     int _maxDelay;
     // number of operands
     int _numOperands; 

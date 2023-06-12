@@ -59,5 +59,7 @@ os.makedirs(new_dfg_name, exist_ok=True)
 new_filename = new_dfg_name + "/affine.dot"
 # print(new_filename)
 new_dfg.write_raw(new_filename)
+os.chdir(new_dfg_name)
+os.system('dot -Tdot_json affine.dot -o affine.json')
 
     

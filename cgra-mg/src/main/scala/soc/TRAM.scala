@@ -10,25 +10,25 @@ import tram.spec._
 
 import java.io.File
 
-object TramParam {
-  val dumpSpec : Boolean = false
-  val loadSpec : Boolean = true
-  val dumpOperationSet : Boolean = true
-  val dumpADG : Boolean = true
-  val rootDirPath = (new File("")).getAbsolutePath()
-  val tram_spec_filename = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/tram_spec.json"
-  val operation_set_filename = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/operations.json"
-  val cgra_adg_filename = rootDirPath + "/generators/tram/cgra-mg/src/main/resources/cgra_adg.json"
-}
+//object TramParam {
+//  val dumpSpec : Boolean = false
+//  val loadSpec : Boolean = true
+//  val dumpOperationSet : Boolean = true
+//  val dumpADG : Boolean = true
+//  val rootDirPath = (new File("")).getAbsolutePath()
+//  val tram_spec_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/resources/tram_spec.json"
+//  val operation_set_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/resources/operations.json"
+//  val cgra_adg_filename = rootDirPath + "/generators/fdra/cgra-mg/src/main/resources/cgra_adg.json"
+//}
 
 class Tram(opcodes: OpcodeSet)(implicit p: Parameters) extends LazyRoCC(opcodes, nPTWPorts = 1) {
-  import TramParam._
-  if(dumpSpec){ TramSpec.dumpSpec(tram_spec_filename) }
-  if(loadSpec){ TramSpec.loadSpec(tram_spec_filename) }
-  TramSpec.attrs("dumpOperationSet") = dumpOperationSet
-  if(dumpOperationSet){ TramSpec.attrs("operation_set_filename") = operation_set_filename }
-  TramSpec.attrs("dumpOperationSet") = dumpADG
-  if(dumpADG){ TramSpec.attrs("cgra_adg_filename") = cgra_adg_filename }
+  //  import TramParam._
+//  if(dumpSpec){ TramSpec.dumpSpec(tram_spec_filename) }
+  if(TramSpec.loadSpecParam){ TramSpec.loadSpec() }
+//  TramSpec.attrs("dumpOperationSet") = dumpOperationSet
+//  if(dumpOperationSet){ TramSpec.attrs("operation_set_filename") = operation_set_filename }
+//  TramSpec.attrs("dumpOperationSet") = dumpADG
+//  if(dumpADG){ TramSpec.attrs("cgra_adg_filename") = cgra_adg_filename }
   // scratchpad banks used for IOB
   val lgSizeSpadBank = TramSpec.attrs("spad_bank_lg_size").asInstanceOf[Int]
   val nSpadBanks = TramSpec.attrs("spad_num_banks").asInstanceOf[Int]
@@ -68,7 +68,8 @@ class TramModuleImp(outer: Tram)(implicit p: Parameters) extends LazyRoCCModuleI
   import outer._
 
   val reservation = Module(new ReservationStation(loadQueDepth, storeQueDepth, exeQueDepth, idWidth))
-  val loader = Module(new LoadController(spadAddrWidth, spadAddrNum, lgMaxDataLen, spadDataWidth, hasMask, idWidth, streamQueDepth, loadQueDepth))
+//  val reservation = Module(new ReservationStationOoO(4, loadQueDepth, storeQueDepth, exeQueDepth, nSpadBanks, lgSizeSpadBank, idWidth))
+  val loader = Module(new LoadController(spadAddrWidth, spadAddrNum, lgMaxDataLen, spadDataWidth, hasMask, idWidth, streamQueDepth, loadQueDepth/2))
   val storer = Module(new StoreController(spadAddrWidth, lgMaxDataLen, spadDataWidth, hasMask, idWidth, streamQueDepth))
   val spad = Module(new Scratchpad(spadAddrWidth, spadAddrNum, lgMaxDataLen, spadDataWidth, hasMask, idWidth, nSpadBanks, lgSizeSpadBank, lgSizeSpadCfg, cgraDataWidth))
   val cgra = Module(new CGRAController(TramSpec.attrs))
