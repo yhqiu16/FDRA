@@ -38,7 +38,7 @@ Framework for a hybrid system with a RISC-V core and a Dynamically Reconfigurabl
 ```sh
     git clone https://github.com/ucb-bar/chipyard.git
     cd chipyard
-    git checkout 1.5.0
+    git checkout 117624d8eea27bafd613eec09e9b9b3e31239e08
     ./scripts/init-submodules-no-riscv-tools.sh
     ./scripts/build-toolchains.sh esp-tools --ignore-qemu
 ```  
